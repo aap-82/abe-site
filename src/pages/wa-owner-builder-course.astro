@@ -1,0 +1,75 @@
+---
+import Hero from "@/components/sections/Hero.astro";
+import TrustBar from "@/components/sections/TrustBar.astro";
+import Section from "@/components/sections/Section.astro";
+import Steps from "@/components/sections/Steps.astro";
+import Pricing from "@/components/sections/Pricing.astro";
+import FAQ from "@/components/sections/FAQ.astro";
+import CTA from "@/components/sections/CTA.astro";
+---
+
+<html lang="en">
+  <head>
+    <title>Owner Builder Course WA — Form 75 Training Online</title>
+    <meta name="description" content="Complete WA's owner builder course online. Meets LGIRS Form 75 knowledge requirements. Self-paced, same-day certificate." />
+  </head>
+
+  <body class="bg-background text-foreground">
+
+    <Hero 
+      title="Owner Builder Course WA"
+      subtitle="Online training for LGIRS Form 75 approval"
+      cta="Start Course — $179"
+    />
+
+    <TrustBar />
+
+    <Section
+      title="What is the WA owner builder course and who needs it?"
+      answer="The WA owner builder course is the knowledge training required for Form 75 approval. If you're building over $20,000 and not a registered builder, you need it."
+    >
+      <p>
+        This course ensures you understand your legal, safety, and financial responsibilities before applying to the Building Services Board.
+      </p>
+    </Section>
+
+    <Section
+      title="How does the course work?"
+      answer="Enrol online, complete modules at your own pace, and receive your certificate the same day."
+    >
+      <Steps />
+    </Section>
+
+    <Section
+      title="What will you learn?"
+      answer="You'll learn legal obligations, permits, contracts, insurance, WHS, and completion processes required under WA law."
+    >
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Legal responsibilities</li>
+        <li>Permits & approvals</li>
+        <li>Managing trades</li>
+        <li>Insurance requirements</li>
+        <li>Workplace safety</li>
+      </ul>
+    </Section>
+
+    <Section
+      title="Eligibility requirements"
+      answer="Anyone can take the course, but Form 75 requires land ownership, intent to occupy, and a White Card."
+    >
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Must be an individual (not company/trust)</li>
+        <li>Own the land</li>
+        <li>White Card required</li>
+        <li>No permit in last 6 years</li>
+      </ul>
+    </Section>
+
+    <Pricing />
+
+    <FAQ />
+
+    <CTA />
+
+  </body>
+</html>
