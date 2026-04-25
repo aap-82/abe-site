@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const jurisdictions = await getCollection('jurisdictions', (j) =>
+  j.data.ownerBuilder?.required === true
+);
+
+const courses = await getCollection('courses', (c) =>
+  c.data.productLine === 'owner-builder' && c.data.status === 'published'
+);
+
+const rows = jurisdictions.map((j) => {
+  const course = courses.find((c) => c.data.jurisdiction.id === j.slug);
+  return {
+    state: j.data.code,
+    regulator: j.data.regulator.name,
+    permitForm: j.data.ownerBuilder.permitForm,
+    applicationFee: j.data.ownerBuilder.applicationFee,
+    threshold: j.data.ownerBuilder.thresholdValue,
+    coursePrice: course?.data.price,
+    courseSlug: course?.slug
+  };
+});
+---
+
+<BaseLayout title="Owner Builder Requirements by State — Compare">
+  <table>
+    <thead>
+      <tr>
+        <th>State</th>
+        <th>Regulator</th>
+        <th>Permit Form</th>
+        <th>Application Fee</th>
+        <th>Work Value Threshold</th>
+        <th>Course</th>
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((r) => (
+        <tr>
+          <td>{r.state}</td>
+          <td>{r.regulator}</td>
+          <td>{r.permitForm}</td>
+          <td>${r.applicationFee}</td>
+          <td>${r.threshold?.toLocaleString()}</td>
+          <td>
+            {r.courseSlug && (
+              <a href={`/courses/${r.courseSlug}/`}>${r.coursePrice}</a>
+            )}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</BaseLayout>
