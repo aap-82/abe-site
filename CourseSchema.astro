@@ -1,0 +1,63 @@
+---
+const { course, jurisdiction, reviewer } = Astro.props;
+const d = course.data;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": d.title,
+  "description": d.answerCapsule,
+  "url": `https://abeeducation.edu.au/courses/${d.slug}/`,
+  "inLanguage": "en-AU",
+  "educationalLevel": "Vocational",
+  "provider": {
+    "@type": "Organization",
+    "name": "ABE Education",
+    "url": "https://abeeducation.edu.au",
+    "sameAs": ["https://www.linkedin.com/company/abe-education"]
+  },
+  "hasCourseInstance": [{
+    "@type": "CourseInstance",
+    "courseMode": d.courseMode === 'online' ? 'Online' : 'Blended',
+    "courseWorkload": `PT${d.durationHours}H`,
+    "inLanguage": "en-AU",
+    "instructor": {
+      "@type": "Person",
+      "@id": `https://abeeducation.edu.au${reviewer.data.profileUrl}#person`
+    }
+  }],
+  "offers": [{
+    "@type": "Offer",
+    "price": d.price,
+    "priceCurrency": d.priceCurrency,
+    "category": "Paid",
+    "availability": "https://schema.org/InStock",
+    "url": d.enrolUrl
+  }],
+  ...(d.credentialAwarded && {
+    "educationalCredentialAwarded": {
+      "@type": "EducationalOccupationalCredential",
+      "name": d.credentialAwarded,
+      "credentialCategory": d.credentialAwarded === 'Statement of Attainment'
+        ? "Certificate"
+        : "CompletionCertificate",
+      "recognizedBy": {
+        "@type": "Organization",
+        "name": d.deliveryRto.name,
+        "identifier": d.deliveryRto.rtoCode
+      }
+    }
+  }),
+  "review": {
+    "@type": "Review",
+    "author": {
+      "@type": "Person",
+      "@id": `https://abeeducation.edu.au${reviewer.data.profileUrl}#person`
+    },
+    "reviewBody": `Reviewed for regulatory currency on ${d.lastReviewed}`,
+    "datePublished": d.lastReviewed
+  }
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
