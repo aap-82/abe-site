@@ -1,0 +1,65 @@
+---
+import { Font } from 'astro:assets';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+}
+
+const { title, description, canonical } = Astro.props;
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonicalUrl} />
+
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content="en_AU" />
+    <meta property="og:site_name" content="ABE Education" />
+
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-mono" />
+
+    <slot name="schema" />
+  </head>
+  <body>
+    <header class="border-b border-[--color-abe-rule]">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between p-4">
+        <a href="/" class="font-display text-lg font-semibold">ABE Education</a>
+        <ul class="flex gap-6 text-sm">
+          <li><a href="/courses/nsw-owner-builder-course/">Owner Builder</a></li>
+          <li><a href="/compare/owner-builder/">Compare states</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="mx-auto max-w-6xl p-4">
+      <slot />
+    </main>
+
+    <footer class="mt-16 border-t border-[--color-abe-rule] py-8">
+      <div class="mx-auto max-w-6xl px-4 text-sm text-slate-600">
+        <p>
+          ABE Education is not a Registered Training Organisation (RTO).
+          Accredited course delivery and Statement of Attainment issuance is
+          provided by our partner RTOs.
+        </p>
+        <p class="mt-2">&copy; {new Date().getFullYear()} ABE Education</p>
+      </div>
+    </footer>
+  </body>
+</html>

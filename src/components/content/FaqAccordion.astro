@@ -1,11 +1,17 @@
 ---
 // src/components/content/FaqAccordion.astro
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  faqs: CollectionEntry<'faqs'>[];
+}
+
 const { faqs } = Astro.props;
 ---
 
 {faqs.map((faq) => (
   <details class="faq-item">
     <summary>{faq.data.question}</summary>
-    <div set:html={faq.rendered.html} />
+    <div set:html={faq.rendered?.html ?? faq.data.answer} />
   </details>
 ))}

@@ -1,0 +1,28 @@
+{
+  "name": "abe-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "abeeducation.edu.au — Astro static site, deployed to Cloudflare Pages",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "sync:experts": "tsx scripts/sync-experts-from-notion.ts"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.8",
+    "@astrojs/mdx": "^5.0.4",
+    "@astrojs/sitemap": "^3.7.2",
+    "@tailwindcss/vite": "~4.1.18",
+    "astro": "^6.0.0",
+    "tailwindcss": "~4.1.18",
+    "typescript": "^5.7.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}

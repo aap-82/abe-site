@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display), Georgia, serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+
+  /* ABE Education brand palette — placeholders, refine against the Grey Design System */
+  --color-abe-ink: #0f172a;
+  --color-abe-paper: #fafaf9;
+  --color-abe-brick: #b53d2a;
+  --color-abe-rule: #e7e5e4;
+}
+
+html {
+  font-family: var(--font-sans);
+  color: var(--color-abe-ink);
+  background: var(--color-abe-paper);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+}

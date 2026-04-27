@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://abeeducation.edu.au/sitemap-index.xml

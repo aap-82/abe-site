@@ -47,11 +47,10 @@ export default defineConfig({
     }
   ],
 
-  // ── Content Security Policy (Astro 6) ───────────────────────
-  // Auto-hashes scripts and styles, generates CSP headers/meta.
-  // Single flag for default protection — covers our schema JSON-LD
-  // blocks and any future inline styles.
-  experimental: {
+  // ── Content Security Policy (stable in Astro 6.1) ───────────
+  // Auto-hashes scripts and styles, generates CSP <meta> tags.
+  // Covers our schema JSON-LD blocks and any future inline styles.
+  security: {
     csp: true
   },
 

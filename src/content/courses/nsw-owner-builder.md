@@ -32,16 +32,14 @@ credentialAwarded: "Statement of Attainment"
 courseCode: "10274NAT"
 unitCodes: ["OBPPBP001"]
 
-faqRefs:
-  - nsw-ob-do-i-need-course
-  - nsw-ob-how-long
-  - nsw-ob-permit-cost
-  - nsw-ob-can-i-sell
-  # ...
+faqRefs: []
+# TODO: add FAQs to src/content/faqs/ then list slugs here, e.g.:
+#   - nsw-ob-do-i-need-course
+#   - nsw-ob-how-long
 
-relatedCourses:
-  - vic-owner-builder
-  - qld-owner-builder
+# TODO: add relatedCourses once VIC/QLD course entries exist:
+#   - vic-owner-builder
+#   - qld-owner-builder
 
 entities:
   - "NSW Fair Trading"

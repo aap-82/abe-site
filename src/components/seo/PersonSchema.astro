@@ -1,0 +1,30 @@
+---
+const { expert } = Astro.props;
+const d = expert.data;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": `https://abeeducation.edu.au${d.profileUrl}#person`,
+  "name": d.name,
+  "jobTitle": d.title,
+  "description": d.shortBio,
+  "image": d.headshotPath,
+  "url": `https://abeeducation.edu.au${d.profileUrl}`,
+  "sameAs": d.sameAs,
+  "hasCredential": d.credentials.map((c: any) => ({
+    "@type": "EducationalOccupationalCredential",
+    "name": c.credential,
+    "recognizedBy": { "@type": "Organization", "name": c.issuer },
+    ...(c.dateIssued && { "dateCreated": c.dateIssued }),
+    ...(c.verificationUrl && { "url": c.verificationUrl })
+  })),
+  "worksFor": {
+    "@type": "Organization",
+    "name": "ABE Education",
+    "url": "https://abeeducation.edu.au"
+  }
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />

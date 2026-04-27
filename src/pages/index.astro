@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const courses = await getCollection('courses', (c) => c.data.status === 'published');
+---
+
+<BaseLayout
+  title="ABE Education — Australian Trades Training & CPD"
+  description="Owner Builder courses, White Card training, and CPD for Australian trades. Reviewed by licensed industry experts. Delivered with our partner RTOs."
+>
+  <section class="py-12">
+    <p class="text-sm uppercase tracking-wide text-slate-500">ABE Education</p>
+    <h1 class="font-display text-4xl font-semibold sm:text-5xl">
+      Practical training for Australian trades.
+    </h1>
+    <p class="mt-4 max-w-2xl text-lg text-slate-700">
+      Owner Builder courses, White Card training, and CPD — reviewed by
+      licensed builders and industry experts, delivered online with our
+      partner Registered Training Organisations.
+    </p>
+    <p class="mt-6">
+      <a class="inline-block rounded bg-[--color-abe-brick] px-5 py-3 text-white no-underline" href="/compare/owner-builder/">
+        Compare Owner Builder requirements by state
+      </a>
+    </p>
+  </section>
+
+  {courses.length > 0 && (
+    <section class="mt-12">
+      <h2 class="font-display text-2xl font-semibold">Available courses</h2>
+      <ul class="mt-4 grid gap-4 sm:grid-cols-2">
+        {courses.map((c) => (
+          <li class="rounded border border-[--color-abe-rule] bg-white p-4">
+            <h3 class="font-display text-lg font-semibold">
+              <a href={`/courses/${c.id}/`}>{c.data.title}</a>
+            </h3>
+            <p class="mt-1 text-sm text-slate-600">{c.data.answerCapsule}</p>
+            <p class="mt-2 text-sm">${c.data.price} {c.data.priceCurrency} &middot; {c.data.duration}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</BaseLayout>

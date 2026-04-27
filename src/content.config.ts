@@ -1,51 +1,53 @@
-import { defineCollection, z, reference } from 'astro:content';
+import { defineCollection, reference } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
 
 // ---------- JURISDICTIONS ----------
 const jurisdictions = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/[^_]*.md', base: './src/content/jurisdictions' }),
   schema: z.object({
     code: z.enum(['NSW', 'VIC', 'QLD', 'WA', 'SA', 'TAS', 'ACT', 'NT']),
     name: z.string(),
     regulator: z.object({
-      name: z.string(),              // e.g. "NSW Fair Trading"
+      name: z.string(),
       url: z.string().url(),
-      shortName: z.string().optional() // e.g. "LGIRS" for WA
+      shortName: z.string().optional()
     }),
     ownerBuilder: z.object({
       required: z.boolean(),
-      permitForm: z.string().optional(),       // "Form 75", "Form 412"
-      applicationFee: z.number().optional(),   // AUD
-      thresholdValue: z.number().optional(),   // value at which course is required
+      permitForm: z.string().optional(),
+      applicationFee: z.number().optional(),
+      thresholdValue: z.number().optional(),
       courseRequired: z.boolean()
     }).optional(),
     whiteCard: z.object({
-      legislation: z.string(),       // e.g. "Work Health and Safety Regulation 2017 (NSW)"
+      legislation: z.string(),
       issuingAuthority: z.string()
     }).optional(),
     legislationReferences: z.array(z.object({
       title: z.string(),
       section: z.string().optional(),
       url: z.string().url(),
-      currency: z.string()           // ISO date — last verified current
+      currency: z.string()
     })),
     penalties: z.array(z.object({
       offence: z.string(),
       amount: z.number(),
       unit: z.enum(['AUD', 'penalty_units']),
-      asAt: z.string()               // ISO date
+      asAt: z.string()
     })).optional(),
-    lastReviewed: z.string(),        // ISO date
+    lastReviewed: z.string(),
     reviewedBy: reference('experts')
   })
 });
 
 // ---------- EXPERTS (mirrored from Notion) ----------
 const experts = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/[^_]*.md', base: './src/content/experts' }),
   schema: z.object({
     notionPageId: z.string(),
     name: z.string(),
-    title: z.string(),               // "CEO & Course Developer"
+    title: z.string(),
     ultraShortBio: z.string().max(200),
     shortBio: z.string().max(500),
     longBio: z.string(),
@@ -55,65 +57,58 @@ const experts = defineCollection({
       dateIssued: z.string().optional(),
       verificationUrl: z.string().url().optional()
     })),
-    credentialPills: z.array(z.string()),  // short pill labels for cards
-    credentialMatrix: z.object({            // which courses this expert can review
+    credentialPills: z.array(z.string()),
+    credentialMatrix: z.object({
       ownerBuilder: z.boolean(),
       whiteCard: z.boolean(),
       cpd: z.boolean(),
       regulatory: z.boolean()
     }),
-    prohibitedClaims: z.array(z.string()), // "What NOT to Claim" — build-time guard
-    headshotPath: z.string(),              // local path, cached from Notion
-    sameAs: z.array(z.string().url()),     // LinkedIn, author pages, etc.
-    profileUrl: z.string(),                // /experts/dominic-ogburn
-    lastVerified: z.string()               // ISO date
+    prohibitedClaims: z.array(z.string()),
+    headshotPath: z.string(),
+    sameAs: z.array(z.string().url()),
+    profileUrl: z.string(),
+    lastVerified: z.string()
   })
 });
 
-// ---------- COURSES (the programmatic layer) ----------
+// ---------- COURSES ----------
 const courses = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/[^_]*.md', base: './src/content/courses' }),
   schema: z.object({
-    // IDENTITY
     productLine: z.enum(['owner-builder', 'white-card', 'cpd']),
     jurisdiction: reference('jurisdictions'),
-    slug: z.string(),                       // "nsw-owner-builder-course"
-    title: z.string(),                      // "NSW Owner Builder Course"
+    slug: z.string(),
+    title: z.string(),
     h1: z.string(),
     metaTitle: z.string().max(60),
     metaDescription: z.string().max(155),
-    answerCapsule: z.string().max(300),     // for AI Overview
+    answerCapsule: z.string().max(300),
 
-    // AUTHORITY (non-RTO model)
     deliveryRto: z.object({
       name: z.enum(['Blue Dog Training', 'AlertForce']),
       rtoCode: z.string()
     }),
     reviewer: reference('experts'),
-    lastReviewed: z.string(),               // ISO date
-    contentVersion: z.string(),             // "2026.1"
+    lastReviewed: z.string(),
+    contentVersion: z.string(),
 
-    // COMMERCIAL
     price: z.number(),
     priceCurrency: z.literal('AUD'),
-    duration: z.string(),                   // "3–5 hours"
-    durationHours: z.number(),              // 5 (for schema)
-    enrolUrl: z.string().url(),             // LearnWorlds checkout
+    duration: z.string(),
+    durationHours: z.number(),
+    enrolUrl: z.string().url(),
     courseMode: z.enum(['online', 'blended', 'in-person']).default('online'),
 
-    // SCHEMA INPUTS
-    credentialAwarded: z.string().optional(), // "Statement of Attainment", "Certificate of Completion"
-    courseCode: z.string().optional(),        // "10274NAT" for accredited
+    credentialAwarded: z.string().optional(),
+    courseCode: z.string().optional(),
     unitCodes: z.array(z.string()).optional(),
 
-    // CONTENT STRUCTURE
     faqRefs: z.array(reference('faqs')),
     relatedCourses: z.array(reference('courses')).optional(),
 
-    // GEO / AI OVERVIEW
-    entities: z.array(z.string()),          // key entities for topical authority
+    entities: z.array(z.string()),
 
-    // HOUSEKEEPING
     publishedAt: z.string(),
     updatedAt: z.string(),
     status: z.enum(['draft', 'review', 'published']).default('draft')
@@ -122,13 +117,13 @@ const courses = defineCollection({
 
 // ---------- FAQS ----------
 const faqs = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/[^_]*.md', base: './src/content/faqs' }),
   schema: z.object({
     question: z.string(),
-    answer: z.string(),                    // supports markdown
+    answer: z.string(),
     appliesTo: z.object({
       productLines: z.array(z.enum(['owner-builder', 'white-card', 'cpd'])),
-      jurisdictions: z.array(z.string()).optional() // state codes, omit if universal
+      jurisdictions: z.array(z.string()).optional()
     }),
     lastReviewed: z.string(),
     reviewedBy: reference('experts')

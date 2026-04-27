@@ -11,43 +11,49 @@ const courses = await getCollection('courses', (c) =>
 );
 
 const rows = jurisdictions.map((j) => {
-  const course = courses.find((c) => c.data.jurisdiction.id === j.slug);
+  const course = courses.find((c) => c.data.jurisdiction.id === j.id);
   return {
     state: j.data.code,
     regulator: j.data.regulator.name,
-    permitForm: j.data.ownerBuilder.permitForm,
-    applicationFee: j.data.ownerBuilder.applicationFee,
-    threshold: j.data.ownerBuilder.thresholdValue,
+    permitForm: j.data.ownerBuilder?.permitForm,
+    applicationFee: j.data.ownerBuilder?.applicationFee,
+    threshold: j.data.ownerBuilder?.thresholdValue,
     coursePrice: course?.data.price,
-    courseSlug: course?.slug
+    courseSlug: course?.id
   };
 });
 ---
 
 <BaseLayout title="Owner Builder Requirements by State — Compare">
-  <table>
+  <h1 class="font-display text-3xl font-semibold">Owner Builder Requirements by State</h1>
+  <p class="mt-2 text-slate-600">
+    Compare permit forms, application fees, and work-value thresholds across
+    Australian states.
+  </p>
+
+  <table class="mt-8 w-full border-collapse text-sm">
     <thead>
-      <tr>
-        <th>State</th>
-        <th>Regulator</th>
-        <th>Permit Form</th>
-        <th>Application Fee</th>
-        <th>Work Value Threshold</th>
-        <th>Course</th>
+      <tr class="border-b border-[--color-abe-rule] text-left">
+        <th class="py-2">State</th>
+        <th class="py-2">Regulator</th>
+        <th class="py-2">Permit Form</th>
+        <th class="py-2">Application Fee</th>
+        <th class="py-2">Work Value Threshold</th>
+        <th class="py-2">Course</th>
       </tr>
     </thead>
     <tbody>
       {rows.map((r) => (
-        <tr>
-          <td>{r.state}</td>
-          <td>{r.regulator}</td>
-          <td>{r.permitForm}</td>
-          <td>${r.applicationFee}</td>
-          <td>${r.threshold?.toLocaleString()}</td>
-          <td>
-            {r.courseSlug && (
-              <a href={`/courses/${r.courseSlug}/`}>${r.coursePrice}</a>
-            )}
+        <tr class="border-b border-[--color-abe-rule]">
+          <td class="py-2">{r.state}</td>
+          <td class="py-2">{r.regulator}</td>
+          <td class="py-2">{r.permitForm ?? '—'}</td>
+          <td class="py-2">{r.applicationFee != null ? `$${r.applicationFee}` : '—'}</td>
+          <td class="py-2">{r.threshold != null ? `$${r.threshold.toLocaleString()}` : '—'}</td>
+          <td class="py-2">
+            {r.courseSlug
+              ? <a href={`/courses/${r.courseSlug}/`}>${r.coursePrice}</a>
+              : '—'}
           </td>
         </tr>
       ))}

@@ -1,0 +1,7 @@
+# Cloudflare Pages config for abe-site
+# This file is optional for the static build (Pages reads `dist/` directly),
+# but it documents the project name and lets `wrangler pages dev` work locally.
+
+name = "abe-site"
+compatibility_date = "2026-04-01"
+pages_build_output_dir = "dist"

@@ -1,0 +1,52 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { ABE_AUTHORITY } from '@/lib/abe-authority';
+
+interface Props {
+  course: any;
+  jurisdiction: any;
+  reviewer: any;
+}
+
+const { course, jurisdiction, reviewer } = Astro.props;
+const d = course.data;
+---
+
+<BaseLayout title={d.metaTitle} description={d.metaDescription}>
+  <slot name="schema" slot="schema" />
+
+  <article class="prose max-w-none">
+    <p class="text-sm uppercase tracking-wide text-slate-500">
+      {jurisdiction.data.name} &middot; {d.productLine.replace('-', ' ')}
+    </p>
+    <h1>{d.h1}</h1>
+    <p class="lead">{d.answerCapsule}</p>
+
+    <aside class="my-8 rounded border border-[--color-abe-rule] bg-white p-4 text-sm">
+      <p>
+        <strong>Authority:</strong>
+        Reviewed by <a href={reviewer.data.profileUrl}>{reviewer.data.name}</a>,
+        {reviewer.data.title}. Last reviewed {d.lastReviewed}.
+      </p>
+      {d.credentialAwarded && (
+        <p class="mt-2">
+          {ABE_AUTHORITY.deliveryRtoDisclosure(d.deliveryRto.name, d.deliveryRto.rtoCode)}
+        </p>
+      )}
+    </aside>
+
+    <slot />
+
+    <hr class="my-8 border-[--color-abe-rule]" />
+
+    <footer class="text-sm text-slate-600">
+      <p><strong>Price:</strong> ${d.price} {d.priceCurrency} &middot; <strong>Duration:</strong> {d.duration}</p>
+      <p class="mt-2">
+        <a class="inline-block rounded bg-[--color-abe-brick] px-4 py-2 text-white no-underline" href={d.enrolUrl}>
+          Enrol now
+        </a>
+      </p>
+      <p class="mt-4 text-xs">{ABE_AUTHORITY.asqaDisclosure}</p>
+    </footer>
+  </article>
+</BaseLayout>

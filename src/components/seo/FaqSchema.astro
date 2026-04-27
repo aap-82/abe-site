@@ -1,5 +1,11 @@
 ---
 // src/components/seo/FaqSchema.astro
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  faqs: CollectionEntry<'faqs'>[];
+}
+
 const { faqs } = Astro.props;
 
 const schema = {
@@ -16,4 +22,4 @@ const schema = {
 };
 ---
 
-<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />

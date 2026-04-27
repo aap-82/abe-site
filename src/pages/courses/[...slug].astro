@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 import CourseLayout from '@/layouts/CourseLayout.astro';
 import CourseSchema from '@/components/seo/CourseSchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
@@ -12,24 +12,31 @@ export async function getStaticPaths() {
   );
 
   return published.map((course) => ({
-    params: { slug: course.slug },
+    params: { slug: course.id },
     props: { course }
   }));
 }
 
 const { course } = Astro.props;
-const { Content } = await course.render();
+const { Content } = await render(course);
 
 // Resolve references
 const jurisdiction = await getEntry(course.data.jurisdiction);
 const reviewer = await getEntry(course.data.reviewer);
 const faqs = await Promise.all(course.data.faqRefs.map((ref) => getEntry(ref)));
 
+if (!jurisdiction) {
+  throw new Error(`Course ${course.id} references missing jurisdiction "${course.data.jurisdiction.id}"`);
+}
+if (!reviewer) {
+  throw new Error(`Course ${course.id} references missing reviewer "${course.data.reviewer.id}"`);
+}
+
 // Build-time guard: prevent any prohibited claims from slipping into meta
 for (const phrase of reviewer.data.prohibitedClaims) {
   if (course.data.metaDescription.toLowerCase().includes(phrase.toLowerCase())) {
     throw new Error(
-      `Prohibited claim "${phrase}" found in meta description for ${course.slug}`
+      `Prohibited claim "${phrase}" found in meta description for ${course.id}`
     );
   }
 }
@@ -40,7 +47,7 @@ for (const phrase of reviewer.data.prohibitedClaims) {
     <CourseSchema course={course} jurisdiction={jurisdiction} reviewer={reviewer} />
     <BreadcrumbSchema course={course} jurisdiction={jurisdiction} />
     <PersonSchema expert={reviewer} />
-    <FaqSchema faqs={faqs} />
+    {faqs.length > 0 && <FaqSchema faqs={faqs} />}
   </Fragment>
 
   <Content />
