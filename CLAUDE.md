@@ -34,9 +34,43 @@ Four collections, all wired with Zod schemas:
 | Collection      | Purpose                                                         |
 |-----------------|-----------------------------------------------------------------|
 | `jurisdictions` | One per Australian state — regulator, owner-builder rules, etc. |
-| `experts`       | Mirrored from a Notion DB by `scripts/sync-experts-from-notion.ts` |
+| `experts`       | Mirrored from the Notion Experts DB ([a8dc3f4c](https://www.notion.so/a8dc3f4c431c420092266cf73ab4067b)) by `scripts/sync-experts-from-notion.ts` |
 | `courses`       | Programmatic layer — links a productLine to a jurisdiction      |
 | `faqs`          | FAQ entries with applies-to filters                             |
+
+### Experts content model — read before editing the schema
+
+The Notion Experts page is the source of truth and is *richer* than the
+old Astro schema. Each expert page in Notion has:
+
+- **Typed properties** — Expert Name, Role, Organisation, Status,
+  Verification Status, Years in Industry, Headshot URL (URL property,
+  hosted on LearnWorlds CDN — do NOT use Notion file attachments,
+  those URLs expire), LinkedIn, Profile Page URL, Last Verified,
+  Specialist Areas (multi-select), Courses Reviewed (multi-select).
+- **Page body sections** — `## Bio Variations` (with H3 sub-bios:
+  Ultra-Short / Short / Medium / Long), `## ✅ Verified Credentials (N)`
+  (each H3 is one structured credential), `## What NOT to Claim ⚠️`
+  (bullets, the source of `prohibitedClaims`), `## Expert Card Copy`
+  (with H3 sub-sections: Credential pills, Inline attribution, Reviewer
+  attribution variant).
+
+The sync script extracts both halves into the Astro frontmatter shape
+defined in [src/content.config.ts](src/content.config.ts). `credentialMatrix` (`ownerBuilder` /
+`whiteCard` / `cpd` booleans) is derived from the Courses Reviewed
+multi-select — don't add it as a separate Notion column.
+
+To run the sync:
+
+```sh
+$env:NOTION_TOKEN = "ntn_<your-internal-integration-token>"
+$env:NOTION_EXPERTS_DB_ID = "a8dc3f4c431c420092266cf73ab4067b"
+npm run sync:experts
+```
+
+Required Notion setup: an internal integration with **Read content**
+scope, **shared with the Experts database** (database `···` →
+Connections → add). Without sharing, the API returns zero pages.
 
 References between collections are Zod-validated. Adding a course means
 ensuring its `jurisdiction` and `reviewer` already exist as entries.

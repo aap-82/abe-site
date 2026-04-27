@@ -1,0 +1,14 @@
+{
+  // Cloudflare Workers + Static Assets config for abe-site.
+  // We deploy dist/ as static assets (Astro `output: 'static'`).
+  // Production AND preview deploys both read this file; without it,
+  // preview deploys fail with "Missing entry-point".
+  //
+  // Do NOT add `main` here — that would make CF try to deploy a Worker
+  // script we don't have. Static-only.
+  "name": "abe-site",
+  "compatibility_date": "2026-04-27",
+  "assets": {
+    "directory": "./dist"
+  }
+}

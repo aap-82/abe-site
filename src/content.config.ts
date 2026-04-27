@@ -41,34 +41,60 @@ const jurisdictions = defineCollection({
   })
 });
 
-// ---------- EXPERTS (mirrored from Notion) ----------
+// ---------- EXPERTS (mirrored from Notion Experts DB) ----------
+// Schema mirrors the Notion data source at
+// https://www.notion.so/a8dc3f4c431c420092266cf73ab4067b
+// — properties from the DB columns, the rest extracted from the page body.
+// scripts/sync-experts-from-notion.ts is the source of truth for shape.
 const experts = defineCollection({
   loader: glob({ pattern: '**/[^_]*.md', base: './src/content/experts' }),
   schema: z.object({
     notionPageId: z.string(),
+
+    // ── Notion properties ──
     name: z.string(),
-    title: z.string(),
-    ultraShortBio: z.string().max(200),
-    shortBio: z.string().max(500),
-    longBio: z.string(),
-    credentials: z.array(z.object({
-      credential: z.string(),
-      issuer: z.string(),
-      dateIssued: z.string().optional(),
-      verificationUrl: z.string().url().optional()
-    })),
-    credentialPills: z.array(z.string()),
+    role: z.enum([
+      'Course Developer',
+      'Compliance & Currency Reviewer',
+      'Subject Matter Expert',
+      'Technical Reviewer'
+    ]),
+    organisation: z.string().optional(),
+    status: z.enum(['Active', 'Inactive', 'Draft']),
+    verificationStatus: z.enum(['All Verified', 'Partially Verified', 'Pending']),
+    yearsInIndustry: z.number().int().nonnegative().optional(),
+    headshotUrl: z.string().url().optional(),
+    linkedIn: z.string().url().optional(),
+    profileUrl: z.string(),
+    lastVerified: z.string(), // ISO date
+    specialistAreas: z.array(z.string()),
+    coursesReviewed: z.array(z.string()),
+
+    // ── Derived from coursesReviewed multi-select ──
     credentialMatrix: z.object({
       ownerBuilder: z.boolean(),
       whiteCard: z.boolean(),
-      cpd: z.boolean(),
-      regulatory: z.boolean()
+      cpd: z.boolean()
     }),
-    prohibitedClaims: z.array(z.string()),
-    headshotPath: z.string(),
-    sameAs: z.array(z.string().url()),
-    profileUrl: z.string(),
-    lastVerified: z.string()
+
+    // ── Extracted from page body sections ──
+    bios: z.object({
+      ultraShort: z.string(),
+      short: z.string(),
+      medium: z.string(),
+      long: z.string()
+    }),
+    credentials: z.array(z.object({
+      title: z.string(),
+      body: z.string(),
+      verified: z.boolean()
+    })),
+    prohibitedClaims: z.array(z.string()), // from "What NOT to Claim" section
+    expertCardCopy: z.object({
+      credentialPills: z.array(z.string()),
+      inlineAttribution: z.string(),
+      reviewerAttribution: z.string().optional()
+    })
   })
 });
 
