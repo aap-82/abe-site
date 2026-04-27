@@ -1,0 +1,47 @@
+---
+// Site footer — DaisyUI footer + a slim disclosure band beneath.
+// Zero JavaScript shipped.
+
+import { ABE_AUTHORITY } from '@/lib/abe-authority';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer sm:footer-horizontal bg-base-200 text-base-content/80 px-4 py-12 mt-16 border-t border-base-300">
+  <div class="mx-auto w-full max-w-6xl grid gap-10 sm:grid-cols-3">
+
+    {/* Brand block */}
+    <aside class="space-y-3">
+      <p class="font-display text-lg font-semibold text-base-content">ABE Education</p>
+      <p class="text-sm max-w-xs">
+        Australian online training for owner builders, White Card, and CPD.
+        Reviewed by licensed industry experts. Delivered with our partner
+        Registered Training Organisations.
+      </p>
+    </aside>
+
+    {/* Courses */}
+    <nav class="space-y-2">
+      <h2 class="footer-title font-display">Courses</h2>
+      <a href="/compare/owner-builder/" class="link link-hover block">Owner Builder by state</a>
+      <a href="/courses/nsw-owner-builder-course/" class="link link-hover block">NSW Owner Builder</a>
+    </nav>
+
+    {/* About */}
+    <nav class="space-y-2">
+      <h2 class="footer-title font-display">About</h2>
+      <a href="/" class="link link-hover block">Home</a>
+      <a href="/compare/owner-builder/" class="link link-hover block">Compare states</a>
+    </nav>
+  </div>
+</footer>
+
+{/* Disclosure band — slim, dark, the legally-load-bearing bit */}
+<div class="bg-neutral text-neutral-content border-t border-base-300 py-6 px-4">
+  <div class="mx-auto max-w-6xl space-y-2 text-xs leading-relaxed">
+    <p>{ABE_AUTHORITY.asqaDisclosure}</p>
+    <p class="text-neutral-content/70">
+      &copy; {year} ABE Education. All rights reserved.
+    </p>
+  </div>
+</div>

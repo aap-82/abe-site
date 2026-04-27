@@ -1,0 +1,72 @@
+---
+// Site header — DaisyUI navbar with native <details>-based mobile menu.
+// Zero JavaScript shipped. Mobile menu opens/closes via the browser's
+// built-in <details>/<summary> behaviour.
+
+interface NavLink {
+  href: string;
+  label: string;
+}
+
+const links: NavLink[] = [
+  { href: '/compare/owner-builder/', label: 'Owner Builder' },
+  { href: '/courses/nsw-owner-builder-course/', label: 'NSW Owner Builder' },
+];
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) => currentPath === href || currentPath === href.replace(/\/$/, '');
+---
+
+<header class="border-b border-base-300 bg-base-100">
+  <div class="navbar mx-auto max-w-6xl px-4">
+
+    {/* Brand + mobile menu trigger */}
+    <div class="navbar-start gap-2">
+
+      {/* Mobile menu — DaisyUI dropdown driven by native <details>, no JS */}
+      <details class="dropdown lg:hidden">
+        <summary class="btn btn-ghost btn-square" aria-label="Toggle navigation menu">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </summary>
+        <ul class="dropdown-content menu bg-base-100 rounded-box z-30 mt-2 w-56 p-2 shadow border border-base-300">
+          {links.map((link) => (
+            <li>
+              <a href={link.href} class={isActive(link.href) ? 'active' : ''}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+
+      <a href="/" class="font-display text-xl font-semibold text-base-content hover:text-primary">
+        ABE Education
+      </a>
+    </div>
+
+    {/* Desktop nav */}
+    <div class="navbar-end hidden lg:flex">
+      <ul class="menu menu-horizontal gap-1 px-1">
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class={isActive(link.href) ? 'active font-medium' : ''}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</header>

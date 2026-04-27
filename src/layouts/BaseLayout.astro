@@ -1,6 +1,8 @@
 ---
 import { Font } from 'astro:assets';
 import '@/styles/global.css';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
 
 interface Props {
   title: string;
@@ -37,29 +39,12 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
     <slot name="schema" />
   </head>
   <body class="bg-base-100 text-base-content min-h-screen flex flex-col">
-    <header class="border-b border-base-300">
-      <nav class="mx-auto flex max-w-6xl items-center justify-between p-4">
-        <a href="/" class="font-display text-lg font-semibold text-base-content">ABE Education</a>
-        <ul class="flex gap-6 text-sm">
-          <li><a href="/courses/nsw-owner-builder-course/" class="hover:text-primary">Owner Builder</a></li>
-          <li><a href="/compare/owner-builder/" class="hover:text-primary">Compare states</a></li>
-        </ul>
-      </nav>
-    </header>
+    <Header />
 
     <main class="mx-auto max-w-6xl p-4 flex-1 w-full">
       <slot />
     </main>
 
-    <footer class="mt-16 border-t border-base-300 py-8 bg-base-200">
-      <div class="mx-auto max-w-6xl px-4 text-sm text-base-content/70">
-        <p>
-          ABE Education is not a Registered Training Organisation (RTO).
-          Accredited course delivery and Statement of Attainment issuance is
-          provided by our partner RTOs.
-        </p>
-        <p class="mt-2">&copy; {new Date().getFullYear()} ABE Education</p>
-      </div>
-    </footer>
+    <Footer />
   </body>
 </html>
