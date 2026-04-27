@@ -120,8 +120,21 @@ type Expert = z.infer<typeof expertSchema>;
 // Notion client + main loop
 // ─────────────────────────────────────────────────────────────────────────
 
-const notion = new Client({ auth: requireEnv('NOTION_TOKEN') });
-const EXPERTS_DB_ID = requireEnv('NOTION_EXPERTS_DB_ID');
+// Graceful skip if env vars are missing — keeps `npm run build` working
+// for local dev and CI pipelines that haven't been wired with NOTION_TOKEN
+// yet. Existing src/content/experts/*.md files become the source of truth
+// for that build. Run `npm run sync:experts` with credentials set when you
+// want to refresh from Notion.
+if (!process.env.NOTION_TOKEN || !process.env.NOTION_EXPERTS_DB_ID) {
+  console.log(
+    '[sync-experts] NOTION_TOKEN or NOTION_EXPERTS_DB_ID not set — skipping. ' +
+      'Existing src/content/experts/*.md will be used.',
+  );
+  process.exit(0);
+}
+
+const notion = new Client({ auth: process.env.NOTION_TOKEN });
+const EXPERTS_DB_ID = process.env.NOTION_EXPERTS_DB_ID;
 
 async function main() {
   await mkdir(CONTENT_DIR, { recursive: true });
@@ -461,12 +474,6 @@ async function writeExpertFile(slug: string, expert: Expert) {
   const frontmatter = { ...rest, bios };
   const body = `---\n${yaml.dump(frontmatter, { lineWidth: 100, noRefs: true })}---\n\n${bios.long}\n`;
   await writeFile(join(CONTENT_DIR, `${slug}.md`), body, 'utf8');
-}
-
-function requireEnv(name: string): string {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing required env var: ${name}`);
-  return v;
 }
 
 main().catch((err) => {
