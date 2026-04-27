@@ -37,16 +37,20 @@ const reviewerTitle = r.title ?? r.role;
 const reviewerPill = r.credentialPills?.[0] ?? r.specialistAreas[0] ?? '';
 const headshotPath = r.headshotPath;
 
-// ── Build-time integrity checks — fail loud if data is missing ──────
+// Initials for the placeholder avatar when no headshot is uploaded yet.
+// The build spec treats missing headshots as a soft blocker (flagged
+// pre-launch), not a hard build failure — so render a DaisyUI avatar
+// placeholder instead of throwing.
+const initials = r.name
+  .split(/\s+/)
+  .filter(Boolean)
+  .map((part) => part[0]?.toUpperCase() ?? '')
+  .slice(0, 2)
+  .join('');
+
+// ── Build-time integrity checks — fail loud only on truly required fields ──
 if (!c.enrolUrl) {
   throw new Error(`HeroCourse: missing enrolUrl on course "${course.id}"`);
-}
-if (!headshotPath) {
-  throw new Error(
-    `HeroCourse: reviewer "${r.name}" has no headshotPath. Upload to ` +
-      `public/images/experts/ and re-run sync (or set headshotPath ` +
-      `manually in src/content/experts/${reviewer.id}.md).`,
-  );
 }
 ---
 
@@ -113,16 +117,28 @@ if (!headshotPath) {
 
         {/* Trust signal — reviewer credential, last reviewed date */}
         <div class="flex items-center gap-3 pt-4 border-t border-base-300">
-          <Image
-            src={headshotPath}
-            alt={`${r.name}, ${reviewerTitle}`}
-            width={48}
-            height={48}
-            inferSize={true}
-            class="rounded-full ring-2 ring-base-300 object-cover"
-            loading="eager"
-            decoding="async"
-          />
+          {headshotPath ? (
+            <Image
+              src={headshotPath}
+              alt={`${r.name}, ${reviewerTitle}`}
+              width={48}
+              height={48}
+              inferSize={true}
+              class="rounded-full ring-2 ring-base-300 object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          ) : (
+            <div class="avatar avatar-placeholder">
+              <div
+                class="bg-primary text-primary-content w-12 rounded-full ring-2 ring-base-300"
+                role="img"
+                aria-label={`${r.name}, ${reviewerTitle}`}
+              >
+                <span class="text-base font-semibold">{initials}</span>
+              </div>
+            </div>
+          )}
           <div class="text-sm leading-tight">
             <div class="text-base-content">
               <span>Reviewed by </span>

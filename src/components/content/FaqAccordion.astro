@@ -1,5 +1,9 @@
 ---
-// src/components/content/FaqAccordion.astro
+// FAQ accordion — DaisyUI collapse, native <details>/<summary>, zero JS.
+// Per docs/abe-astro-6-patch.md Patch 7: pre-renders each FAQ body via
+// the standalone render() function so <Content /> can be used in JSX.
+
+import { render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
@@ -7,11 +11,24 @@ interface Props {
 }
 
 const { faqs } = Astro.props;
+
+const rendered = await Promise.all(
+  faqs.map(async (faq) => {
+    const { Content } = await render(faq);
+    return { faq, Content };
+  }),
+);
 ---
 
-{faqs.map((faq) => (
-  <details class="faq-item">
-    <summary>{faq.data.question}</summary>
-    <div set:html={faq.rendered?.html ?? faq.data.answer} />
-  </details>
-))}
+<div class="space-y-2 not-prose">
+  {rendered.map(({ faq, Content }) => (
+    <details class="collapse collapse-arrow bg-base-100 border border-base-300 rounded-box">
+      <summary class="collapse-title font-medium text-base-content">
+        {faq.data.question}
+      </summary>
+      <div class="collapse-content prose max-w-none text-base-content/80">
+        <Content />
+      </div>
+    </details>
+  ))}
+</div>

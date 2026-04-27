@@ -2,11 +2,11 @@
 import { getCollection, getEntry, render } from 'astro:content';
 import CourseLayout from '@/layouts/CourseLayout.astro';
 import HeroCourse from '@/components/blocks/HeroCourse.astro';
+import FaqAccordion from '@/components/content/FaqAccordion.astro';
 import CourseSchema from '@/components/seo/CourseSchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
 import PersonSchema from '@/components/seo/PersonSchema.astro';
 import FaqSchema from '@/components/seo/FaqSchema.astro';
-import { ABE_AUTHORITY } from '@/lib/abe-authority';
 
 export async function getStaticPaths() {
   const published = await getCollection('courses', (c) =>
@@ -25,13 +25,22 @@ const { Content } = await render(course);
 // Resolve references
 const jurisdiction = await getEntry(course.data.jurisdiction);
 const reviewer = await getEntry(course.data.reviewer);
-const faqs = await Promise.all(course.data.faqRefs.map((ref) => getEntry(ref)));
+const faqEntries = await Promise.all(course.data.faqRefs.map((ref) => getEntry(ref)));
 
 if (!jurisdiction) {
   throw new Error(`Course ${course.id} references missing jurisdiction "${course.data.jurisdiction.id}"`);
 }
 if (!reviewer) {
   throw new Error(`Course ${course.id} references missing reviewer "${course.data.reviewer.id}"`);
+}
+
+// Filter out any unresolved FAQ references (defensive — schema enforces but log if any go missing)
+const faqs = faqEntries.filter((f): f is NonNullable<typeof f> => f != null);
+if (faqs.length !== faqEntries.length) {
+  const missing = course.data.faqRefs
+    .map((ref, i) => (faqEntries[i] == null ? ref.id : null))
+    .filter((x): x is string => x != null);
+  throw new Error(`Course ${course.id} references missing FAQs: ${missing.join(', ')}`);
 }
 
 // Build-time guard: prevent any prohibited claims from slipping into meta
@@ -56,11 +65,16 @@ for (const phrase of reviewer.data.prohibitedClaims) {
 
   <article id="course-details" class="prose max-w-3xl mx-auto px-4 py-12">
     <Content />
-
-    {course.data.credentialAwarded && (
-      <p class="not-prose text-sm text-base-content/70 border-l-4 border-primary pl-4 my-8">
-        {ABE_AUTHORITY.deliveryRtoDisclosure(course.data.deliveryRto.name, course.data.deliveryRto.rtoCode)}
-      </p>
-    )}
   </article>
+
+  {faqs.length > 0 && (
+    <section class="bg-base-200 border-t border-base-300 py-12">
+      <div class="max-w-3xl mx-auto px-4">
+        <h2 class="font-display text-3xl font-semibold text-base-content mb-6">
+          Frequently asked questions
+        </h2>
+        <FaqAccordion faqs={faqs} />
+      </div>
+    </section>
+  )}
 </CourseLayout>
