@@ -1,35 +1,42 @@
 ---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+  jurisdiction: CollectionEntry<'jurisdictions'>;
+}
+
 const { course, jurisdiction } = Astro.props;
 const d = course.data;
+const j = jurisdiction.data;
 
+// Three-level breadcrumb that matches the visual <Breadcrumbs> in
+// HeroCourse: Home › Compare states › <state code>.
+// Per schema.org guidance the URL on the last item is optional but
+// recommended; we include it so the path is fully addressable.
 const schema = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
     {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Home",
-      "item": "https://abeeducation.edu.au/"
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://abeeducation.edu.au/',
     },
     {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Courses",
-      "item": "https://abeeducation.edu.au/courses/"
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Compare states',
+      item: 'https://abeeducation.edu.au/compare/owner-builder/',
     },
     {
-      "@type": "ListItem",
-      "position": 3,
-      "name": jurisdiction.data.name,
-      "item": `https://abeeducation.edu.au/courses/${d.slug}/`
+      '@type': 'ListItem',
+      position: 3,
+      name: `${j.code} ${d.productLine === 'owner-builder' ? 'Owner Builder' : d.productLine === 'white-card' ? 'White Card' : 'CPD'}`,
+      item: `https://abeeducation.edu.au/courses/${d.slug}/`,
     },
-    {
-      "@type": "ListItem",
-      "position": 4,
-      "name": d.title
-    }
-  ]
+  ],
 };
 ---
 

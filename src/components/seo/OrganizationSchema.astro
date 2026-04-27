@@ -1,0 +1,24 @@
+---
+// Organization schema — emitted on every page via BaseLayout.
+// Single source of truth for the ABE Education entity record.
+//
+// CRITICAL: ABE Education is NOT an RTO. Don't add a `credentialCategory`
+// or `awards` block claiming ASQA registration on this Organization. The
+// RTO entity is the partner (Blue Dog Training, AlertForce) and surfaces
+// in Course schemas under `educationalCredentialAwarded.recognizedBy`.
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': 'https://abeeducation.edu.au/#organization',
+  name: 'ABE Education',
+  url: 'https://abeeducation.edu.au',
+  description:
+    'Australian online training for owner builders, White Card, and CPD. Reviewed by licensed industry experts. Delivered with our partner Registered Training Organisations.',
+  sameAs: [
+    'https://www.linkedin.com/company/abe-education',
+  ],
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />

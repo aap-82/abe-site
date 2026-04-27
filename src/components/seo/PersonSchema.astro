@@ -1,29 +1,46 @@
 ---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  expert: CollectionEntry<'experts'>;
+}
+
 const { expert } = Astro.props;
 const d = expert.data;
 
+// Map our richer experts model into Person schema. The Notion-derived
+// shape (bios.{short,...} + credentials[{title, body, verified}]) is
+// flattened/renamed for Google's schema vocabulary.
+const verifiedCredentials = d.credentials.filter((c) => c.verified);
+
+// Schema.org `image` should be an absolute URL. Prefer a local path
+// (better for site Lighthouse) but emit it as an absolute URL here.
+const imageUrl = d.headshotPath
+  ? `https://abeeducation.edu.au${d.headshotPath}`
+  : d.headshotUrl;
+
 const schema = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "@id": `https://abeeducation.edu.au${d.profileUrl}#person`,
-  "name": d.name,
-  "jobTitle": d.title,
-  "description": d.shortBio,
-  "image": d.headshotPath,
-  "url": `https://abeeducation.edu.au${d.profileUrl}`,
-  "sameAs": d.sameAs,
-  "hasCredential": d.credentials.map((c: any) => ({
-    "@type": "EducationalOccupationalCredential",
-    "name": c.credential,
-    "recognizedBy": { "@type": "Organization", "name": c.issuer },
-    ...(c.dateIssued && { "dateCreated": c.dateIssued }),
-    ...(c.verificationUrl && { "url": c.verificationUrl })
-  })),
-  "worksFor": {
-    "@type": "Organization",
-    "name": "ABE Education",
-    "url": "https://abeeducation.edu.au"
-  }
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `https://abeeducation.edu.au${d.profileUrl}#person`,
+  name: d.name,
+  jobTitle: d.title ?? d.role,
+  description: d.bios.short,
+  ...(imageUrl && { image: imageUrl }),
+  url: `https://abeeducation.edu.au${d.profileUrl}`,
+  ...(d.sameAs && d.sameAs.length > 0 && { sameAs: d.sameAs }),
+  ...(verifiedCredentials.length > 0 && {
+    hasCredential: verifiedCredentials.map((c) => ({
+      '@type': 'EducationalOccupationalCredential',
+      name: c.title,
+    })),
+  }),
+  worksFor: {
+    '@type': 'Organization',
+    '@id': 'https://abeeducation.edu.au/#organization',
+    name: d.organisation ?? 'ABE Education',
+    url: 'https://abeeducation.edu.au',
+  },
 };
 ---
 
