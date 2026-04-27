@@ -33,12 +33,13 @@
  * The page body becomes the long bio (rendered as Markdown in the .md output).
  */
 
-import { Client, isFullPage } from '@notionhq/client';
-import type {
-  BlockObjectResponse,
-  PageObjectResponse,
-  RichTextItemResponse,
-} from '@notionhq/client/build/src/api-endpoints';
+import {
+  Client,
+  isFullPage,
+  type BlockObjectResponse,
+  type PageObjectResponse,
+  type RichTextItemResponse,
+} from '@notionhq/client';
 import yaml from 'js-yaml';
 import { z } from 'zod';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -207,13 +208,13 @@ function getProp(page: PageObjectResponse, name: string) {
 function getTitle(page: PageObjectResponse, name: string): string {
   const p = getProp(page, name);
   if (p.type !== 'title') throw new Error(`"${name}" expected title, got ${p.type}`);
-  return p.title.map((t) => t.plain_text).join('').trim();
+  return p.title.map((t: RichTextItemResponse) => t.plain_text).join('').trim();
 }
 
 function getRichText(page: PageObjectResponse, name: string): string {
   const p = getProp(page, name);
   if (p.type !== 'rich_text') throw new Error(`"${name}" expected rich_text, got ${p.type}`);
-  return p.rich_text.map((t) => t.plain_text).join('').trim();
+  return p.rich_text.map((t: RichTextItemResponse) => t.plain_text).join('').trim();
 }
 
 function getCheckbox(page: PageObjectResponse, name: string): boolean {
@@ -225,7 +226,7 @@ function getCheckbox(page: PageObjectResponse, name: string): boolean {
 function getMultiSelect(page: PageObjectResponse, name: string): string[] {
   const p = getProp(page, name);
   if (p.type !== 'multi_select') throw new Error(`"${name}" expected multi_select, got ${p.type}`);
-  return p.multi_select.map((o) => o.name);
+  return p.multi_select.map((o: { name: string }) => o.name);
 }
 
 function getDate(page: PageObjectResponse, name: string): string {
@@ -240,7 +241,9 @@ function getFileUrl(page: PageObjectResponse, name: string): string {
   if (p.type !== 'files') throw new Error(`"${name}" expected files, got ${p.type}`);
   const file = p.files[0];
   if (!file) throw new Error(`No file in "${name}" on page ${page.id}`);
-  return file.type === 'external' ? file.external.url : file.file.url;
+  if ('external' in file) return file.external.url;
+  if ('file' in file) return file.file.url;
+  throw new Error(`Unsupported file shape in "${name}" on page ${page.id}`);
 }
 
 async function downloadHeadshot(url: string, slug: string): Promise<string> {
