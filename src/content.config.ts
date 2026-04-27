@@ -10,7 +10,7 @@ const jurisdictions = defineCollection({
     name: z.string(),
     regulator: z.object({
       name: z.string(),
-      url: z.string().url(),
+      url: z.url(),
       shortName: z.string().optional()
     }),
     ownerBuilder: z.object({
@@ -27,7 +27,7 @@ const jurisdictions = defineCollection({
     legislationReferences: z.array(z.object({
       title: z.string(),
       section: z.string().optional(),
-      url: z.string().url(),
+      url: z.url(),
       currency: z.string()
     })),
     penalties: z.array(z.object({
@@ -63,8 +63,8 @@ const experts = defineCollection({
     status: z.enum(['Active', 'Inactive', 'Draft']),
     verificationStatus: z.enum(['All Verified', 'Partially Verified', 'Pending']),
     yearsInIndustry: z.number().int().nonnegative().optional(),
-    headshotUrl: z.string().url().optional(),
-    linkedIn: z.string().url().optional(),
+    headshotUrl: z.url().optional(),
+    linkedIn: z.url().optional(),
     profileUrl: z.string(),
     lastVerified: z.string(), // ISO date
     specialistAreas: z.array(z.string()),
@@ -104,7 +104,7 @@ const experts = defineCollection({
     title: z.string().optional(),                             // alt for `role` (e.g. "CEO & Course Developer")
     headshotPath: z.string().optional(),                      // local path under public/, e.g. /images/experts/dominic-ogburn.webp
     credentialPills: z.array(z.string()).optional(),          // top-level pills (mirrors expertCardCopy.credentialPills)
-    sameAs: z.array(z.string().url()).optional()              // typically [linkedIn, ...]
+    sameAs: z.array(z.url()).optional()              // typically [linkedIn, ...]
   })
 });
 
@@ -133,7 +133,7 @@ const courses = defineCollection({
     priceCurrency: z.literal('AUD'),
     duration: z.string(),
     durationHours: z.number(),
-    enrolUrl: z.string().url(),
+    enrolUrl: z.url(),
     courseMode: z.enum(['online', 'blended', 'in-person']).default('online'),
 
     credentialAwarded: z.string().optional(),

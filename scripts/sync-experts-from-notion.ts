@@ -74,8 +74,8 @@ const expertSchema = z.object({
   status: z.enum(['Active', 'Inactive', 'Draft']),
   verificationStatus: z.enum(['All Verified', 'Partially Verified', 'Pending']),
   yearsInIndustry: z.number().int().nonnegative().optional(),
-  headshotUrl: z.string().url().optional(),
-  linkedIn: z.string().url().optional(),
+  headshotUrl: z.url().optional(),
+  linkedIn: z.url().optional(),
   profileUrl: z.string(),
   lastVerified: z.string(),
   specialistAreas: z.array(z.string()),
@@ -111,7 +111,7 @@ const expertSchema = z.object({
   title: z.string().optional(),
   headshotPath: z.string().optional(),
   credentialPills: z.array(z.string()).optional(),
-  sameAs: z.array(z.string().url()).optional(),
+  sameAs: z.array(z.url()).optional(),
 });
 
 type Expert = z.infer<typeof expertSchema>;
