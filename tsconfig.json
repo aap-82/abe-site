@@ -3,23 +3,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"]
     },
     "jsx": "preserve",
     "verbatimModuleSyntax": true
   },
-  "include": [
-    ".astro/types.d.ts",
-    "src/**/*",
-    "*.config.*",
-    "*.d.ts",
-    "./worker-configuration.d.ts"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules",
-    "scripts"
-  ]
+  "include": [".astro/types.d.ts", "src/**/*", "*.config.*", "*.d.ts"],
+  "exclude": ["dist", "node_modules", "scripts"]
 }
