@@ -8,6 +8,6 @@
     "jsx": "preserve",
     "verbatimModuleSyntax": true
   },
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "node_modules"]
+  "include": [".astro/types.d.ts", "src/**/*", "*.config.*", "*.d.ts"],
+  "exclude": ["dist", "node_modules", "scripts"]
 }
