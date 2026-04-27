@@ -8,12 +8,15 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
-    "preview": "astro preview",
+    "preview": "npm run build && wrangler dev",
     "astro": "astro",
-    "sync:experts": "tsx scripts/sync-experts-from-notion.ts"
+    "sync:experts": "tsx scripts/sync-experts-from-notion.ts",
+    "generate-types": "wrangler types",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",
+    "@astrojs/cloudflare": "^13.2.1",
     "@astrojs/mdx": "^5.0.4",
     "@astrojs/sitemap": "^3.7.2",
     "@tailwindcss/vite": "~4.1.18",
@@ -26,6 +29,10 @@
     "@notionhq/client": "^4.0.2",
     "@types/js-yaml": "^4.0.9",
     "js-yaml": "^4.1.1",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "wrangler": "^4.85.0"
+  },
+  "overrides": {
+    "vite": "^7"
   }
 }
