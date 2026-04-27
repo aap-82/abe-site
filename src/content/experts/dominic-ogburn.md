@@ -8,7 +8,7 @@ status: Active
 verificationStatus: All Verified
 yearsInIndustry: 40
 headshotUrl: https://lwfiles.mycourse.app/638d2798a130a8e77268b848-public/f13e5463746db5554514e16b0804ce41.png
-headshotPath: /images/experts/dominic-ogburn.webp
+headshotPath: /images/experts/Dominic-Ogburn-ABE-Education-CEO-Course-Creator.webp
 linkedIn: https://www.linkedin.com/in/dominic-ogburn
 sameAs:
   - https://www.linkedin.com/in/dominic-ogburn

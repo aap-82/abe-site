@@ -49,7 +49,7 @@ import {
 } from '@notionhq/client';
 import yaml from 'js-yaml';
 import { z } from 'zod';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -59,6 +59,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CONTENT_DIR = join(ROOT, 'src/content/experts');
+const HEADSHOT_DIR = join(ROOT, 'public/images/experts');
 
 const expertSchema = z.object({
   notionPageId: z.string(),
@@ -156,6 +157,7 @@ async function main() {
       const role = getSelect(page, 'Role') as Expert['role'];
       const linkedIn = getUrlOptional(page, 'LinkedIn');
       const expertCardCopy = extractExpertCardCopy(blocks);
+      const headshotPath = await findHeadshotFor(slug);
       const expert: Expert = {
         notionPageId: page.id,
         name,
@@ -180,7 +182,7 @@ async function main() {
         // so consumers (HeroCourse, PersonSchema) don't have to know the
         // richer Notion-derived shape exists.
         title: role,
-        headshotPath: `/images/experts/${slug}.webp`,
+        headshotPath,
         credentialPills: expertCardCopy.credentialPills,
         sameAs: linkedIn ? [linkedIn] : [],
       };
@@ -449,6 +451,30 @@ function getUrlOptional(page: PageObjectResponse, name: string): string | undefi
 // ─────────────────────────────────────────────────────────────────────────
 // Misc utilities
 // ─────────────────────────────────────────────────────────────────────────
+
+/**
+ * Find a headshot file in public/images/experts/ that matches an expert slug.
+ * Lets users upload files with descriptive names (good for image SEO) without
+ * forcing the strict <slug>.webp convention. Match is case-insensitive on
+ * alphanum-only normalised strings, so:
+ *   slug "dominic-ogburn" matches "Dominic-Ogburn-ABE-Education-CEO-Course-Creator.webp"
+ *   slug "warwick-smith"  matches "warwick-smith.webp" or "Warwick Smith CDRG.png"
+ * Falls back to "/images/experts/<slug>.webp" if nothing matches — that path
+ * may not exist, in which case the page will fail to load the image. This is
+ * intentional: better a visible broken image than silently using the wrong file.
+ */
+async function findHeadshotFor(slug: string): Promise<string> {
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const target = norm(slug);
+  try {
+    const files = await readdir(HEADSHOT_DIR);
+    const match = files.find((f) => norm(f).startsWith(target));
+    if (match) return `/images/experts/${match}`;
+  } catch {
+    // Directory may not exist yet — fall through to default
+  }
+  return `/images/experts/${slug}.webp`;
+}
 
 function deriveCredentialMatrix(coursesReviewed: string[]): Expert['credentialMatrix'] {
   return {
