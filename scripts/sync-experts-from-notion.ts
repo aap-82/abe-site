@@ -106,6 +106,12 @@ const expertSchema = z.object({
     inlineAttribution: z.string(),
     reviewerAttribution: z.string().optional(),
   }),
+
+  // Aliases for the build spec's components (option B reconciliation)
+  title: z.string().optional(),
+  headshotPath: z.string().optional(),
+  credentialPills: z.array(z.string()).optional(),
+  sameAs: z.array(z.string().url()).optional(),
 });
 
 type Expert = z.infer<typeof expertSchema>;
@@ -134,16 +140,19 @@ async function main() {
 
     try {
       const blocks = await listAllBlocks(page.id);
+      const role = getSelect(page, 'Role') as Expert['role'];
+      const linkedIn = getUrlOptional(page, 'LinkedIn');
+      const expertCardCopy = extractExpertCardCopy(blocks);
       const expert: Expert = {
         notionPageId: page.id,
         name,
-        role: getSelect(page, 'Role') as Expert['role'],
+        role,
         organisation: getRichTextOptional(page, 'Organisation'),
         status: status as Expert['status'],
         verificationStatus: getSelect(page, 'Verification Status') as Expert['verificationStatus'],
         yearsInIndustry: getNumberOptional(page, 'Years in Industry'),
         headshotUrl: getUrlOptional(page, 'Headshot URL'),
-        linkedIn: getUrlOptional(page, 'LinkedIn'),
+        linkedIn,
         profileUrl: getRichText(page, 'Profile Page URL'),
         lastVerified: getDate(page, 'Last Verified'),
         specialistAreas: getMultiSelect(page, 'Specialist Areas'),
@@ -152,7 +161,15 @@ async function main() {
         bios: extractBios(blocks),
         credentials: extractCredentials(blocks),
         prohibitedClaims: extractProhibitedClaims(blocks),
-        expertCardCopy: extractExpertCardCopy(blocks),
+        expertCardCopy,
+
+        // Aliases for the build spec's components — populated automatically
+        // so consumers (HeroCourse, PersonSchema) don't have to know the
+        // richer Notion-derived shape exists.
+        title: role,
+        headshotPath: `/images/experts/${slug}.webp`,
+        credentialPills: expertCardCopy.credentialPills,
+        sameAs: linkedIn ? [linkedIn] : [],
       };
 
       expertSchema.parse(expert);

@@ -94,7 +94,17 @@ const experts = defineCollection({
       credentialPills: z.array(z.string()),
       inlineAttribution: z.string(),
       reviewerAttribution: z.string().optional()
-    })
+    }),
+
+    // ── Aliases for the build spec's components (option B reconciliation) ──
+    // The HeroCourse worked example and PersonSchema in the spec use a
+    // flatter expert shape (title, headshotPath, credentialPills, sameAs).
+    // Keeping these alongside the rich Notion-derived fields means existing
+    // spec components keep working AND the rich data is available.
+    title: z.string().optional(),                             // alt for `role` (e.g. "CEO & Course Developer")
+    headshotPath: z.string().optional(),                      // local path under public/, e.g. /images/experts/dominic-ogburn.webp
+    credentialPills: z.array(z.string()).optional(),          // top-level pills (mirrors expertCardCopy.credentialPills)
+    sameAs: z.array(z.string().url()).optional()              // typically [linkedIn, ...]
   })
 });
 

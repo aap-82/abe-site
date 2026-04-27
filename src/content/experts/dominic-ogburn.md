@@ -2,12 +2,25 @@
 notionPageId: 34266bff-e880-8113-b9c5-cc588b59d1cc
 name: Dominic Ogburn
 role: Course Developer
+title: CEO & Course Developer
 organisation: ABE Education
 status: Active
 verificationStatus: All Verified
 yearsInIndustry: 40
 headshotUrl: https://lwfiles.mycourse.app/638d2798a130a8e77268b848-public/f13e5463746db5554514e16b0804ce41.png
+headshotPath: /images/experts/dominic-ogburn.webp
 linkedIn: https://www.linkedin.com/in/dominic-ogburn
+sameAs:
+  - https://www.linkedin.com/in/dominic-ogburn
+credentialPills:
+  - Licensed NSW Builder
+  - Minister's Award 2005
+  - Standards Australia BD-038
+  - Published Author — Allen & Unwin
+  - Parliamentary Citation
+  - 40+ Years Experience
+  - 31,000+ Students Trained
+  - 5 Government Jurisdictions
 profileUrl: /experts/dominic-ogburn
 lastVerified: '2026-04-14'
 specialistAreas:
