@@ -1,10 +1,12 @@
 ---
 import { getCollection, getEntry, render } from 'astro:content';
 import CourseLayout from '@/layouts/CourseLayout.astro';
+import HeroCourse from '@/components/blocks/HeroCourse.astro';
 import CourseSchema from '@/components/seo/CourseSchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
 import PersonSchema from '@/components/seo/PersonSchema.astro';
 import FaqSchema from '@/components/seo/FaqSchema.astro';
+import { ABE_AUTHORITY } from '@/lib/abe-authority';
 
 export async function getStaticPaths() {
   const published = await getCollection('courses', (c) =>
@@ -50,5 +52,15 @@ for (const phrase of reviewer.data.prohibitedClaims) {
     {faqs.length > 0 && <FaqSchema faqs={faqs} />}
   </Fragment>
 
-  <Content />
+  <HeroCourse course={course} jurisdiction={jurisdiction} reviewer={reviewer} />
+
+  <article id="course-details" class="prose max-w-3xl mx-auto px-4 py-12">
+    <Content />
+
+    {course.data.credentialAwarded && (
+      <p class="not-prose text-sm text-base-content/70 border-l-4 border-primary pl-4 my-8">
+        {ABE_AUTHORITY.deliveryRtoDisclosure(course.data.deliveryRto.name, course.data.deliveryRto.rtoCode)}
+      </p>
+    )}
+  </article>
 </CourseLayout>

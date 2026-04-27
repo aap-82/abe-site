@@ -1,54 +1,24 @@
 ---
+// CourseLayout — thin shell over BaseLayout for course pages.
+// HeroCourse handles the visual hero (title, capsule, CTAs, trust signal).
+// This layout just sets the page meta and exposes the schema slot.
+// Anything else (post-hero CTA banner, FAQ accordion, related courses)
+// goes in the default slot from [...slug].astro.
+
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { ABE_AUTHORITY } from '@/lib/abe-authority';
+import type { CollectionEntry } from 'astro:content';
 
 interface Props {
-  course: any;
-  jurisdiction: any;
-  reviewer: any;
+  course: CollectionEntry<'courses'>;
+  jurisdiction: CollectionEntry<'jurisdictions'>;
+  reviewer: CollectionEntry<'experts'>;
 }
 
-const { course, jurisdiction, reviewer } = Astro.props;
+const { course } = Astro.props;
 const d = course.data;
 ---
 
 <BaseLayout title={d.metaTitle} description={d.metaDescription}>
   <slot name="schema" slot="schema" />
-
-  <article class="prose prose-slate max-w-none">
-    <p class="text-sm uppercase tracking-wide text-base-content/60 not-prose">
-      {jurisdiction.data.name} &middot; {d.productLine.replace('-', ' ')}
-    </p>
-    <h1>{d.h1}</h1>
-    <p class="lead">{d.answerCapsule}</p>
-
-    <aside class="not-prose my-8 card bg-base-200 border border-base-300">
-      <div class="card-body p-4 text-sm">
-        <p>
-          <strong>Authority:</strong>
-          Reviewed by <a href={reviewer.data.profileUrl} class="link link-primary">{reviewer.data.name}</a>,
-          {reviewer.data.title ?? reviewer.data.role}. Last reviewed {d.lastReviewed}.
-        </p>
-        {d.credentialAwarded && (
-          <p class="mt-2">
-            {ABE_AUTHORITY.deliveryRtoDisclosure(d.deliveryRto.name, d.deliveryRto.rtoCode)}
-          </p>
-        )}
-      </div>
-    </aside>
-
-    <slot />
-
-    <hr class="my-8 border-base-300" />
-
-    <footer class="not-prose text-sm text-base-content/70">
-      <p><strong>Price:</strong> ${d.price} {d.priceCurrency} &middot; <strong>Duration:</strong> {d.duration}</p>
-      <p class="mt-2">
-        <a class="btn btn-primary btn-lg" href={d.enrolUrl}>
-          Enrol now
-        </a>
-      </p>
-      <p class="mt-4 text-xs text-base-content/60">{ABE_AUTHORITY.asqaDisclosure}</p>
-    </footer>
-  </article>
+  <slot />
 </BaseLayout>

@@ -9,6 +9,7 @@ const courses = await getCollection('courses', (c) => c.data.status === 'publish
   title="ABE Education — Australian Trades Training & CPD"
   description="Owner Builder courses, White Card training, and CPD for Australian trades. Reviewed by licensed industry experts. Delivered with our partner RTOs."
 >
+  <div class="max-w-6xl mx-auto px-4">
   <section class="py-12">
     <p class="text-sm uppercase tracking-wide text-base-content/60">ABE Education</p>
     <h1 class="font-display text-4xl font-semibold sm:text-5xl text-base-content">
@@ -44,4 +45,5 @@ const courses = await getCollection('courses', (c) => c.data.status === 'publish
       </ul>
     </section>
   )}
+  </div>
 </BaseLayout>

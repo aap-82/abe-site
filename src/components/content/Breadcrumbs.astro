@@ -1,0 +1,28 @@
+---
+// Breadcrumbs — DaisyUI breadcrumbs, zero-JS.
+// Items with href: null render as plain text (the current page).
+
+interface Item {
+  label: string;
+  href: string | null;
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="breadcrumbs text-sm text-base-content/70" aria-label="Breadcrumb">
+  <ul>
+    {items.map((item) => (
+      <li>
+        {item.href
+          ? <a href={item.href} class="link link-hover">{item.label}</a>
+          : <span class="text-base-content">{item.label}</span>
+        }
+      </li>
+    ))}
+  </ul>
+</nav>

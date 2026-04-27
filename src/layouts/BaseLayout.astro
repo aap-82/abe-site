@@ -41,7 +41,10 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
   <body class="bg-base-100 text-base-content min-h-screen flex flex-col">
     <Header />
 
-    <main class="mx-auto max-w-6xl p-4 flex-1 w-full">
+    {/* main has no max-w so blocks like HeroCourse can render full-bleed
+        backgrounds. Pages that need a constrained content column wrap
+        their own content in `max-w-6xl mx-auto px-4`. */}
+    <main class="flex-1 w-full">
       <slot />
     </main>
 
