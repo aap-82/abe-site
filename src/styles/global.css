@@ -1,23 +1,64 @@
 @import "tailwindcss";
-
-@theme {
-  --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
-  --font-display: var(--font-display), Georgia, serif;
-  --font-mono: var(--font-mono), ui-monospace, monospace;
-
-  /* ABE Education brand palette — placeholders, refine against the Grey Design System */
-  --color-abe-ink: #0f172a;
-  --color-abe-paper: #fafaf9;
-  --color-abe-brick: #b53d2a;
-  --color-abe-rule: #e7e5e4;
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: abe --default;
+  logs: false;
 }
 
-html {
-  font-family: var(--font-sans);
-  color: var(--color-abe-ink);
-  background: var(--color-abe-paper);
+/* ABE Education brand theme — Classic Maroon (#800000) palette + DM Sans body / Archivo display.
+   --font-sans / --font-display / --font-mono are set automatically by the Astro 6 Fonts API
+   (configured in astro.config.mjs). Don't redefine them here. */
+@plugin "daisyui/theme" {
+  name: "abe";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  /* Surfaces */
+  --color-base-100: oklch(99% 0.003 60);          /* page background — near-white warm */
+  --color-base-200: oklch(96% 0.005 60);          /* card / subtle band */
+  --color-base-300: oklch(92% 0.008 60);          /* dividers, borders */
+  --color-base-content: oklch(20% 0.02 280);      /* body text — near-black with slight cool */
+
+  /* Brand — Classic Maroon (#800000) */
+  --color-primary: oklch(38% 0.13 29);
+  --color-primary-content: oklch(98% 0.005 60);
+
+  /* Accent — warm complement */
+  --color-secondary: oklch(55% 0.12 40);
+  --color-secondary-content: oklch(98% 0.005 60);
+
+  /* Highlight — for trust badges, callouts */
+  --color-accent: oklch(70% 0.15 85);
+  --color-accent-content: oklch(20% 0.02 280);
+
+  /* Neutral — deep grey for footers */
+  --color-neutral: oklch(25% 0.015 280);
+  --color-neutral-content: oklch(95% 0.005 60);
+
+  /* Status colours */
+  --color-info: oklch(60% 0.14 230);
+  --color-info-content: oklch(98% 0.005 230);
+  --color-success: oklch(55% 0.14 145);
+  --color-success-content: oklch(98% 0.005 145);
+  --color-warning: oklch(75% 0.16 75);
+  --color-warning-content: oklch(20% 0.02 75);
+  --color-error: oklch(55% 0.20 25);
+  --color-error-content: oklch(98% 0.005 25);
+
+  /* Geometry — slightly tighter than DaisyUI defaults for editorial feel */
+  --radius-selector: 0.5rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }

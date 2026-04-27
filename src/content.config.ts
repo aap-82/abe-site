@@ -10,7 +10,7 @@ const jurisdictions = defineCollection({
     name: z.string(),
     regulator: z.object({
       name: z.string(),
-      url: z.string().url(),
+      url: z.url(),
       shortName: z.string().optional()
     }),
     ownerBuilder: z.object({
@@ -27,7 +27,7 @@ const jurisdictions = defineCollection({
     legislationReferences: z.array(z.object({
       title: z.string(),
       section: z.string().optional(),
-      url: z.string().url(),
+      url: z.url(),
       currency: z.string()
     })),
     penalties: z.array(z.object({
@@ -41,34 +41,70 @@ const jurisdictions = defineCollection({
   })
 });
 
-// ---------- EXPERTS (mirrored from Notion) ----------
+// ---------- EXPERTS (mirrored from Notion Experts DB) ----------
+// Schema mirrors the Notion data source at
+// https://www.notion.so/a8dc3f4c431c420092266cf73ab4067b
+// — properties from the DB columns, the rest extracted from the page body.
+// scripts/sync-experts-from-notion.ts is the source of truth for shape.
 const experts = defineCollection({
   loader: glob({ pattern: '**/[^_]*.md', base: './src/content/experts' }),
   schema: z.object({
     notionPageId: z.string(),
+
+    // ── Notion properties ──
     name: z.string(),
-    title: z.string(),
-    ultraShortBio: z.string().max(200),
-    shortBio: z.string().max(500),
-    longBio: z.string(),
-    credentials: z.array(z.object({
-      credential: z.string(),
-      issuer: z.string(),
-      dateIssued: z.string().optional(),
-      verificationUrl: z.string().url().optional()
-    })),
-    credentialPills: z.array(z.string()),
+    role: z.enum([
+      'Course Developer',
+      'Compliance & Currency Reviewer',
+      'Subject Matter Expert',
+      'Technical Reviewer'
+    ]),
+    organisation: z.string().optional(),
+    status: z.enum(['Active', 'Inactive', 'Draft']),
+    verificationStatus: z.enum(['All Verified', 'Partially Verified', 'Pending']),
+    yearsInIndustry: z.number().int().nonnegative().optional(),
+    headshotUrl: z.url().optional(),
+    linkedIn: z.url().optional(),
+    profileUrl: z.string(),
+    lastVerified: z.string(), // ISO date
+    specialistAreas: z.array(z.string()),
+    coursesReviewed: z.array(z.string()),
+
+    // ── Derived from coursesReviewed multi-select ──
     credentialMatrix: z.object({
       ownerBuilder: z.boolean(),
       whiteCard: z.boolean(),
-      cpd: z.boolean(),
-      regulatory: z.boolean()
+      cpd: z.boolean()
     }),
-    prohibitedClaims: z.array(z.string()),
-    headshotPath: z.string(),
-    sameAs: z.array(z.string().url()),
-    profileUrl: z.string(),
-    lastVerified: z.string()
+
+    // ── Extracted from page body sections ──
+    bios: z.object({
+      ultraShort: z.string(),
+      short: z.string(),
+      medium: z.string(),
+      long: z.string()
+    }),
+    credentials: z.array(z.object({
+      title: z.string(),
+      body: z.string(),
+      verified: z.boolean()
+    })),
+    prohibitedClaims: z.array(z.string()), // from "What NOT to Claim" section
+    expertCardCopy: z.object({
+      credentialPills: z.array(z.string()),
+      inlineAttribution: z.string(),
+      reviewerAttribution: z.string().optional()
+    }),
+
+    // ── Aliases for the build spec's components (option B reconciliation) ──
+    // The HeroCourse worked example and PersonSchema in the spec use a
+    // flatter expert shape (title, headshotPath, credentialPills, sameAs).
+    // Keeping these alongside the rich Notion-derived fields means existing
+    // spec components keep working AND the rich data is available.
+    title: z.string().optional(),                             // alt for `role` (e.g. "CEO & Course Developer")
+    headshotPath: z.string().optional(),                      // local path under public/, e.g. /images/experts/dominic-ogburn.webp
+    credentialPills: z.array(z.string()).optional(),          // top-level pills (mirrors expertCardCopy.credentialPills)
+    sameAs: z.array(z.url()).optional()              // typically [linkedIn, ...]
   })
 });
 
@@ -97,7 +133,7 @@ const courses = defineCollection({
     priceCurrency: z.literal('AUD'),
     duration: z.string(),
     durationHours: z.number(),
-    enrolUrl: z.string().url(),
+    enrolUrl: z.url(),
     courseMode: z.enum(['online', 'blended', 'in-person']).default('online'),
 
     credentialAwarded: z.string().optional(),
