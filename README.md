@@ -20,3 +20,6 @@ content collection schema, and the rules that the build-time guard enforces.
 
 Cloudflare Pages picks up `main` and runs `npm run build`. Output: `dist/`.
 No Cloudflare adapter is used — the site is `output: 'static'`.
+
+The site lives at [abe-site.pages.dev](https://abe-site.pages.dev) until
+DNS is cut over to the apex domain.
