@@ -62,6 +62,32 @@ faqRefs:
   - nsw-ob-can-i-sell
   - nsw-ob-cant-do
 
+developer: dominic-ogburn
+
+eligibility:
+  eligible:
+    - Single dwelling-house
+    - Secondary dwelling (granny flat)
+    - Dual occupancy (special circumstances)
+  excluded:
+    - Strata renovations
+    - Commercial premises
+    - Hotels & tourist accommodation
+    - Caravans & moveable dwellings
+
+requirements:
+  - Council or water rates notice less than 1 year old, OR Certificate of Title from NSW Land Registry Services
+  - Approved Development Application (DA) or Complying Development Certificate (CDC) — the application number alone is not enough
+  - Current White Card (a SafeWork NSW Statement of Training is also accepted within 60 days of training)
+  - Estimated cost of the building work (labour and materials)
+  - Signatures from all owners, leaseholders, or shareholders of the property
+
+exemptionNote: |
+  If you already hold a NSW general building work licence, a qualified
+  supervisor certificate (general building, not limited), an accredited
+  certifier credential, or work as a council building inspector, you may
+  be exempt from the course requirement.
+
 entities:
   - "Building Commission NSW"
   - "Owner Builder Permit"
@@ -102,24 +128,3 @@ current **White Card**, **own the land** (or hold a 3+ year registered lease),
 and have an **approved DA or CDC**. You must intend to live in the home after
 building. Only **one permit per 5-year period** unless special circumstances
 apply.
-
-Permits are issued for single dwelling-houses, secondary dwellings (granny
-flats), and dual occupancies in special circumstances. Strata renovations,
-commercial premises, hotels, and moveable dwellings (like caravans or motor
-homes) are excluded.
-
-You'll also need:
-
-- Council or water rates notice less than 1 year old, OR Certificate of Title from NSW Land Registry Services
-- Approved Development Application (DA) or Complying Development Certificate (CDC) — the application number alone is not enough
-- Current White Card (a SafeWork NSW Statement of Training is also accepted within 60 days of training)
-- Estimated cost of the building work (labour and materials)
-- Signatures from all owners, leaseholders, or shareholders of the property
-
-> **Source:** [Service NSW — Apply for an Owner-Builder Permit](https://www.service.nsw.gov.au/transaction/apply-for-an-owner-builder-permit)
-> · eligibility and the 5-year rule verified 28 April 2026.
-
-If you already hold a NSW general building work licence, a qualified
-supervisor certificate (general building, not limited), an accredited
-certifier credential, or work as a council building inspector, you may be
-**exempt** from the course requirement.

@@ -3,10 +3,12 @@ import { getCollection, getEntry, render } from 'astro:content';
 import CourseLayout from '@/layouts/CourseLayout.astro';
 import BreadcrumbsBar from '@/components/layout/BreadcrumbsBar.astro';
 import HeroCourse from '@/components/blocks/HeroCourse.astro';
+import EligibilityCards from '@/components/blocks/EligibilityCards.astro';
 import HowItWorksSteps from '@/components/blocks/HowItWorksSteps.astro';
 import UnitsTable from '@/components/blocks/UnitsTable.astro';
 import PricingCard from '@/components/blocks/PricingCard.astro';
 import WhyAbe from '@/components/blocks/WhyAbe.astro';
+import CourseAuthorship from '@/components/blocks/CourseAuthorship.astro';
 import WhoDelivers from '@/components/blocks/WhoDelivers.astro';
 import CtaBanner from '@/components/blocks/CtaBanner.astro';
 import TrustFooter from '@/components/blocks/TrustFooter.astro';
@@ -34,6 +36,7 @@ const { Content } = await render(course);
 // Resolve references
 const jurisdiction = await getEntry(course.data.jurisdiction);
 const reviewer = await getEntry(course.data.reviewer);
+const developer = course.data.developer ? await getEntry(course.data.developer) : undefined;
 const faqEntries = await Promise.all(course.data.faqRefs.map((ref) => getEntry(ref)));
 
 if (!jurisdiction) {
@@ -98,6 +101,8 @@ const breadcrumbItems = [
     <Content />
   </article>
 
+  <EligibilityCards course={course} jurisdiction={jurisdiction} />
+
   <HowItWorksSteps />
 
   <UnitsTable course={course} jurisdiction={jurisdiction} />
@@ -119,6 +124,8 @@ const breadcrumbItems = [
   )}
 
   <WhyAbe course={course} jurisdiction={jurisdiction} />
+
+  <CourseAuthorship course={course} developer={developer} reviewer={reviewer} />
 
   <WhoDelivers course={course} />
 

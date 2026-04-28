@@ -1,0 +1,102 @@
+---
+// EligibilityCards — Section 4 visual treatment of the course requirements.
+// Renders an Eligible/Excluded two-card grid, a "you'll also need" list
+// with primary badge dots, and an "Already qualified?" exemption alert.
+//
+// Driven entirely by frontmatter: course.eligibility, course.requirements,
+// course.exemptionNote. The component renders nothing if no fields are set
+// — keeps it safe to drop in for any course.
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+  jurisdiction: CollectionEntry<'jurisdictions'>;
+}
+
+const { course, jurisdiction } = Astro.props;
+const c = course.data;
+const j = jurisdiction.data;
+
+const hasContent = !!(c.eligibility || c.requirements?.length || c.exemptionNote);
+---
+
+{hasContent && (
+  <section id="section-4" class="py-14 lg:py-20 bg-base-200/50 border-t border-base-300">
+    <div class="mx-auto max-w-5xl px-4">
+      <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">
+        What's eligible and what you'll need
+      </h2>
+
+      {c.eligibility && (
+        <div class="grid lg:grid-cols-2 gap-5 mb-10">
+          <div class="card bg-base-100 border border-base-300">
+            <div class="card-body p-6">
+              <h3 class="card-title font-display text-lg flex items-center gap-2">
+                <span class="badge badge-success badge-sm">Eligible</span>
+                Properties covered
+              </h3>
+              <ul class="space-y-2 mt-2 text-sm">
+                {c.eligibility.eligible.map((item) => (
+                  <li class="flex gap-2">
+                    <span class="text-success mt-0.5" aria-hidden="true">✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div class="card bg-base-100 border border-base-300">
+            <div class="card-body p-6">
+              <h3 class="card-title font-display text-lg flex items-center gap-2">
+                <span class="badge badge-error badge-sm">Excluded</span>
+                Properties not covered
+              </h3>
+              <ul class="space-y-2 mt-2 text-sm">
+                {c.eligibility.excluded.map((item) => (
+                  <li class="flex gap-2">
+                    <span class="text-error mt-0.5" aria-hidden="true">✗</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {c.requirements && c.requirements.length > 0 && (
+        <>
+          <h3 class="font-display text-xl font-semibold mt-10 mb-3">You'll also need:</h3>
+          <ul class="list-none space-y-2.5 text-base-content/90">
+            {c.requirements.map((item) => (
+              <li class="flex gap-3">
+                <span class="badge badge-primary badge-xs mt-2 shrink-0" aria-hidden="true"></span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+
+          {j.regulator.url && (
+            <p class="source-link text-sm mt-5">
+              Source: <a href={j.regulator.url}>{j.regulator.name} — Apply for a permit</a>
+            </p>
+          )}
+        </>
+      )}
+
+      {c.exemptionNote && (
+        <div class="alert mt-8 bg-accent/10 border border-accent/30 text-base-content">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 stroke-accent shrink-0" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          <div>
+            <p class="font-semibold">Already qualified? You may be exempt.</p>
+            <p class="text-sm mt-1">{c.exemptionNote}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+)}

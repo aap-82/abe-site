@@ -151,6 +151,19 @@ const courses = defineCollection({
     faqRefs: z.array(reference('faqs')),
     relatedCourses: z.array(reference('courses')).optional(),
 
+    // Section 4 — eligibility/requirements (drives <EligibilityCards>).
+    // All optional so courses without this structure still validate.
+    eligibility: z.object({
+      eligible: z.array(z.string()),
+      excluded: z.array(z.string())
+    }).optional(),
+    requirements: z.array(z.string()).optional(),
+    exemptionNote: z.string().optional(),
+
+    // Course developer (typically distinct from reviewer). Surfaces in
+    // <CourseAuthorship> alongside the page reviewer.
+    developer: reference('experts').optional(),
+
     entities: z.array(z.string()),
 
     publishedAt: z.string(),

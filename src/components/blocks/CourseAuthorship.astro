@@ -1,0 +1,169 @@
+---
+// CourseAuthorship — Section 8a. Surfaces the humans behind the course:
+// the Course Developer (typically Dominic) and the Compliance & Currency
+// Reviewer (typically Warwick).
+//
+// Sits above WhoDelivers (which covers the org-level role separation
+// between the RTO partner and ABE Education).
+//
+// Driven by course.developer + course.reviewer references. Renders the
+// developer card only if course.developer is populated. Reviewer card
+// always renders (reviewer is required by the schema).
+
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+  developer?: CollectionEntry<'experts'>;
+  reviewer: CollectionEntry<'experts'>;
+}
+
+const { course, developer, reviewer } = Astro.props;
+const c = course.data;
+
+// "28 April 2026" style — review date for Warwick's attribution
+const reviewDateLabel = new Intl.DateTimeFormat('en-AU', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(new Date(c.lastReviewed));
+
+const initialsOf = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .slice(0, 2)
+    .join('');
+---
+
+<section class="py-14 lg:py-20">
+  <div class="mx-auto max-w-5xl px-4">
+    <h2 class="font-display text-3xl md:text-4xl font-bold mb-3">
+      How is the course content developed and reviewed?
+    </h2>
+    <p class="text-base-content/80 max-w-3xl mb-10">
+      ABE Education uses a two-stage process. Course content is developed by a
+      qualified industry practitioner; an independent compliance &amp; currency
+      reviewer then verifies that what's published reflects current legislation,
+      regulator names, fees, and process.
+    </p>
+
+    <div class={developer ? 'grid md:grid-cols-2 gap-5' : 'grid grid-cols-1 gap-5 max-w-2xl'}>
+
+      {developer && (
+        <div class="card bg-base-100 border border-base-300 shadow-sm">
+          <div class="card-body p-6">
+            <p class="text-xs uppercase tracking-wider text-primary/70 font-semibold mb-3">
+              Course Developer
+            </p>
+            <div class="flex items-start gap-4 mb-4">
+              {developer.data.headshotPath ? (
+                <Image
+                  src={developer.data.headshotPath}
+                  alt={`${developer.data.name}, ${developer.data.title ?? developer.data.role}`}
+                  width={64}
+                  height={64}
+                  inferSize
+                  class="rounded-full ring-2 ring-base-300 object-cover shrink-0"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div class="avatar avatar-placeholder shrink-0">
+                  <div class="w-16 rounded-full bg-primary text-primary-content ring-2 ring-base-300">
+                    <span class="text-base font-semibold">{initialsOf(developer.data.name)}</span>
+                  </div>
+                </div>
+              )}
+              <div class="flex-1 min-w-0">
+                <h3 class="font-display text-lg font-bold leading-tight">
+                  <a href={developer.data.profileUrl} class="link link-hover">{developer.data.name}</a>
+                </h3>
+                <p class="text-sm text-base-content/70">
+                  {developer.data.title ?? developer.data.role}
+                  {developer.data.organisation && ` · ${developer.data.organisation}`}
+                </p>
+              </div>
+            </div>
+
+            {developer.data.credentialPills && developer.data.credentialPills.length > 0 && (
+              <div class="flex flex-wrap gap-1.5 mb-4">
+                {developer.data.credentialPills.slice(0, 4).map((pill) => (
+                  <span class="badge badge-outline badge-sm">{pill}</span>
+                ))}
+              </div>
+            )}
+
+            <p class="text-sm text-base-content/85 leading-relaxed">
+              {developer.data.bios.short}
+            </p>
+
+            <div class="divider my-2"></div>
+            <p class="text-xs text-base-content/60 italic">
+              Course content developed by {developer.data.name} &middot;
+              {developer.data.organisation ?? 'ABE Education'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body p-6">
+          <p class="text-xs uppercase tracking-wider text-primary/70 font-semibold mb-3">
+            Compliance &amp; Currency Reviewer
+          </p>
+          <div class="flex items-start gap-4 mb-4">
+            {reviewer.data.headshotPath ? (
+              <Image
+                src={reviewer.data.headshotPath}
+                alt={`${reviewer.data.name}, ${reviewer.data.title ?? reviewer.data.role}`}
+                width={64}
+                height={64}
+                inferSize
+                class="rounded-full ring-2 ring-base-300 object-cover shrink-0"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div class="avatar avatar-placeholder shrink-0">
+                <div class="w-16 rounded-full bg-primary text-primary-content ring-2 ring-base-300">
+                  <span class="text-base font-semibold">{initialsOf(reviewer.data.name)}</span>
+                </div>
+              </div>
+            )}
+            <div class="flex-1 min-w-0">
+              <h3 class="font-display text-lg font-bold leading-tight">
+                <a href={reviewer.data.profileUrl} class="link link-hover">{reviewer.data.name}</a>
+              </h3>
+              <p class="text-sm text-base-content/70">
+                {reviewer.data.title ?? reviewer.data.role}
+                {reviewer.data.organisation && ` · ${reviewer.data.organisation}`}
+              </p>
+            </div>
+          </div>
+
+          {reviewer.data.credentialPills && reviewer.data.credentialPills.length > 0 && (
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              {reviewer.data.credentialPills.slice(0, 4).map((pill) => (
+                <span class="badge badge-outline badge-sm">{pill}</span>
+              ))}
+            </div>
+          )}
+
+          <p class="text-sm text-base-content/85 leading-relaxed">
+            {reviewer.data.bios.short}
+          </p>
+
+          <div class="divider my-2"></div>
+          <p class="text-xs text-base-content/60 italic">
+            Compliance and currency review of this published page completed on{' '}
+            <time datetime={c.lastReviewed}>{reviewDateLabel}</time>.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
