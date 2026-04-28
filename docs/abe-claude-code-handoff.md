@@ -173,7 +173,7 @@ Goal: make the site visually correct — ABE maroon, DM Sans/Archivo fonts, Dais
 
 Goal: replace the bare markdown rendering on course pages with a proper hero.
 
-1. Read `docs/hero-course-worked-example.md` (must be in the repo). Build `src/components/blocks/HeroCourse.astro` exactly per that spec.
+1. Read [`hero-course-worked-example.md`](../hero-course-worked-example.md) (at the repo root). Build `src/components/blocks/HeroCourse.astro` exactly per that spec.
 2. Update `src/pages/courses/[...slug].astro` to render `<HeroCourse>` above `<Content />`.
 3. Confirm headshot for Dominic exists at `public/images/experts/dominic-ogburn.webp` (cached locally — Notion file URLs expire).
 4. If the headshot isn't there, write the prebuild script (or run it) to fetch from Notion.
@@ -267,11 +267,13 @@ Before starting, confirm these exist. If any are missing, that's the first thing
 
 ```
 docs/
-  build-spec.md                  ← architecture and rules
-  hero-course-worked-example.md  ← reference for HeroCourse.astro
+  abe-astro-build-spec.md        ← architecture and rules
   abe-astro-6-patch.md           ← Astro 6 migration patches
   abe-windows-setup.md           ← Andrey's setup guide
-  this-handoff.md                ← this file
+  abe-claude-code-handoff.md     ← this file
+  CLAUDE.md                      ← project context loaded by Claude Code
+
+hero-course-worked-example.md    ← at repo root (not in docs/) — reference for HeroCourse.astro
 
 src/
   content/
@@ -534,7 +536,7 @@ Don't begin Phase A without answers to these:
 
 After reading this document, your first response to Andrey should be:
 
-1. Confirmation you've read this handoff and the four supporting docs (`build-spec.md`, `hero-course-worked-example.md`, `abe-astro-6-patch.md`, `abe-windows-setup.md`).
+1. Confirmation you've read this handoff and the four supporting docs ([`abe-astro-build-spec.md`](abe-astro-build-spec.md), [`hero-course-worked-example.md`](../hero-course-worked-example.md), [`abe-astro-6-patch.md`](abe-astro-6-patch.md), [`abe-windows-setup.md`](abe-windows-setup.md)).
 2. The output of the Phase A audit (Astro version, what's installed, what's missing, what failed in build).
 3. Answers required from Andrey to the questions in section 9.
 4. A proposed first commit — usually applying the Astro 6 patches if needed, or installing missing dependencies.

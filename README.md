@@ -13,7 +13,7 @@ npm run preview  # serves the built site locally
 
 ## Project context
 
-See [CLAUDE.md](CLAUDE.md) for the authority model (ABE is not an RTO),
+See [docs/CLAUDE.md](docs/CLAUDE.md) for the authority model (ABE is not an RTO),
 content collection schema, and the rules that the build-time guard enforces.
 
 ## Deployment
