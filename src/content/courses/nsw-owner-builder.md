@@ -121,6 +121,8 @@ Registered Training Organisation. That's why this course is delivered by our
 RTO partner **AlertForce (RTO 91826)** — the same RTO ABE works with for ACT
 construction training.
 
+<p class="micro-cta not-prose"><a href="#section-4">↓ Jump to course requirements</a></p>
+
 ## Course requirements and eligibility
 
 To apply for an NSW Owner Builder Permit you must be at least **18**, hold a
