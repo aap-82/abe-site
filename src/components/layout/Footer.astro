@@ -1,47 +1,70 @@
 ---
-// Site footer — DaisyUI footer + a slim disclosure band beneath.
+// Site footer — three-band layout matching the mockup:
+//   1. Sitewide ASQA disclosure band (bg-neutral, ASQA Loc 5)
+//   2. Main footer (bg-neutral, 4-column DaisyUI footer)
+//   3. Course attribution / copyright bar (bg-neutral)
 // Zero JavaScript shipped.
-
-import { ABE_AUTHORITY } from '@/lib/abe-authority';
 
 const year = new Date().getFullYear();
 ---
 
-<footer class="footer sm:footer-horizontal bg-base-200 text-base-content/80 px-4 py-12 mt-16 border-t border-base-300">
-  <div class="mx-auto w-full max-w-6xl grid gap-10 sm:grid-cols-3">
+{/* Sitewide ASQA disclosure — Loc 5 (verbatim approved template per the
+    Phase E content draft). Surfaces every page; specific course pages
+    additionally include Loc 3 + Loc 4 in their TrustFooter block. */}
+<div class="bg-neutral text-neutral-content/85 border-t border-neutral-content/10">
+  <div class="mx-auto max-w-7xl px-4 py-6">
+    <p class="text-xs leading-relaxed">
+      ABE Education Pty Ltd (ABN 64 125 455 272) is not a Registered Training
+      Organisation (RTO). Nationally recognised qualifications, including
+      White Card (CPCWHS1001), Asbestos Awareness, and Silica Awareness
+      training, are delivered in partnership with
+      <strong>Blue Dog Training Pty Ltd (RTO 31193)</strong>
+      for QLD, WA and TAS, and
+      <strong>AlertForce Pty Ltd (RTO 91826)</strong>
+      for ACT and NSW. Both are registered training organisations regulated by
+      the Australian Skills Quality Authority (ASQA). Owner Builder and CPD
+      courses are delivered directly by ABE Education under state government
+      approvals.
+    </p>
+  </div>
+</div>
 
-    {/* Brand block */}
-    <aside class="space-y-3">
-      <p class="font-display text-lg font-semibold text-base-content">ABE Education</p>
-      <p class="text-sm max-w-xs">
-        Australian online training for owner builders, White Card, and CPD.
-        Reviewed by licensed industry experts. Delivered with our partner
-        Registered Training Organisations.
+<footer class="footer p-10 bg-neutral text-neutral-content">
+  <div class="mx-auto w-full max-w-7xl grid grid-cols-1 md:grid-cols-4 gap-8">
+    <aside>
+      <p class="font-display text-2xl font-bold">ABE Education</p>
+      <p class="text-sm opacity-80 mt-2 max-w-xs">
+        Australian-owned online training provider since 2007. Trusted by
+        31,000+ students across NSW, ACT, QLD, TAS &amp; WA.
       </p>
     </aside>
-
-    {/* Courses */}
-    <nav class="space-y-2">
+    <nav>
       <h2 class="footer-title font-display">Courses</h2>
-      <a href="/compare/owner-builder/" class="link link-hover block">Owner Builder by state</a>
-      <a href="/courses/nsw-owner-builder-course/" class="link link-hover block">NSW Owner Builder</a>
+      <a class="link link-hover" href="/compare/owner-builder/">Owner Builder</a>
+      <a class="link link-hover" href="#">White Card</a>
+      <a class="link link-hover" href="#">CPD Courses</a>
+      <a class="link link-hover" href="#">CPD Bundles</a>
     </nav>
-
-    {/* About */}
-    <nav class="space-y-2">
-      <h2 class="footer-title font-display">About</h2>
-      <a href="/" class="link link-hover block">Home</a>
-      <a href="/compare/owner-builder/" class="link link-hover block">Compare states</a>
+    <nav>
+      <h2 class="footer-title font-display">Company</h2>
+      <a class="link link-hover" href="#">About</a>
+      <a class="link link-hover" href="#">Trainers</a>
+      <a class="link link-hover" href="#">Accreditation</a>
+      <a class="link link-hover" href="#">Contact</a>
+    </nav>
+    <nav>
+      <h2 class="footer-title font-display">Legal</h2>
+      <a class="link link-hover" href="#">Terms &amp; Conditions</a>
+      <a class="link link-hover" href="#">Privacy Policy</a>
+      <a class="link link-hover" href="#">Refund Policy</a>
+      <a class="link link-hover" href="#">Complaints &amp; Appeals</a>
     </nav>
   </div>
 </footer>
 
-{/* Disclosure band — slim, dark, the legally-load-bearing bit */}
-<div class="bg-neutral text-neutral-content border-t border-base-300 py-6 px-4">
-  <div class="mx-auto max-w-6xl space-y-2 text-xs leading-relaxed">
-    <p>{ABE_AUTHORITY.asqaDisclosure}</p>
-    <p class="text-neutral-content/70">
-      &copy; {year} ABE Education. All rights reserved.
-    </p>
+<div class="bg-neutral text-neutral-content/60 text-xs py-4 border-t border-neutral-content/10">
+  <div class="mx-auto max-w-7xl px-4 flex flex-col md:flex-row md:justify-between gap-2">
+    <p>&copy; {year} ABE Education Pty Ltd &middot; ABN 64 125 455 272</p>
+    <p>NSW Owner Builder Course delivered by AlertForce (RTO 91826)</p>
   </div>
 </div>

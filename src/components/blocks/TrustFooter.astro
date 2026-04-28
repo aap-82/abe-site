@@ -1,0 +1,76 @@
+---
+// TrustFooter — per-course "About this course" block carrying the
+// ASQA Loc 3 (verbatim disclosure) and Loc 4 (3-line copyright bar).
+//
+// Sits between the page body and the sitewide Footer. Driven by the
+// course collection entry so the disclosure stays in sync with the
+// course's deliveryRto and unitCodes.
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+  jurisdiction: CollectionEntry<'jurisdictions'>;
+}
+
+const { course, jurisdiction } = Astro.props;
+const c = course.data;
+const j = jurisdiction.data;
+
+const productLineLabel =
+  c.productLine === 'owner-builder'
+    ? 'Owner Builder'
+    : c.productLine === 'white-card'
+      ? 'White Card'
+      : 'CPD';
+
+const courseUnits = c.unitCodes && c.unitCodes.length > 0
+  ? c.unitCodes.join(' · ')
+  : c.courseCode ?? 'See course frontmatter';
+
+const courseLabel = `${j.code} ${productLineLabel}`;
+---
+
+<section class="bg-base-200 py-12 border-t border-base-300">
+  <div class="mx-auto max-w-5xl px-4">
+    <h2 class="font-display text-xl font-bold mb-4">About this course</h2>
+
+    {/* ASQA Loc 3 — Per-course footer legal disclosure */}
+    <div class="text-sm text-base-content/80 leading-relaxed space-y-3 max-w-4xl">
+      <p>
+        This website is operated by ABE Education (ABN 64 125 455 272) as an
+        authorised third-party enrolment partner. The {j.name} {productLineLabel}
+        Course ({courseUnits}) is delivered by {c.deliveryRto.name}, a
+        nationally recognised Registered Training Organisation (RTO {c.deliveryRto.rtoCode})
+        accredited by the Australian Skills Quality Authority (ASQA).
+      </p>
+      <p>
+        ABE Education provides enrolment services, payment processing, and
+        student support. {c.deliveryRto.name} delivers all training and
+        assessment, issues qualifications, and maintains student records in
+        accordance with the Standards for Registered Training Organisations
+        2025. ABE Education does not deliver training, conduct assessments,
+        or issue qualifications.
+      </p>
+      <p>
+        Owner Builder Permits are administered by {j.regulator.name} under the
+        Home Building Act 1989. Applications are submitted through Service NSW.
+        Read our full enrolment terms on the
+        <a href="/terms" class="link link-primary">Terms &amp; Conditions</a> page.
+      </p>
+    </div>
+
+    {/* ASQA Loc 4 — 3-line structured copyright bar */}
+    <div class="mt-8 p-5 bg-base-100 border border-base-300 rounded-box font-mono text-xs leading-relaxed">
+      <div>
+        <span class="text-base-content/60">Course:</span>{' '}{courseUnits} — {courseLabel}
+      </div>
+      <div>
+        <span class="text-base-content/60">Training Provider:</span>{' '}{c.deliveryRto.name} Pty Ltd (RTO {c.deliveryRto.rtoCode})
+      </div>
+      <div>
+        <span class="text-base-content/60">Enrolment Partner:</span>{' '}ABE Education Pty Ltd (ABN 64 125 455 272)
+      </div>
+    </div>
+  </div>
+</section>

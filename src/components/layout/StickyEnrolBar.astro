@@ -1,0 +1,43 @@
+---
+// Mobile-only sticky enrol bar — shows course title + price + CTA pinned
+// to the bottom of the viewport on small screens.
+// Pure CSS sticky positioning, zero JS.
+//
+// Includes a spacer div so the fixed bar doesn't cover the page footer.
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+}
+
+const { course } = Astro.props;
+const c = course.data;
+
+const formattedPrice = new Intl.NumberFormat('en-AU', {
+  style: 'currency',
+  currency: c.priceCurrency,
+  maximumFractionDigits: 0,
+}).format(c.price);
+
+// Short course label for the bar — first three words of title
+const shortLabel = c.title.split(' ').slice(0, 3).join(' ');
+---
+
+<div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-base-100 border-t border-base-300 shadow-2xl p-3 flex items-center justify-between gap-3">
+  <div>
+    <p class="text-xs text-base-content/60 leading-tight">{shortLabel}</p>
+    <p class="font-display font-bold text-lg leading-tight text-primary">{formattedPrice}</p>
+  </div>
+  <a
+    href={c.enrolUrl}
+    class="btn btn-primary flex-1 max-w-xs"
+    data-cta="sticky-mobile-enrol"
+    data-course={c.slug}
+  >
+    Enrol now
+  </a>
+</div>
+
+{/* Spacer so the sticky bar doesn't cover the footer on mobile */}
+<div class="h-20 lg:hidden" aria-hidden="true"></div>

@@ -5,60 +5,141 @@
   logs: false;
 }
 
-/* ABE Education brand theme — Classic Maroon (#800000) palette + DM Sans body / Archivo display.
-   --font-sans / --font-display / --font-mono are set automatically by the Astro 6 Fonts API
-   (configured in astro.config.mjs). Don't redefine them here. */
+/* ABE Education brand theme — Heritage Maroon (#800000), Charcoal text on
+   Cool Off-White surfaces, Steel for secondary actions. Hex values match
+   the brand mockup exactly (Grey Design System v1.1).
+   --font-sans / --font-display / --font-mono are set automatically by the
+   Astro 6 Fonts API in astro.config.mjs — don't redefine them here. */
 @plugin "daisyui/theme" {
   name: "abe";
   default: true;
   prefersdark: false;
   color-scheme: light;
 
-  /* Surfaces */
-  --color-base-100: oklch(99% 0.003 60);          /* page background — near-white warm */
-  --color-base-200: oklch(96% 0.005 60);          /* card / subtle band */
-  --color-base-300: oklch(92% 0.008 60);          /* dividers, borders */
-  --color-base-content: oklch(20% 0.02 280);      /* body text — near-black with slight cool */
+  --color-primary:           #800000;       /* Heritage Maroon */
+  --color-primary-content:   #ffffff;
 
-  /* Brand — Classic Maroon (#800000) */
-  --color-primary: oklch(38% 0.13 29);
-  --color-primary-content: oklch(98% 0.005 60);
+  --color-secondary:         #4a5568;       /* Steel */
+  --color-secondary-content: #ffffff;
 
-  /* Accent — warm complement */
-  --color-secondary: oklch(55% 0.12 40);
-  --color-secondary-content: oklch(98% 0.005 60);
+  --color-accent:            #e2e8f0;       /* Steel Pale — pill / badge backgrounds */
+  --color-accent-content:    #1a1a1a;
 
-  /* Highlight — for trust badges, callouts */
-  --color-accent: oklch(70% 0.15 85);
-  --color-accent-content: oklch(20% 0.02 280);
+  --color-neutral:           #1a1a1a;       /* Charcoal — footer / dark surfaces */
+  --color-neutral-content:   #ffffff;
 
-  /* Neutral — deep grey for footers */
-  --color-neutral: oklch(25% 0.015 280);
-  --color-neutral-content: oklch(95% 0.005 60);
+  --color-base-100:          #ffffff;
+  --color-base-200:          #f9fafb;       /* Cool Off-White — alternating sections */
+  --color-base-300:          #e5e7eb;       /* Cool Border — card borders, dividers */
+  --color-base-content:      #1a1a1a;       /* Charcoal */
 
-  /* Status colours */
-  --color-info: oklch(60% 0.14 230);
-  --color-info-content: oklch(98% 0.005 230);
-  --color-success: oklch(55% 0.14 145);
-  --color-success-content: oklch(98% 0.005 145);
-  --color-warning: oklch(75% 0.16 75);
-  --color-warning-content: oklch(20% 0.02 75);
-  --color-error: oklch(55% 0.20 25);
-  --color-error-content: oklch(98% 0.005 25);
+  --color-info:              #4a5568;       /* Steel — legal callouts */
+  --color-info-content:      #ffffff;
+  --color-success:           #059669;
+  --color-success-content:   #ffffff;
+  --color-warning:           #d97706;
+  --color-warning-content:   #ffffff;
+  --color-error:             #dc2626;
+  --color-error-content:     #ffffff;
 
-  /* Geometry — slightly tighter than DaisyUI defaults for editorial feel */
-  --radius-selector: 0.5rem;
-  --radius-field: 0.375rem;
-  --radius-box: 0.75rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 1;
-  --noise: 0;
+  --radius-selector:         0.5rem;
+  --radius-field:            0.375rem;
+  --radius-box:              0.75rem;
+  --size-selector:           0.25rem;
+  --size-field:              0.25rem;
+  --border:                  1px;
+  --depth:                   1;
+  --noise:                   0;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+/* ─── Custom utilities matching the mockup ─────────────────────────── */
+
+@utility verification-note {
+  font-size: 12px;
+  color: #6b6b6b;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+@utility source-link {
+  & a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: #9ca3af;
+    text-underline-offset: 3px;
+  }
+}
+
+@utility micro-cta {
+  font-size: 0.875rem;
+  color: #800000;
+  font-weight: 500;
+  margin-top: 1.5rem;
+  & a {
+    text-decoration: none;
+    border-bottom: 1px dotted currentColor;
+    transition: border-color 200ms ease;
+  }
+  & a:hover {
+    border-bottom-color: transparent;
+    border-bottom-style: solid;
+  }
+}
+
+/* ─── Subtle motion (zero JS) ───────────────────────────────────────── */
+
+/* Card lift on hover — applies to DaisyUI .card and HyperUI feature tiles */
+.card,
+.rounded-lg.border.border-base-300 {
+  transition:
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 200ms ease;
+}
+
+.card:hover,
+.rounded-lg.border.border-base-300:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 24px -8px rgba(26, 26, 26, 0.12),
+    0 2px 6px -2px rgba(26, 26, 26, 0.06);
+}
+
+.card:focus-within,
+.rounded-lg.border.border-base-300:focus-within {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 24px -8px rgba(26, 26, 26, 0.12),
+    0 2px 6px -2px rgba(26, 26, 26, 0.06);
+}
+
+/* Buttons stay snappy — colour transitions only */
+.btn {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+/* Honour reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .card:hover,
+  .rounded-lg.border.border-base-300:hover {
+    transform: none;
+  }
 }

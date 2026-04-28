@@ -1,0 +1,65 @@
+---
+// Full-width breadcrumb bar with optional right-aligned reviewer credit.
+// Used on course pages above the hero. Replaces the previous inline
+// breadcrumb inside HeroCourse so the credit can sit alongside.
+//
+// Per build spec — DaisyUI breadcrumbs semantic class, native <ol>, zero JS.
+
+interface BreadcrumbItem {
+  label: string;
+  href: string | null;
+}
+
+interface ReviewerCredit {
+  name: string;
+  href: string;
+  date: string; // ISO date — formatted via Intl below
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+  reviewer?: ReviewerCredit;
+}
+
+const { items, reviewer } = Astro.props;
+
+const formattedDate = reviewer
+  ? new Intl.DateTimeFormat('en-AU', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(new Date(reviewer.date))
+  : null;
+---
+
+<div class="bg-base-200/60 border-b border-base-300">
+  <div class="mx-auto max-w-7xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-sm">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-1.5 text-base-content/70">
+        {items.map((item, i) => (
+          <>
+            <li>
+              {item.href
+                ? <a href={item.href} class="hover:text-primary">{item.label}</a>
+                : <span class="text-base-content font-medium" aria-current="page">{item.label}</span>
+              }
+            </li>
+            {i < items.length - 1 && (
+              <li class="text-base-content/40" aria-hidden="true">›</li>
+            )}
+          </>
+        ))}
+      </ol>
+    </nav>
+
+    {reviewer && (
+      <p class="text-xs text-base-content/60 italic">
+        Reviewed by{' '}
+        <a href={reviewer.href} class="text-primary not-italic font-medium hover:underline">
+          {reviewer.name}
+        </a>
+        {' '}&middot;{' '}{formattedDate}
+      </p>
+    )}
+  </div>
+</div>

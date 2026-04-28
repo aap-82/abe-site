@@ -1,13 +1,17 @@
 ---
-// HeroCourse — the single most-reused block on the ABE site.
-// Built per docs/hero-course-worked-example.md. Zero JavaScript shipped.
-// Pulls everything from frontmatter via the resolved collection entries
-// passed in as props. DaisyUI semantic classes only — never hardcoded
-// Tailwind colours.
+// HeroCourse — course page hero, designed per the v0.3 visual mockup.
+//
+// Layout: 12-col grid (8 content + 4 image) on desktop, stacked on mobile.
+// Reviewer credit + breadcrumbs live in the separate <BreadcrumbsBar>
+// component above this hero — keeps things composable and lets the
+// breadcrumb bar span full-width while the hero panel rounds.
+//
+// Image column: pure CSS gradient + inline SVG (no external image
+// dependency). Replace with a real <Image> when art is finalised.
+//
+// Zero JavaScript shipped.
 
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
 
 interface Props {
   course: CollectionEntry<'courses'>;
@@ -15,223 +19,145 @@ interface Props {
   reviewer: CollectionEntry<'experts'>;
 }
 
-const { course, jurisdiction, reviewer } = Astro.props;
+const { course, jurisdiction, reviewer: _reviewer } = Astro.props;
 const c = course.data;
 const j = jurisdiction.data;
-const r = reviewer.data;
 
-// ── Format helpers — keep presentation logic local to the block ─────
+// Currency formatter — Intl is build-time, locale en-AU
 const formattedPrice = new Intl.NumberFormat('en-AU', {
   style: 'currency',
   currency: c.priceCurrency,
   maximumFractionDigits: 0,
 }).format(c.price);
 
-const formattedReviewDate = new Intl.DateTimeFormat('en-AU', {
-  day: 'numeric',
-  month: 'short',
+// "April 2026" style for the eyebrow — derived from updatedAt
+const updatedLabel = new Intl.DateTimeFormat('en-AU', {
+  month: 'long',
   year: 'numeric',
-}).format(new Date(c.lastReviewed));
+}).format(new Date(c.updatedAt));
 
-const reviewerTitle = r.title ?? r.role;
-const reviewerPill = r.credentialPills?.[0] ?? r.specialistAreas[0] ?? '';
-const headshotPath = r.headshotPath;
+// H1 splits on " — " into a main line + colored sub-line, matching the
+// mockup. Falls back to a single-line render if there's no separator.
+const h1Parts = c.h1.split(' — ');
+const h1Main = h1Parts[0];
+const h1Sub = h1Parts.slice(1).join(' — ');
 
-// Initials for the placeholder avatar when no headshot is uploaded yet.
-// The build spec treats missing headshots as a soft blocker (flagged
-// pre-launch), not a hard build failure — so render a DaisyUI avatar
-// placeholder instead of throwing.
-const initials = r.name
-  .split(/\s+/)
-  .filter(Boolean)
-  .map((part) => part[0]?.toUpperCase() ?? '')
-  .slice(0, 2)
-  .join('');
-
-// ── Build-time integrity checks — fail loud only on truly required fields ──
+// Build-time integrity check — primary CTA must resolve
 if (!c.enrolUrl) {
   throw new Error(`HeroCourse: missing enrolUrl on course "${course.id}"`);
 }
 ---
 
-<section class="bg-base-200 border-b border-base-300">
-  <div class="max-w-6xl mx-auto px-4 py-8 lg:py-12">
+<section>
+  <div class="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8 lg:grid-cols-12 lg:gap-y-16">
 
-    {/* Breadcrumbs */}
-    <Breadcrumbs
-      items={[
-        { label: 'Home', href: '/' },
-        { label: 'Compare states', href: '/compare/owner-builder/' },
-        { label: j.code, href: null },
-      ]}
-    />
+      {/* ─────── Content panel — bleeds right on desktop ─────── */}
+      <div class="relative flex items-center bg-base-200 rounded-lg lg:col-span-8 lg:order-1">
+        <span class="hidden lg:absolute lg:inset-y-0 lg:-right-16 lg:block lg:w-16 lg:bg-base-200 lg:rounded-r-lg" aria-hidden="true"></span>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
+        <div class="p-8 sm:p-12 lg:p-16">
 
-      {/* ─────────── Left column: title, capsule, CTAs, trust ─────────── */}
-      <div class="lg:col-span-7">
+          {/* ASQA Loc 1 — Hero inline disclosure */}
+          <div class="inline-flex items-center gap-2 mb-4 px-3 py-1.5 bg-base-100 rounded-full text-xs font-medium border border-base-300">
+            <span class="inline-block w-2 h-2 rounded-full bg-success" aria-hidden="true"></span>
+            Training delivered by <strong>{c.deliveryRto.name}</strong> (RTO {c.deliveryRto.rtoCode}) &middot; Enrolled through ABE Education
+          </div>
 
-        {/* Regulator + RTO badges */}
-        <div class="flex flex-wrap gap-2 mb-4">
-          <span class="badge badge-primary badge-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1" aria-hidden="true">
-              <path fill-rule="evenodd" d="M10 1.5l8 4v5c0 4-3.5 7.5-8 8-4.5-.5-8-4-8-8v-5l8-4zm-1 12.5l5-5-1.5-1.5L9 11l-2-2L5.5 10.5 9 14z" clip-rule="evenodd" />
-            </svg>
-            Meets {j.regulator.name} requirements
-          </span>
-          <span class="badge badge-outline badge-lg">
-            Delivered by {c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode})
-          </span>
-        </div>
+          <p class="text-xs uppercase tracking-widest text-primary/70 font-semibold mb-3">
+            Last updated: {updatedLabel}
+          </p>
 
-        {/* H1 — only h1 on the page */}
-        <h1 class="text-4xl lg:text-5xl font-display font-semibold tracking-tight text-base-content mb-4">
-          {c.h1}
-        </h1>
+          <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.1] mb-4 text-base-content">
+            {h1Main}
+            {h1Sub && (
+              <span class="block text-primary mt-1">{h1Sub}</span>
+            )}
+          </h1>
 
-        {/* Answer capsule — for AI Overviews. Marked up with data attribute
-            so AI parsers can identify it as the canonical answer. */}
-        <div class="prose prose-lg max-w-none mb-6" data-answer-capsule>
-          <p class="text-lg leading-relaxed text-base-content/80">
+          <p class="text-base sm:text-lg text-base-content/80 max-w-xl leading-relaxed mb-6">
             {c.answerCapsule}
           </p>
-        </div>
 
-        {/* CTAs — primary goes to LearnWorlds checkout, secondary scrolls */}
-        <div class="flex flex-col sm:flex-row gap-3 mb-8">
-          <a
-            href={c.enrolUrl}
-            class="btn btn-primary btn-lg"
-            data-cta="hero-enrol"
-            data-course={c.slug}
-          >
-            Enrol now — {formattedPrice}
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 ml-1" aria-hidden="true">
-              <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
-            </svg>
-          </a>
-          <a href="#course-details" class="btn btn-ghost btn-lg">
-            See what's included
-          </a>
-        </div>
+          {/* Dual CTAs */}
+          <div class="flex flex-wrap gap-3 mb-8">
+            <a
+              href={c.enrolUrl}
+              class="inline-block rounded-md border border-transparent bg-primary px-10 py-3 text-sm font-medium text-primary-content hover:bg-transparent hover:text-primary hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition"
+              data-cta="hero-enrol"
+              data-course={c.slug}
+            >
+              Enrol now — {formattedPrice}
+            </a>
+            <a
+              href="#course-details"
+              class="inline-block rounded-md border border-base-content/20 px-10 py-3 text-sm font-medium text-base-content hover:bg-base-300 transition"
+            >
+              How it works
+            </a>
+          </div>
 
-        {/* Trust signal — reviewer credential, last reviewed date */}
-        <div class="flex items-center gap-3 pt-4 border-t border-base-300">
-          {headshotPath ? (
-            <Image
-              src={headshotPath}
-              alt={`${r.name}, ${reviewerTitle}`}
-              width={48}
-              height={48}
-              inferSize={true}
-              class="rounded-full ring-2 ring-base-300 object-cover"
-              loading="eager"
-              decoding="async"
-            />
-          ) : (
-            <div class="avatar avatar-placeholder">
-              <div
-                class="bg-primary text-primary-content w-12 rounded-full ring-2 ring-base-300"
-                role="img"
-                aria-label={`${r.name}, ${reviewerTitle}`}
-              >
-                <span class="text-base font-semibold">{initials}</span>
-              </div>
+          {/* Stats trio */}
+          <div class="stats stats-vertical sm:stats-horizontal shadow-sm border border-base-300 bg-base-100">
+            <div class="stat py-3">
+              <div class="stat-title text-xs">RTO Partner</div>
+              <div class="stat-value text-base text-primary font-display">{c.deliveryRto.name}</div>
+              <div class="stat-desc text-xs">RTO {c.deliveryRto.rtoCode} &middot; ASQA</div>
             </div>
-          )}
-          <div class="text-sm leading-tight">
-            <div class="text-base-content">
-              <span>Reviewed by </span>
-              <a
-                href={r.profileUrl}
-                class="font-semibold link link-primary"
-                rel="author"
-              >
-                {r.name}
-              </a>
-              {reviewerPill && (
-                <span class="text-base-content/70">, {reviewerPill}</span>
-              )}
+            <div class="stat py-3">
+              <div class="stat-title text-xs">Students Trained</div>
+              <div class="stat-value text-base text-primary font-display">31,000+</div>
+              <div class="stat-desc text-xs">Since 2007</div>
             </div>
-            <div class="text-base-content/60 mt-0.5">
-              <time datetime={c.lastReviewed}>
-                Last reviewed {formattedReviewDate}
-              </time>
-              <span class="mx-1.5">·</span>
-              <span>Content version {c.contentVersion}</span>
+            <div class="stat py-3">
+              <div class="stat-title text-xs">Course Duration</div>
+              <div class="stat-value text-base text-primary font-display">{c.duration}</div>
+              <div class="stat-desc text-xs">Self-paced</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ─────────── Right column: pricing card ─────────── */}
-      <aside class="lg:col-span-5">
-        <div class="card bg-base-100 shadow-md border border-base-300 lg:sticky lg:top-6">
-          <div class="card-body p-6 lg:p-8">
-
-            <div class="flex items-baseline gap-2 mb-1">
-              <span class="text-4xl font-display font-semibold text-base-content">
-                {formattedPrice}
-              </span>
-              <span class="text-base-content/60 text-sm">{c.priceCurrency}</span>
-            </div>
-            <p class="text-base-content/60 text-sm mb-6">
-              one-off payment &middot; GST included
-            </p>
-
-            <ul class="space-y-3 mb-6">
-              <li class="flex gap-2 items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-success flex-none mt-0.5" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                </svg>
-                <span class="text-base-content">
-                  <strong>{c.duration}</strong> &middot; self-paced online
-                </span>
-              </li>
-              <li class="flex gap-2 items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-success flex-none mt-0.5" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                </svg>
-                <span class="text-base-content">
-                  Available on any device
-                </span>
-              </li>
-              {c.credentialAwarded && (
-                <li class="flex gap-2 items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-success flex-none mt-0.5" aria-hidden="true">
-                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-base-content">
-                    {c.credentialAwarded} on completion
-                  </span>
-                </li>
-              )}
-              <li class="flex gap-2 items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-success flex-none mt-0.5" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                </svg>
-                <span class="text-base-content">
-                  Lifetime access to course materials
-                </span>
-              </li>
-            </ul>
-
-            <a
-              href={c.enrolUrl}
-              class="btn btn-primary btn-block btn-lg"
-              data-cta="hero-pricing-enrol"
-              data-course={c.slug}
+      {/* ─────── Image column — CSS gradient + inline SVG (no external load) ─────── */}
+      <div class="relative z-10 lg:col-span-4 lg:py-12 lg:order-2">
+        <div
+          class="relative h-64 rounded-lg overflow-hidden sm:h-80 lg:h-full bg-gradient-to-br from-primary via-primary/80 to-secondary"
+          role="img"
+          aria-label={`${j.code} ${c.productLine.replace('-', ' ')} course illustration`}
+        >
+          <div class="absolute inset-0 flex items-center justify-center p-8">
+            {/* Inline construction-blueprint SVG, primary-content tint */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 200 200"
+              class="w-full h-full max-w-[180px] text-primary-content/85"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
             >
-              Enrol now
-            </a>
-
-            <p class="text-xs text-base-content/60 text-center mt-3">
-              Secure checkout via LearnWorlds
-            </p>
+              {/* Building outline */}
+              <path d="M30 170 L30 80 L100 30 L170 80 L170 170 Z" />
+              {/* Roof line */}
+              <path d="M30 80 L100 30 L170 80" />
+              {/* Door */}
+              <rect x="85" y="120" width="30" height="50" />
+              {/* Windows */}
+              <rect x="50" y="100" width="22" height="22" />
+              <rect x="128" y="100" width="22" height="22" />
+              {/* Floor line */}
+              <line x1="20" y1="170" x2="180" y2="170" />
+              {/* Measurement marks */}
+              <line x1="20" y1="170" x2="20" y2="180" />
+              <line x1="180" y1="170" x2="180" y2="180" />
+            </svg>
           </div>
+          {/* Soft overlay for visual depth */}
+          <div class="absolute inset-0 bg-gradient-to-tl from-primary/20 via-transparent to-transparent pointer-events-none"></div>
         </div>
-      </aside>
-
+      </div>
     </div>
   </div>
 </section>

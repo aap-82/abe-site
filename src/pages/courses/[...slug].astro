@@ -1,7 +1,11 @@
 ---
 import { getCollection, getEntry, render } from 'astro:content';
 import CourseLayout from '@/layouts/CourseLayout.astro';
+import BreadcrumbsBar from '@/components/layout/BreadcrumbsBar.astro';
 import HeroCourse from '@/components/blocks/HeroCourse.astro';
+import CtaBanner from '@/components/blocks/CtaBanner.astro';
+import TrustFooter from '@/components/blocks/TrustFooter.astro';
+import StickyEnrolBar from '@/components/layout/StickyEnrolBar.astro';
 import FaqAccordion from '@/components/content/FaqAccordion.astro';
 import CourseSchema from '@/components/seo/CourseSchema.astro';
 import BreadcrumbSchema from '@/components/seo/BreadcrumbSchema.astro';
@@ -34,7 +38,6 @@ if (!reviewer) {
   throw new Error(`Course ${course.id} references missing reviewer "${course.data.reviewer.id}"`);
 }
 
-// Filter out any unresolved FAQ references (defensive — schema enforces but log if any go missing)
 const faqs = faqEntries.filter((f): f is NonNullable<typeof f> => f != null);
 if (faqs.length !== faqEntries.length) {
   const missing = course.data.faqRefs
@@ -51,6 +54,19 @@ for (const phrase of reviewer.data.prohibitedClaims) {
     );
   }
 }
+
+const productLineLabel =
+  course.data.productLine === 'owner-builder'
+    ? 'Owner Builder Training'
+    : course.data.productLine === 'white-card'
+      ? 'White Card Training'
+      : 'CPD Training';
+
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: productLineLabel, href: '/compare/owner-builder/' },
+  { label: `${jurisdiction.data.code} ${productLineLabel.replace(' Training', '')}`, href: null },
+];
 ---
 
 <CourseLayout course={course} jurisdiction={jurisdiction} reviewer={reviewer}>
@@ -61,20 +77,43 @@ for (const phrase of reviewer.data.prohibitedClaims) {
     {faqs.length > 0 && <FaqSchema faqs={faqs} />}
   </Fragment>
 
+  <BreadcrumbsBar
+    items={breadcrumbItems}
+    reviewer={{
+      name: reviewer.data.name,
+      href: reviewer.data.profileUrl,
+      date: course.data.lastReviewed,
+    }}
+  />
+
   <HeroCourse course={course} jurisdiction={jurisdiction} reviewer={reviewer} />
 
-  <article id="course-details" class="prose max-w-3xl mx-auto px-4 py-12">
+  <article id="course-details" class="prose max-w-3xl mx-auto px-4 py-14 lg:py-20">
     <Content />
   </article>
 
   {faqs.length > 0 && (
-    <section class="bg-base-200 border-t border-base-300 py-12">
-      <div class="max-w-3xl mx-auto px-4">
-        <h2 class="font-display text-3xl font-semibold text-base-content mb-6">
+    <section class="bg-base-200/50 border-t border-base-300 py-14 lg:py-20">
+      <div class="mx-auto max-w-4xl px-4">
+        <h2 class="font-display text-3xl md:text-4xl font-bold mb-2">
           Frequently asked questions
         </h2>
+        <p class="text-base-content/70 mb-8">
+          Everything builders ask before they enrol.
+        </p>
         <FaqAccordion faqs={faqs} />
       </div>
     </section>
   )}
+
+  <CtaBanner
+    title="Get your Statement of Attainment in your inbox."
+    description={`Self-paced. Nationally recognised. Delivered by ${course.data.deliveryRto.name} (RTO ${course.data.deliveryRto.rtoCode}) and accepted by ${jurisdiction.data.regulator.name}.`}
+    ctaLabel={`Enrol now — $${course.data.price}`}
+    ctaHref={course.data.enrolUrl}
+  />
+
+  <TrustFooter course={course} jurisdiction={jurisdiction} />
+
+  <StickyEnrolBar course={course} />
 </CourseLayout>

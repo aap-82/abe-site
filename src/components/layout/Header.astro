@@ -1,31 +1,78 @@
 ---
-// Site header — DaisyUI navbar with native <details>-based mobile menu.
-// Zero JavaScript shipped. Mobile menu opens/closes via the browser's
-// built-in <details>/<summary> behaviour.
+// Site header — DaisyUI navbar with multi-tier <details>-based dropdowns.
+// Both desktop dropdowns AND mobile menu use native <details>/<summary>,
+// so zero JavaScript ships per build spec section 3.3 / standing rule.
 
-interface NavLink {
+interface SubLink {
   href: string;
   label: string;
+  active?: boolean;
 }
 
-const links: NavLink[] = [
-  { href: '/compare/owner-builder/', label: 'Owner Builder' },
-  { href: '/courses/nsw-owner-builder-course/', label: 'NSW Owner Builder' },
-];
+interface Category {
+  label: string;
+  links: SubLink[];
+}
 
 const currentPath = Astro.url.pathname;
-const isActive = (href: string) => currentPath === href || currentPath === href.replace(/\/$/, '');
+const isActive = (href: string) =>
+  currentPath === href || currentPath === href.replace(/\/$/, '');
+
+// Categories shown in desktop nav. State pages live under /courses/<slug>/
+// today — we surface the live ones plus stubs for states still to come,
+// disabled (no href) so they don't 404. Once Phase F adds state pages,
+// these become real links.
+const categories: Category[] = [
+  {
+    label: 'White Card',
+    links: [
+      { href: '#', label: 'QLD White Card' },
+      { href: '#', label: 'WA White Card' },
+      { href: '#', label: 'TAS White Card' },
+      { href: '#', label: 'ACT White Card' },
+    ],
+  },
+  {
+    label: 'Owner Builder',
+    links: [
+      {
+        href: '/courses/nsw-owner-builder-course/',
+        label: 'NSW Owner Builder',
+        active: isActive('/courses/nsw-owner-builder-course/'),
+      },
+      { href: '#', label: 'QLD Owner Builder' },
+      { href: '#', label: 'WA Owner Builder' },
+      { href: '#', label: 'TAS Owner Builder' },
+      { href: '#', label: 'ACT Owner Builder' },
+      { href: '/compare/owner-builder/', label: 'Compare states', active: isActive('/compare/owner-builder/') },
+    ],
+  },
+  {
+    label: 'CPD Courses',
+    links: [
+      { href: '#', label: 'NSW CPD' },
+      { href: '#', label: 'TAS CPD' },
+      { href: '#', label: 'WA CPD' },
+    ],
+  },
+];
+
+// Flat list for mobile menu
+const mobileLinks: SubLink[] = categories.flatMap((c) => [
+  { href: '', label: c.label },
+  ...c.links,
+]);
 ---
 
-<header class="border-b border-base-300 bg-base-100">
-  <div class="navbar mx-auto max-w-6xl px-4">
+<header class="border-b border-base-300 bg-base-100 sticky top-0 z-30">
+  <div class="navbar mx-auto max-w-7xl px-4">
 
     {/* Brand + mobile menu trigger */}
-    <div class="navbar-start gap-2">
+    <div class="navbar-start gap-1">
 
       {/* Mobile menu — DaisyUI dropdown driven by native <details>, no JS */}
       <details class="dropdown lg:hidden">
-        <summary class="btn btn-ghost btn-square" aria-label="Toggle navigation menu">
+        <summary class="btn btn-ghost btn-sm" aria-label="Toggle navigation menu">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5"
@@ -37,36 +84,60 @@ const isActive = (href: string) => currentPath === href || currentPath === href.
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </summary>
-        <ul class="dropdown-content menu bg-base-100 rounded-box z-30 mt-2 w-56 p-2 shadow border border-base-300">
-          {links.map((link) => (
-            <li>
-              <a href={link.href} class={isActive(link.href) ? 'active' : ''}>
-                {link.label}
-              </a>
-            </li>
-          ))}
+        <ul class="menu dropdown-content mt-2 z-50 p-2 shadow bg-base-100 rounded-box w-64 border border-base-300">
+          {mobileLinks.map((link) =>
+            link.href === '' ? (
+              <li class="menu-title">
+                <span>{link.label}</span>
+              </li>
+            ) : link.href === '#' ? (
+              <li class="opacity-50"><span>{link.label}</span></li>
+            ) : (
+              <li>
+                <a href={link.href} class={link.active ? 'active' : ''}>{link.label}</a>
+              </li>
+            )
+          )}
+          <li class="menu-title"><span>About</span></li>
+          <li><a href="/" class={isActive('/') ? 'active' : ''}>Home</a></li>
         </ul>
       </details>
 
-      <a href="/" class="font-display text-xl font-semibold text-base-content hover:text-primary">
+      <a href="/" class="font-display text-xl font-bold text-primary px-2 hover:opacity-80 transition-opacity">
         ABE Education
       </a>
     </div>
 
-    {/* Desktop nav */}
-    <div class="navbar-end hidden lg:flex">
-      <ul class="menu menu-horizontal gap-1 px-1">
-        {links.map((link) => (
+    {/* Desktop nav — center column with category dropdowns */}
+    <div class="navbar-center hidden lg:flex">
+      <ul class="menu menu-horizontal px-1 gap-1">
+        {categories.map((cat) => (
           <li>
-            <a
-              href={link.href}
-              class={isActive(link.href) ? 'active font-medium' : ''}
-            >
-              {link.label}
-            </a>
+            <details>
+              <summary class="font-medium">{cat.label}</summary>
+              <ul class="bg-base-100 z-50 w-56 p-2 shadow border border-base-300 rounded-box">
+                {cat.links.map((link) =>
+                  link.href === '#' ? (
+                    <li class="opacity-50"><span>{link.label}</span></li>
+                  ) : (
+                    <li>
+                      <a href={link.href} class={link.active ? 'font-semibold text-primary' : ''}>
+                        {link.label}
+                      </a>
+                    </li>
+                  )
+                )}
+              </ul>
+            </details>
           </li>
         ))}
       </ul>
+    </div>
+
+    {/* Right side — secondary CTAs */}
+    <div class="navbar-end gap-2">
+      <a class="btn btn-ghost btn-sm hidden md:inline-flex" href="#">Contact</a>
+      <a class="btn btn-outline btn-sm" href="#">Student Login</a>
     </div>
   </div>
 </header>
