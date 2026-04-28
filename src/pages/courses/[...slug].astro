@@ -3,6 +3,11 @@ import { getCollection, getEntry, render } from 'astro:content';
 import CourseLayout from '@/layouts/CourseLayout.astro';
 import BreadcrumbsBar from '@/components/layout/BreadcrumbsBar.astro';
 import HeroCourse from '@/components/blocks/HeroCourse.astro';
+import HowItWorksSteps from '@/components/blocks/HowItWorksSteps.astro';
+import UnitsTable from '@/components/blocks/UnitsTable.astro';
+import PricingCard from '@/components/blocks/PricingCard.astro';
+import WhyAbe from '@/components/blocks/WhyAbe.astro';
+import WhoDelivers from '@/components/blocks/WhoDelivers.astro';
 import CtaBanner from '@/components/blocks/CtaBanner.astro';
 import TrustFooter from '@/components/blocks/TrustFooter.astro';
 import StickyEnrolBar from '@/components/layout/StickyEnrolBar.astro';
@@ -88,12 +93,19 @@ const breadcrumbItems = [
 
   <HeroCourse course={course} jurisdiction={jurisdiction} reviewer={reviewer} />
 
+  {/* Section 1 + Section 4 narrative live in the markdown body */}
   <article id="course-details" class="prose max-w-3xl mx-auto px-4 py-14 lg:py-20">
     <Content />
   </article>
 
+  <HowItWorksSteps />
+
+  <UnitsTable course={course} jurisdiction={jurisdiction} />
+
+  <PricingCard course={course} jurisdiction={jurisdiction} />
+
   {faqs.length > 0 && (
-    <section class="bg-base-200/50 border-t border-base-300 py-14 lg:py-20">
+    <section id="section-6" class="bg-base-200/50 border-t border-base-300 py-14 lg:py-20">
       <div class="mx-auto max-w-4xl px-4">
         <h2 class="font-display text-3xl md:text-4xl font-bold mb-2">
           Frequently asked questions
@@ -105,6 +117,10 @@ const breadcrumbItems = [
       </div>
     </section>
   )}
+
+  <WhyAbe course={course} jurisdiction={jurisdiction} />
+
+  <WhoDelivers course={course} />
 
   <CtaBanner
     title="Get your Statement of Attainment in your inbox."

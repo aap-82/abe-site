@@ -1,0 +1,104 @@
+---
+// PricingCard — Section 5 prominent pricing block matching the mockup.
+// Driven by course frontmatter (price, currency, deliveryRto).
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+  jurisdiction: CollectionEntry<'jurisdictions'>;
+}
+
+const { course, jurisdiction } = Astro.props;
+const c = course.data;
+const j = jurisdiction.data;
+
+const formattedPrice = new Intl.NumberFormat('en-AU', {
+  style: 'currency',
+  currency: c.priceCurrency,
+  maximumFractionDigits: 0,
+}).format(c.price);
+
+// Per-jurisdiction permit fee link — falls back to a generic note if the
+// jurisdiction doesn't surface one.
+const permitFeeNote = j.regulator.url
+  ? { label: 'See current fees', href: j.regulator.url }
+  : null;
+---
+
+<section id="section-5" class="py-14 lg:py-20">
+  <div class="mx-auto max-w-4xl px-4">
+    <h2 class="font-display text-3xl md:text-4xl font-bold mb-8">How much does the course cost?</h2>
+
+    <div class="card bg-base-100 border-2 border-primary/20 shadow-lg">
+      <div class="card-body p-8">
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div>
+            <p class="text-xs uppercase tracking-widest text-primary/70 font-semibold mb-1">
+              ABE Education course fee
+            </p>
+            <p class="font-display text-5xl font-bold text-primary">{formattedPrice}</p>
+            <p class="text-sm text-base-content/70 mt-1">
+              Includes training, assessment &amp; Statement of Attainment
+            </p>
+          </div>
+          <a
+            href={c.enrolUrl}
+            class="btn btn-primary btn-lg whitespace-nowrap"
+            data-cta="pricing-card-enrol"
+            data-course={c.slug}
+          >
+            Enrol Now <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <div class="divider my-2"></div>
+
+        <table class="table table-sm">
+          <tbody>
+            <tr>
+              <td class="text-sm">ABE Education course fee</td>
+              <td class="text-right font-semibold">{formattedPrice}</td>
+            </tr>
+            <tr>
+              <td class="text-sm">{c.deliveryRto.name} {c.credentialAwarded ?? 'certification'}</td>
+              <td class="text-right text-success font-medium">Included</td>
+            </tr>
+            <tr>
+              <td class="text-sm">{j.regulator.name} permit fee</td>
+              <td class="text-right text-sm">
+                {permitFeeNote ? (
+                  <a href={permitFeeNote.href} class="link link-primary">{permitFeeNote.label}</a>
+                ) : (
+                  <span class="text-base-content/70">Set by regulator</span>
+                )}
+              </td>
+            </tr>
+            {j.whiteCard && (
+              <tr>
+                <td class="text-sm">White Card (if you don't have one)</td>
+                <td class="text-right text-sm text-base-content/70">
+                  Separate — book through {j.whiteCard.issuingAuthority}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
+        <div class="alert bg-base-200 mt-3 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-base-content/60 shrink-0" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <p class="text-base-content/80">
+            <strong>Note:</strong> The course fee covers training and assessment
+            for the {c.units?.length ?? c.unitCodes?.length ?? 'required'}
+            unit{(c.units?.length ?? c.unitCodes?.length ?? 0) === 1 ? '' : 's'}.
+            The permit fee is paid separately when you submit your application.
+            Fees are reviewed periodically by {j.regulator.name}.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

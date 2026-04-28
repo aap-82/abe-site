@@ -1,0 +1,68 @@
+---
+// UnitsTable — renders the units of competency table on a course page.
+// Driven by course.data.units (richer per-unit metadata: code + plain
+// English title + superseded versions accepted).
+//
+// Falls back to course.data.unitCodes if `units` isn't populated yet —
+// renders code-only rows.
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+  jurisdiction: CollectionEntry<'jurisdictions'>;
+}
+
+const { course, jurisdiction } = Astro.props;
+const c = course.data;
+const j = jurisdiction.data;
+
+// Prefer rich `units` if present; otherwise synthesize bare rows from `unitCodes`
+const rows = c.units ?? (c.unitCodes ?? []).map((code) => ({ code, title: '', superseded: undefined as string | undefined }));
+---
+
+{rows.length > 0 && (
+  <section id="section-3" class="py-14 lg:py-20">
+    <div class="mx-auto max-w-5xl px-4">
+      <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">What will you learn?</h2>
+      <p class="text-base-content/80 mb-8 max-w-3xl">
+        {rows.length} nationally recognised
+        unit{rows.length === 1 ? '' : 's'} of competency, exactly as listed by
+        {j.regulator.name}:
+      </p>
+
+      <div class="overflow-x-auto rounded-box border border-base-300 bg-base-100 shadow-sm">
+        <table class="table table-zebra">
+          <thead class="bg-base-200">
+            <tr>
+              <th class="font-display">Unit code</th>
+              <th class="font-display">Unit title</th>
+              <th class="font-display">Superseded versions accepted</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr>
+                <td>
+                  <code class="bg-base-200 px-2 py-1 rounded text-sm font-mono text-primary">{row.code}</code>
+                </td>
+                <td>{row.title || <span class="text-base-content/50 italic">—</span>}</td>
+                <td class="text-xs text-base-content/60 font-mono">
+                  {row.superseded ?? <span class="text-base-content/30">—</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-8 text-base-content/90 leading-relaxed">
+        You'll come out of the course knowing how to <strong>read building plans</strong>,
+        <strong>estimate labour and materials</strong>,
+        <strong>plan and sequence the build</strong>,
+        <strong>communicate with tradies and certifiers</strong>, and
+        <strong>stay safe on a construction site</strong>.
+      </p>
+    </div>
+  </section>
+)}

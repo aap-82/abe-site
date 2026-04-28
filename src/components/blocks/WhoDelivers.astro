@@ -1,0 +1,230 @@
+---
+// WhoDelivers — Section 8 / ASQA Loc 7. Two-card role separation matching
+// the v0.3 mockup. Driven by course.deliveryRto + RTO_PARTNERS lookup
+// (src/lib/rto-partners.ts) for partner-specific policy URLs.
+
+import type { CollectionEntry } from 'astro:content';
+import { RTO_PARTNERS, ABE_ENROLMENT_PARTNER } from '@/lib/rto-partners';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+}
+
+const { course } = Astro.props;
+const c = course.data;
+
+const rto = RTO_PARTNERS[c.deliveryRto.name];
+const rtoLegalName = rto?.legalName ?? `${c.deliveryRto.name} Pty Ltd`;
+const rtoBadges = rto?.badges ?? [
+  `RTO ${c.deliveryRto.rtoCode}`,
+  'ASQA Regulated',
+  'Standards for RTOs 2025',
+];
+const rtoProvides = rto?.provides ?? [
+  'Course materials & training delivery',
+  'Assessment & assessor sign-off',
+  'Statement of Attainment',
+  'Student support for course questions',
+];
+const rtoNationalRegister = rto?.nationalRegisterUrl ??
+  `https://training.gov.au/Organisation/Details/${c.deliveryRto.rtoCode}`;
+
+const abe = ABE_ENROLMENT_PARTNER;
+---
+
+<section id="content-review" class="py-14 lg:py-20 bg-gradient-to-b from-base-200/50 to-base-100">
+  <div class="mx-auto max-w-5xl px-4">
+    <h2 class="font-display text-3xl md:text-4xl font-bold mb-6">Who delivers this course?</h2>
+
+    <div class="alert bg-primary/5 border border-primary/20 mb-8">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-primary shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <p class="text-base-content">
+        <strong class="font-display">
+          {rtoLegalName} (RTO {c.deliveryRto.rtoCode}) delivers this course end-to-end.
+        </strong>
+        Course materials, the online learning portal, assessment, your
+        {c.credentialAwarded ?? 'Statement of Attainment'}, and student support
+        are all provided by {c.deliveryRto.name}. ABE Education's role is
+        limited to marketing the course and processing your enrolment — once
+        enrolled, you log into {c.deliveryRto.name}'s portal to complete your
+        training.
+      </p>
+    </div>
+
+    <p class="text-base-content/85 mb-10 max-w-3xl">
+      When you enrol through ABE, you receive a login to {c.deliveryRto.name}'s
+      secure learning portal. From that point forward, {c.deliveryRto.name} is
+      your training provider: their course materials, their assessment, their
+      Statement of Attainment, their student support team. For any question
+      about course content, your progress, or the assessment, contact
+      {c.deliveryRto.name} directly. ABE is your contact only for enrolment,
+      payment, and account access issues.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-5">
+
+      {/* RTO partner card — primary (md:col-span-2) */}
+      <div class="card bg-base-100 border-2 border-primary/30 shadow-md md:col-span-2">
+        <div class="card-body p-6">
+
+          <div class="flex items-start gap-4 mb-4">
+            <div class="avatar avatar-placeholder">
+              <div class="w-16 rounded-lg bg-primary/10 text-primary ring ring-primary/30 ring-offset-base-100 ring-offset-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21V7l9-4 9 4v14M9 21V12h6v9M3 21h18" />
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs uppercase tracking-wider text-primary/70 font-semibold mb-0.5">
+                Course Delivery Partner
+              </p>
+              <h3 class="font-display text-xl font-bold leading-tight">{rtoLegalName}</h3>
+              <p class="text-sm text-base-content/70">Registered Training Organisation</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            {rtoBadges.map((badge) => (
+              <span class="badge badge-outline badge-sm">{badge}</span>
+            ))}
+          </div>
+
+          <p class="text-xs uppercase tracking-wider text-base-content/60 font-semibold mb-2">
+            {c.deliveryRto.name} provides:
+          </p>
+          <ul class="space-y-1.5 text-sm text-base-content/85 mb-4">
+            {rtoProvides.map((item) => (
+              <li class="flex gap-2">
+                <span class="text-primary mt-0.5" aria-hidden="true">✓</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+
+          {rto && (rto.studentHandbookUrl || rto.refundFormUrl || rto.complaintsFormUrl) && (
+            <>
+              <p class="text-xs uppercase tracking-wider text-base-content/60 font-semibold mb-2 mt-4">
+                {c.deliveryRto.name} policies &amp; documents:
+              </p>
+              <ul class="space-y-1.5 text-sm mb-4">
+                {rto.studentHandbookUrl && (
+                  <li>
+                    <a href={rto.studentHandbookUrl} target="_blank" rel="noopener" class="link link-primary inline-flex items-center gap-1.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                      </svg>
+                      Student Handbook
+                      <span class="text-xs text-base-content/60 font-normal">(PDF)</span>
+                    </a>
+                  </li>
+                )}
+                {rto.refundFormUrl && (
+                  <li>
+                    <a href={rto.refundFormUrl} target="_blank" rel="noopener" class="link link-primary inline-flex items-center gap-1.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                      </svg>
+                      Refund Policy &amp; Application Form
+                      <span class="text-xs text-base-content/60 font-normal">(PDF)</span>
+                    </a>
+                  </li>
+                )}
+                {rto.complaintsFormUrl && (
+                  <li>
+                    <a href={rto.complaintsFormUrl} target="_blank" rel="noopener" class="link link-primary inline-flex items-center gap-1.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                      </svg>
+                      Complaints &amp; Appeals Form
+                      <span class="text-xs text-base-content/60 font-normal">(DOC)</span>
+                    </a>
+                  </li>
+                )}
+              </ul>
+              {rto.rtoPoliciesUrl && (
+                <p class="text-xs text-base-content/60 leading-relaxed mb-4">
+                  Full refund and complaints &amp; appeals policies are
+                  documented in the Student Handbook.
+                  <a href={rto.rtoPoliciesUrl} target="_blank" rel="noopener" class="link link-primary not-italic">
+                    {' '}View all {c.deliveryRto.name} RTO documents →
+                  </a>
+                </p>
+              )}
+            </>
+          )}
+
+          <div class="divider my-2"></div>
+          <p class="text-xs text-base-content/60 italic">
+            RTO status verifiable on the national register at
+            <a href={rtoNationalRegister} class="link link-primary not-italic" target="_blank" rel="noopener">
+              {' '}training.gov.au using RTO Code {c.deliveryRto.rtoCode}
+            </a>.
+          </p>
+          {rto?.website && (
+            <a href={rto.website} class="btn btn-ghost btn-sm self-start mt-1 -ml-3" target="_blank" rel="noopener">
+              Visit {c.deliveryRto.name} →
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* ABE Education card — secondary */}
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body p-6">
+
+          <div class="flex items-start gap-3 mb-4">
+            <div class="avatar avatar-placeholder">
+              <div class="w-12 rounded-lg bg-secondary/15 text-secondary ring ring-secondary/30 ring-offset-base-100 ring-offset-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                </svg>
+              </div>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs uppercase tracking-wider text-secondary/80 font-semibold mb-0.5">
+                Enrolment Partner
+              </p>
+              <h3 class="font-display text-lg font-bold leading-tight">ABE Education</h3>
+              <p class="text-xs text-base-content/70">{abe.websiteLabel}</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            {abe.badges.map((badge) => (
+              <span class="badge badge-outline badge-sm">{badge}</span>
+            ))}
+          </div>
+
+          <p class="text-sm text-base-content/85 leading-relaxed mb-4">{abe.description}</p>
+
+          <div class="bg-base-200/70 rounded-lg p-3 mb-4">
+            <p class="text-xs uppercase tracking-wider text-base-content/60 font-semibold mb-2">
+              Contact ABE for:
+            </p>
+            <ul class="text-sm text-base-content/85 space-y-1 mb-3">
+              {abe.contactFor.map((item) => (
+                <li class="flex gap-2"><span class="text-secondary mt-0.5" aria-hidden="true">•</span><span>{item}</span></li>
+              ))}
+            </ul>
+            <p class="text-xs text-base-content/70 leading-relaxed">
+              <a href={`mailto:${abe.contactEmail}`} class="link link-primary">{abe.contactEmail}</a><br />
+              <a href={abe.contactPhoneLink} class="link link-primary">{abe.contactPhone}</a>
+            </p>
+          </div>
+
+          <p class="text-xs text-base-content/60 italic mt-auto">
+            For everything else (course content, your progress, the assessment,
+            your certificate), contact {c.deliveryRto.name}.
+          </p>
+
+          <div class="divider my-2"></div>
+          <p class="text-xs text-base-content/60 italic">{abe.legalName} &middot; ABN {abe.abn}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

@@ -139,6 +139,14 @@ const courses = defineCollection({
     credentialAwarded: z.string().optional(),
     courseCode: z.string().optional(),
     unitCodes: z.array(z.string()).optional(),
+    // Richer per-unit metadata (code + plain-English title + superseded
+    // versions accepted). Drives <UnitsTable>. Optional because not every
+    // course will have a units list (e.g. non-accredited CPD courses).
+    units: z.array(z.object({
+      code: z.string(),
+      title: z.string(),
+      superseded: z.string().optional()
+    })).optional(),
 
     faqRefs: z.array(reference('faqs')),
     relatedCourses: z.array(reference('courses')).optional(),

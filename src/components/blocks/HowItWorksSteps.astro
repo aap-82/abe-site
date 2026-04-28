@@ -1,0 +1,81 @@
+---
+// HowItWorksSteps — three-step explainer block matching the v0.3 mockup
+// Section 2. Owner Builder–specific copy: enrol → learn → assess.
+//
+// Could be parameterised per productLine in future; for now hardcoded
+// since every Owner Builder course follows the same flow.
+//
+// Zero JS shipped. Card hover-lift comes from global.css.
+---
+
+<section id="section-2" class="py-14 lg:py-20 bg-base-200/50 border-t border-base-300">
+  <div class="mx-auto max-w-5xl px-4">
+    <h2 class="font-display text-3xl md:text-4xl font-bold mb-8">How does the course work?</h2>
+
+    <div class="alert bg-primary/5 border border-primary/20 mb-10 text-base-content">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-primary shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <p>
+        Enrol online through ABE Education, complete five units of competency at
+        your own pace, then sit the assessment. Your RTO partner verifies your
+        work and issues your Statement of Attainment. You then take that
+        certificate to the regulator with your White Card and supporting
+        documents to apply for your Owner Builder Permit.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5">
+
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="font-display text-3xl font-bold text-primary">01</span>
+            <span class="badge badge-outline badge-sm">Enrol</span>
+          </div>
+          <h3 class="card-title font-display text-lg">Enrol online</h3>
+          <p class="text-sm text-base-content/80">
+            Sign up through ABE Education, set your password, and you'll get
+            straight access to the course. You'll need a Unique Student
+            Identifier (USI) to enrol — required for all nationally recognised
+            training. Free to create at
+            <a href="https://www.usi.gov.au" class="link link-primary">usi.gov.au</a>.
+          </p>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="font-display text-3xl font-bold text-primary">02</span>
+            <span class="badge badge-outline badge-sm">Learn</span>
+          </div>
+          <h3 class="card-title font-display text-lg">Work through five units</h3>
+          <p class="text-sm text-base-content/80">
+            The course is fully online and self-paced. Read the learner
+            materials, watch the supporting videos, and complete each unit in
+            order. Pause and pick up where you left off — your progress is
+            saved.
+          </p>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 border border-base-300 shadow-sm">
+        <div class="card-body p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="font-display text-3xl font-bold text-primary">03</span>
+            <span class="badge badge-outline badge-sm">Assess</span>
+          </div>
+          <h3 class="card-title font-display text-lg">Sit the assessment</h3>
+          <p class="text-sm text-base-content/80">
+            Each unit has a written assessment you complete inside the platform.
+            Once you've passed all five, your RTO reviews your work and issues
+            your Statement of Attainment — emailed to you and recorded against
+            your USI.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

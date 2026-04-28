@@ -1,0 +1,162 @@
+---
+// WhyAbe — Section 7 of the course page. Carries:
+//   - ASQA Loc 2 (verbatim approved partner-disclosure template)
+//   - HyperUI 6-tile features grid (verbatim pattern, ABE-coloured)
+//
+// Driven by course.deliveryRto so the disclosure stays in sync.
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+  jurisdiction: CollectionEntry<'jurisdictions'>;
+}
+
+const { course, jurisdiction } = Astro.props;
+const c = course.data;
+const j = jurisdiction.data;
+
+const productLineLabel =
+  c.productLine === 'owner-builder'
+    ? 'Owner Builder'
+    : c.productLine === 'white-card'
+      ? 'White Card'
+      : 'CPD';
+---
+
+<section id="section-7" class="py-14 lg:py-20">
+  <div class="mx-auto max-w-5xl px-4">
+    <h2 class="font-display text-3xl md:text-4xl font-bold mb-4">
+      Why choose ABE Education for your {j.code} {productLineLabel} training?
+    </h2>
+    <p class="text-base-content/80 max-w-3xl mb-8">
+      ABE Education has trained more than 31,000 students across owner builder
+      and CPD courses since 2007. We partner with established RTOs to deliver
+      nationally recognised training, and we run the online platform, content,
+      and student support that make the course straightforward to finish.
+    </p>
+
+    {/* ASQA Loc 2 — verbatim approved template */}
+    <div class="alert bg-base-200 text-sm leading-relaxed mb-10">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 stroke-primary shrink-0 hidden md:block" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+      <p class="text-base-content/90">
+        <em>
+          ABE Education recruits and markets training on behalf of
+          <strong>{c.deliveryRto.name} Pty Ltd</strong>
+          (RTO {c.deliveryRto.rtoCode}). {c.deliveryRto.name} Pty Ltd is the
+          Registered Training Organisation responsible for delivering this
+          qualification and issuing certification. All training and assessment
+          is conducted in accordance with the Standards for Registered Training
+          Organisations 2025. {c.deliveryRto.name} Pty Ltd can be verified on
+          the national register at
+          <a
+            href={`https://training.gov.au/Organisation/Details/${c.deliveryRto.rtoCode}`}
+            class="link link-primary"
+          >training.gov.au using RTO Code {c.deliveryRto.rtoCode}</a>.
+        </em>
+      </p>
+    </div>
+
+    {/* HyperUI 6-tile features grid — verbatim pattern, ABE-coloured */}
+    <div class="mt-8">
+      <h3 class="font-display text-3xl/tight font-bold text-base-content sm:text-4xl">
+        What you get with this course
+      </h3>
+      <p class="mt-4 text-lg text-pretty text-base-content/75 max-w-3xl">
+        Built for {j.code} homeowners who want a course they can finish in a
+        sitting and a Statement of Attainment that {j.regulator.name} will
+        accept the first time.
+      </p>
+
+      <div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
+
+        <div class="rounded-lg border border-base-300 p-6">
+          <div class="inline-flex rounded-lg bg-base-200 p-3 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
+          <h4 class="mt-4 font-display text-lg font-semibold text-base-content">Online &amp; self-paced</h4>
+          <p class="mt-2 text-pretty text-base-content/75">
+            Start today, finish on your schedule — most students complete in {c.duration}.
+          </p>
+        </div>
+
+        <div class="rounded-lg border border-base-300 p-6">
+          <div class="inline-flex rounded-lg bg-base-200 p-3 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+            </svg>
+          </div>
+          <h4 class="mt-4 font-display text-lg font-semibold text-base-content">Certificate issued straight away</h4>
+          <p class="mt-2 text-pretty text-base-content/75">
+            {c.credentialAwarded ?? 'Statement of Attainment'} emailed within
+            minutes of completing the assessment — submit your permit
+            application the same day.
+          </p>
+        </div>
+
+        <div class="rounded-lg border border-base-300 p-6">
+          <div class="inline-flex rounded-lg bg-base-200 p-3 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
+            </svg>
+          </div>
+          <h4 class="mt-4 font-display text-lg font-semibold text-base-content">RTO-delivered assessment</h4>
+          <p class="mt-2 text-pretty text-base-content/75">
+            {c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode}) verifies your
+            work and issues the certificate.
+          </p>
+        </div>
+
+        <div class="rounded-lg border border-base-300 p-6">
+          <div class="inline-flex rounded-lg bg-base-200 p-3 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+            </svg>
+          </div>
+          <h4 class="mt-4 font-display text-lg font-semibold text-base-content">Trusted by 31,000+ students</h4>
+          <p class="mt-2 text-pretty text-base-content/75">
+            Australian-owned since 2007 — serving owner builders and trade
+            professionals across NSW, ACT, QLD, TAS and WA.
+          </p>
+        </div>
+
+        <div class="rounded-lg border border-base-300 p-6">
+          <div class="inline-flex rounded-lg bg-base-200 p-3 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+            </svg>
+          </div>
+          <h4 class="mt-4 font-display text-lg font-semibold text-base-content">Meets {j.regulator.name} requirements</h4>
+          <p class="mt-2 text-pretty text-base-content/75">
+            Covers the {c.units?.length ?? c.unitCodes?.length ?? 'required'}
+            unit{(c.units?.length ?? c.unitCodes?.length ?? 0) === 1 ? '' : 's'}
+            of competency required by {j.regulator.name} for an Owner Builder Permit.
+          </p>
+        </div>
+
+        <div class="rounded-lg border border-base-300 p-6">
+          <div class="inline-flex rounded-lg bg-base-200 p-3 text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+            </svg>
+          </div>
+          <h4 class="mt-4 font-display text-lg font-semibold text-base-content">Independent compliance review</h4>
+          <p class="mt-2 text-pretty text-base-content/75">
+            Every page checked for legislative currency by Warwick Smith.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <p class="text-sm text-base-content/70 mt-8">
+      By enrolling through ABE Education, you agree to ABE's
+      <a href="/terms" class="link link-primary font-medium">Terms &amp; Conditions</a>
+      and {c.deliveryRto.name}'s training policies, which are provided at enrolment.
+    </p>
+  </div>
+</section>
