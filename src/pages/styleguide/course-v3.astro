@@ -309,7 +309,12 @@ const unitOutcomes: Record<string, string> = {
             (residential building work, NSW).
           </p>
           <p>
-            <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+            {/* "Verified" eyebrow in Success green (#059669 — brand-
+                reserved for "confirmations / Eligible badges" per the
+                Grey Design System v1.1 palette). The label IS the
+                confirmation; the body text below it stays in regular
+                reading colour. */}
+            <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-success mb-1">
               Verified
             </span>
             <a
@@ -383,7 +388,11 @@ const unitOutcomes: Record<string, string> = {
             <ul class="border-t border-base-300">
               {c.eligibility.excluded.map((item: string) => (
                 <li class="border-b border-base-300 py-4 grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-3 items-baseline">
-                  <span class="font-mono text-base text-base-content/55 leading-none" aria-hidden="true">✕</span>
+                  {/* ✕ in Error red (#dc2626 — brand-reserved for the
+                      "prohibited / Excluded states" semantic per the
+                      Grey Design System v1.1 palette). Single tactical
+                      colour pop in the page's monochrome scheme. */}
+                  <span class="font-mono text-base text-error leading-none" aria-hidden="true">✕</span>
                   <span class="text-base lg:text-[1.0625rem] text-base-content/85">{item}</span>
                 </li>
               ))}
