@@ -231,19 +231,27 @@ const antiPatterns = [
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {palette.map((c) => (
           <article class="border border-base-300 rounded-box overflow-hidden bg-base-100">
+            {/* The colour itself fills the top of the card, role + name + hex
+                + token overlaid in the colour's contrast text colour. */}
             <div
-              class="h-24 flex items-end p-4"
+              class="h-44 p-6 flex flex-col justify-between"
               style={`background:${c.hex};color:${c.text}`}
             >
-              <span class="font-mono text-xs">{c.hex}</span>
+              <header>
+                <p class="text-[11px] uppercase tracking-[0.18em] opacity-75 mb-1.5">
+                  {c.role}
+                </p>
+                <h3 class="font-display text-xl font-semibold leading-tight">
+                  {c.name}
+                </h3>
+              </header>
+              <div class="font-mono text-xs leading-relaxed">
+                <p>{c.hex}</p>
+                <p class="opacity-75 mt-0.5">{c.token}</p>
+              </div>
             </div>
             <div class="p-4">
-              <p class="text-xs uppercase tracking-wider text-base-content/50 mb-1">
-                {c.role}
-              </p>
-              <h3 class="font-display text-base font-semibold">{c.name}</h3>
-              <p class="font-mono text-xs text-base-content/60 mt-1">{c.token}</p>
-              <p class="text-sm text-base-content/75 mt-3 leading-relaxed">{c.use}</p>
+              <p class="text-sm text-base-content/80 leading-relaxed">{c.use}</p>
             </div>
           </article>
         ))}
