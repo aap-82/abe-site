@@ -3,6 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import { ABE_AUTHORITY } from '@/lib/abe-authority';
 import FaqAccordion from '@/components/content/FaqAccordion.astro';
 import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import AnswerCapsule from '@/components/content/AnswerCapsule.astro';
 import { getCollection } from 'astro:content';
 
 // Pull a couple of real FAQs so the accordion section reads like the
@@ -662,12 +663,6 @@ const antiPatterns = [
       <div class="mb-12">
         <h3 class="font-display text-lg font-semibold mb-4">Alerts</h3>
         <div class="space-y-3 max-w-3xl">
-          <div class="alert bg-primary/5 border border-primary/20 text-base-content">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-primary shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p>Answer-capsule alert — primary tinted. Used for the answer paragraph in regulator-handbook sections.</p>
-          </div>
           <div class="alert bg-accent/10 border border-accent/30 text-base-content">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-accent shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -675,6 +670,45 @@ const antiPatterns = [
             <p><strong>Exemption alert</strong> — accent (Steel Pale) tinted. Used for "you may be exempt" messaging on requirement sections.</p>
           </div>
         </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Note: the previous "primary tinted alert with info icon" answer
+          capsule was retired in favour of the dedicated
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">AnswerCapsule</code>
+          component below — uncontainered, type-driven, with optional source
+          citation.
+        </p>
+      </div>
+
+      {/* ─── Answer capsule ─────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Answer capsule</h3>
+
+        <div class="space-y-12 lg:space-y-16">
+          {/* Variant 1: with source citation — full editorial composition */}
+          <AnswerCapsule
+            text="The NSW Owner Builder Course is the approved education you must complete before applying for an Owner Builder Permit when residential building work on your home is valued at $20,000 or more. It covers the five nationally recognised units of competency set by Building Commission NSW. You finish online and receive a Statement of Attainment."
+            source={{
+              name: 'Building Commission NSW',
+              url: 'https://www.nsw.gov.au/housing-and-construction/building-or-renovating-a-home/owner-builder/when-a-permit-needed',
+              date: '2026-04-28',
+            }}
+          />
+
+          {/* Variant 2: without source — minimal mode, custom eyebrow */}
+          <AnswerCapsule
+            eyebrow="In short"
+            text="Most students complete the course in 8 to 12 hours of study, spread over a few days or weeks. The course is self-paced — finish in one sitting or stretch it over a month. There's no minimum or maximum time."
+          />
+        </div>
+
+        <p class="mt-8 text-sm text-base-content/70 max-w-prose">
+          Wraps with <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">data-answer-capsule</code>
+          so AI Overview parsers (Google AI Overviews, ChatGPT, Perplexity)
+          can identify the canonical answer without positional heuristics.
+          Pair with FAQPage or Course JSON-LD for full coverage. The
+          eyebrow defaults to "The short version" but can be overridden
+          per-section ("In short", "Quick answer", "TL;DR" etc).
+        </p>
       </div>
 
       {/* ─── Progress ─────────────────────────────── */}

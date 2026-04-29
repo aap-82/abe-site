@@ -1,0 +1,105 @@
+---
+/**
+ * AnswerCapsule — the page's canonical answer paragraph.
+ *
+ * Used wherever a page (or section) needs to surface "the short version" —
+ * the single quotable statement that AI Overviews and feature snippets
+ * tend to pull. Marked with `data-answer-capsule` so AI parsers can find
+ * it without relying on positional heuristics.
+ *
+ * Composition (per .impeccable.md, Reassuring · Australian · Practical):
+ *
+ *   THE SHORT VERSION                              ← mono eyebrow
+ *
+ *   The answer paragraph, set in DM Sans 500       ← body, weighted but not
+ *   at xl/2xl, leading 1.55. Larger and heavier      a heading. The TYPE is
+ *   than surrounding body — the type IS the          the container.
+ *   container, no card or alert tint required.
+ *
+ *   ─────────────────────                          ← hairline rule
+ *   Verified against {Source} on {Date}.           ← mono citation
+ *
+ * Anti-slop discipline:
+ *   - No alert / callout tint
+ *   - No info icon
+ *   - No side-stripe border (banned absolutely)
+ *   - No gradient text (banned absolutely)
+ *   - No card / drop shadow
+ *   - Heritage Maroon used in ZERO places by default (the citation
+ *     link picks up Maroon on hover only)
+ *
+ * The component is uncontainered on purpose. If you wrap it in a card,
+ * you're undoing its design — the whole point is that the prose itself
+ * carries the weight.
+ */
+
+interface Source {
+  /** Display name of the source — e.g. "Building Commission NSW". */
+  name: string;
+  /** Optional URL for the source — renders the name as a dotted-underline link. */
+  url?: string;
+  /** ISO date string (YYYY-MM-DD) when the answer was last verified against this source. */
+  date: string;
+}
+
+interface Props {
+  /** The canonical answer paragraph. 40–60 words is the sweet spot for AI Overview extraction. */
+  text: string;
+  /** Eyebrow override; defaults to "The short version". */
+  eyebrow?: string;
+  /** Optional source citation rendered as a hairline-rule + mono line below the body. */
+  source?: Source;
+  /** Outer wrapper additional classes (for spacing or width overrides). */
+  class?: string;
+}
+
+const {
+  text,
+  eyebrow = 'The short version',
+  source,
+  class: cls = '',
+} = Astro.props;
+
+const formattedDate = source
+  ? new Intl.DateTimeFormat('en-AU', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date(source.date))
+  : null;
+---
+
+<div data-answer-capsule class:list={['max-w-prose', cls]}>
+
+  {/* Eyebrow — small mono label, regulator-handbook gravitas */}
+  <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
+    {eyebrow}
+  </p>
+
+  {/* The answer itself — DM Sans 500 at xl/2xl, leading 1.55. The TYPE
+      is the container; no card, no tint, no border. */}
+  <p class="text-xl lg:text-2xl leading-[1.55] font-medium text-base-content">
+    {text}
+  </p>
+
+  {/* Optional source citation: hairline rule + mono "Verified against ..." */}
+  {source && (
+    <div class="mt-7 lg:mt-9 pt-4 border-t border-base-300 max-w-md">
+      <p class="font-mono text-xs leading-relaxed text-base-content/55">
+        Verified against{' '}
+        {source.url ? (
+          <a
+            href={source.url}
+            class="text-base-content/85 underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors"
+            rel="noopener"
+          >
+            {source.name}
+          </a>
+        ) : (
+          <span class="text-base-content/85">{source.name}</span>
+        )}
+        {' '}on {formattedDate}.
+      </p>
+    </div>
+  )}
+</div>
