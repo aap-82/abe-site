@@ -205,8 +205,25 @@ p {
 .hero-anim-fade-up {
   opacity: 0;
   animation: hero-fade-up 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  /* animation-delay set per-element via inline style */
+  /* animation-delay set via .hero-d-NNN utility classes below.
+     Inline `style="animation-delay: ..."` would be cleaner but
+     Astro's strict CSP omits 'unsafe-hashes' from style-src, so
+     inline style attributes are silently dropped on first render.
+     The class-based approach compiles into the bundled CSS that
+     style-src 'self' permits. */
 }
+
+/* Animation-delay utility classes for the hero typeset entrance.
+   Values match the choreography in course-v3.astro. */
+.hero-d-100 { animation-delay: 100ms; }
+.hero-d-150 { animation-delay: 150ms; }
+.hero-d-250 { animation-delay: 250ms; }
+.hero-d-320 { animation-delay: 320ms; }
+.hero-d-390 { animation-delay: 390ms; }
+.hero-d-460 { animation-delay: 460ms; }
+.hero-d-500 { animation-delay: 500ms; }
+.hero-d-600 { animation-delay: 600ms; }
+.hero-d-700 { animation-delay: 700ms; }
 
 .hero-anim-hairline {
   transform: scaleX(0);
