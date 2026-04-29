@@ -168,7 +168,7 @@ const unitOutcomes: Record<string, string> = {
        reviewer dateline lives in the breadcrumb bar above, not here.
      ───────────────────────────────────────────────────────────────── */}
   <header class="border-b border-base-300">
-    <div class="mx-auto max-w-6xl px-4 pt-10 lg:pt-14 pb-10 lg:pb-14">
+    <div class="mx-auto max-w-6xl px-4 pt-12 lg:pt-20 pb-10 lg:pb-14">
 
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-12 lg:gap-x-16 items-start">
 
@@ -273,7 +273,13 @@ const unitOutcomes: Record<string, string> = {
        the verified-source citation hairlined below. No card.
      ───────────────────────────────────────────────────────────────── */}
   <section id="section-short" class="bg-base-200/60 border-b border-base-300">
-    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+    {/* Vertical rhythm note — § 02 carries more breathing room than the
+        adjacent sections (py-16 lg:py-24 vs the page's standard
+        py-14 lg:py-20). This is the canonical answer block, the
+        section AI Overviews are most likely to cite, and the place
+        the page's voice lands first. The extra padding makes it read
+        as a primary peak in the vertical rhythm. */}
+    <div class="mx-auto max-w-6xl px-4 py-16 lg:py-24">
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
 
         <div>
@@ -531,7 +537,12 @@ const unitOutcomes: Record<string, string> = {
        The single CTA is a maroon button. Nothing else competes.
      ───────────────────────────────────────────────────────────────── */}
   <section id="section-cost" class="bg-base-200/60 border-b border-base-300">
-    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+    {/* Vertical rhythm note — § 06 also runs py-16 lg:py-24, matching
+        § 02. The decision moment (price + CTA) deserves the same
+        breathing as the canonical answer. Together § 02 and § 06 form
+        the page's two visual peaks; the rest sits on the standard
+        py-14 lg:py-20 baseline. */}
+    <div class="mx-auto max-w-6xl px-4 py-16 lg:py-24">
 
       <header class="mb-8 lg:mb-10">
         <div>
