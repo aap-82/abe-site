@@ -857,6 +857,19 @@ const antiPatterns = [
             eyebrow="In short"
             text="Most students complete the course in 8 to 12 hours of study, spread over a few days or weeks. The course is self-paced — finish in one sitting or stretch it over a month. There's no minimum or maximum time."
           />
+
+          {/* Variant 3: subtle — bg-base-200 block, no eyebrow, no borders.
+              Useful inside a section that already has a heading, where the
+              editorial composition would compete with surrounding chrome. */}
+          <AnswerCapsule
+            variant="subtle"
+            text="The $20,000 threshold is the construction value at which a permit becomes mandatory in NSW. Any residential building work on your own home valued at $10,000 or more, however, requires you to be the holder of an Owner Builder Permit if you intend to act as the builder yourself."
+            source={{
+              name: 'Home Building Act 1989 (NSW), s. 31',
+              url: 'https://legislation.nsw.gov.au/view/html/inforce/current/act-1989-147',
+              date: '2026-04-28',
+            }}
+          />
         </div>
 
         <p class="mt-8 text-sm text-base-content/70 max-w-prose">
@@ -865,7 +878,12 @@ const antiPatterns = [
           can identify the canonical answer without positional heuristics.
           Pair with FAQPage or Course JSON-LD for full coverage. The
           eyebrow defaults to "The short version" but can be overridden
-          per-section ("In short", "Quick answer", "TL;DR" etc).
+          per-section ("In short", "Quick answer", "TL;DR" etc). The
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">subtle</code>
+          variant drops the eyebrow and sets the answer on a Cool Off-White
+          (<code class="font-mono text-xs">bg-base-200</code>) block — no
+          borders, no hairline rule — when the surrounding section already
+          provides framing.
         </p>
       </div>
 
