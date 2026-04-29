@@ -72,10 +72,10 @@ const steps = [
         because it appears in only one place on the v1 page. */}
     {eyebrow ? (
       <header class="mb-8 lg:mb-10">
-        <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+        <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-secondary mb-2">
           {eyebrow}
         </p>
-        <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+        <h2 class="font-display text-3xl lg:text-[2.875rem] font-semibold tracking-tight lg:tracking-[-0.03em] lg:leading-[1.05] text-base-content">
           How does the course work?
         </h2>
       </header>
@@ -85,7 +85,7 @@ const steps = [
           class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
           aria-hidden="true"
         >§</span>
-        <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+        <h2 class="font-display text-3xl lg:text-[2.875rem] font-semibold tracking-tight lg:tracking-[-0.03em] lg:leading-[1.05] text-base-content">
           How does the course work?
         </h2>
       </header>
@@ -98,20 +98,30 @@ const steps = [
         marginalia tracks. */}
     <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16 mb-16 lg:mb-24 lg:items-end">
 
-      <p class="text-lg lg:text-xl leading-relaxed text-base-content max-w-prose">
-        Enrol online through ABE Education, complete five units of competency
-        at your own pace, then sit the assessment. {c.deliveryRto.name} verifies
-        your work and issues your Statement of Attainment. You then take that
-        certificate to Service NSW with your White Card and supporting
-        documents to apply for your Owner Builder Permit.
+      {/* Body Text Pairing — primary action sentence in charcoal/600,
+          supporting clause in slate/400. */}
+      <p class="text-lg leading-relaxed max-w-prose">
+        <span class="text-base-content font-semibold">
+          Enrol online through ABE Education, complete five units of
+          competency at your own pace, then sit the assessment.
+        </span>{' '}
+        <span class="text-[#4a4a4a] font-normal">
+          {c.deliveryRto.name} verifies your work and issues your
+          Statement of Attainment. You then take that certificate to
+          Service NSW with your White Card and supporting documents
+          to apply for your Owner Builder Permit.
+        </span>
       </p>
 
       <aside class="lg:border-l lg:border-base-300 lg:pl-8">
-        <p class="text-[11px] uppercase tracking-[0.22em] font-mono text-base-content/55 mb-3">
+        <p class="text-[11px] uppercase tracking-[0.22em] font-mono text-secondary mb-3">
           At a glance
         </p>
-        <p class="font-display text-2xl lg:text-3xl font-semibold leading-tight text-base-content">
-          <span class="text-primary">Five units.</span><br />
+        {/* Callout — three-line stack at 28px on lg, charcoal throughout
+            (per ABE Grey v1.1, the maroon accent on "Five units." was
+            off-system; Heritage Maroon stays load-bearing on the CTA). */}
+        <p class="font-display text-2xl lg:text-[1.75rem] font-semibold leading-[1.12] tracking-tight lg:tracking-[-0.025em] text-base-content">
+          <span>Five units.</span><br />
           About a day.<br />
           Fully online.
         </p>
@@ -130,7 +140,7 @@ const steps = [
 
           {/* numeral column */}
           <div class="flex lg:flex-col items-baseline lg:items-start gap-3 lg:gap-2 mb-4 lg:mb-0">
-            <span class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 leading-none">
+            <span class="font-mono text-[10px] uppercase tracking-[0.22em] text-secondary leading-none">
               Step
             </span>
             <span class="font-display text-5xl lg:text-6xl font-semibold text-primary leading-none tabular-nums lining-nums">
@@ -143,7 +153,7 @@ const steps = [
             <h3 class="font-display text-xl lg:text-2xl font-semibold leading-tight text-base-content">
               {step.title}
             </h3>
-            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55 lg:text-right whitespace-nowrap">
+            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-secondary lg:text-right whitespace-nowrap">
               {step.meta}
             </p>
             <p

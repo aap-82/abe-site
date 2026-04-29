@@ -52,10 +52,14 @@
   --noise:                   0;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+@layer base {
+  /* Heading defaults — wrapped in @layer base so Tailwind utility
+     classes (tracking-*, font-*, etc.) can override per-element. */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
 }
 
 /* Display headings get balanced wrapping so two-line H1/H2 don't end on a
