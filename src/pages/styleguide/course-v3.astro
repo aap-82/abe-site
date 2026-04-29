@@ -94,6 +94,14 @@ const inclusions = [
   'Email and phone support from the partner RTO during business hours.',
 ];
 
+// H1 split into words so each one can stagger-reveal on first paint
+// (Direction A of the hero overdrive). Word-level rather than character-
+// level: at the H1 size, character splitting reads as gimmicky; words
+// preserve the editorial cadence. Spaces stay outside the spans so the
+// title still wraps naturally on mobile.
+const heroTitle = c.h1.replace(/ — .*$/, '');
+const heroTitleWords = heroTitle.split(' ');
+
 // Plain-English outcome for each unit of competency. Keyed on the unit
 // code so the lookup is independent of array order in frontmatter. The
 // outcome answers "what will I actually be able to do?" in handbook
@@ -120,19 +128,52 @@ const unitOutcomes: Record<string, string> = {
 >
 
   {/* ─────────────────────────────────────────────────────────────────
+       HERO OVERDRIVE — STICKY TOP FACT BAR (Direction B).
+       Hidden until the user scrolls past the masthead, then slides
+       down via animation-timeline: scroll(). Carries the regulator-
+       handbook reference card (price + course + Enrol) into the rest
+       of the page so the decision data stays one click away. Pure CSS
+       animation keyed off scroll position — no JS shipped. Falls back
+       to permanently-hidden in browsers without scroll-driven anims;
+       the existing bottom bar covers that case. Desktop only — mobile
+       keeps the sticky bottom bar pattern unchanged.
+     ───────────────────────────────────────────────────────────────── */}
+  <aside class="hero-top-fact-bar bg-base-100/95 backdrop-blur-sm border-b border-base-300 hidden lg:block" aria-hidden="true">
+    <div class="mx-auto max-w-6xl px-4 h-12 flex items-center justify-between gap-6">
+      <div class="flex items-baseline gap-5 min-w-0">
+        <span class="font-display text-xl font-semibold text-base-content leading-none tabular-nums">
+          {formattedPrice}
+        </span>
+        <span class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 truncate">
+          NSW Owner Builder · Approved by Building Commission&nbsp;NSW
+        </span>
+      </div>
+      <a
+        href={c.enrolUrl}
+        tabindex="-1"
+        class="btn btn-primary btn-sm font-semibold whitespace-nowrap"
+      >
+        Enrol now — {formattedPrice}
+      </a>
+    </div>
+  </aside>
+
+  {/* ─────────────────────────────────────────────────────────────────
        BREADCRUMB BAR — navigation on the left, freshness signal on the
-       right. Replaces the old "running head" eyebrow that sat inside
-       the masthead. Per page-type-engine §4: › separator (U+203A),
+       right. Per page-type-engine §4: › separator (U+203A),
        <nav aria-label="Breadcrumb">, current page non-clickable with
        aria-current. The currency-reviewer line on the right is the
-       AI-Overview / E-E-A-T freshness signal — name links to the
-       on-page #section-authorship anchor, date is the reviewer's last
-       check.
+       AI-Overview / E-E-A-T freshness signal.
+
+       Direction A overdrive: the hairline at the bottom of this bar
+       draws scaleX 0 → 1 on first paint, like an underline being
+       printed. The breadcrumb ol and reviewer line fade up in
+       sequence after it.
      ───────────────────────────────────────────────────────────────── */}
-  <nav id="top" aria-label="Breadcrumb" class="border-b border-base-300/70 bg-base-100">
+  <nav id="top" aria-label="Breadcrumb" class="relative bg-base-100">
     <div class="mx-auto max-w-6xl px-4 py-3 lg:py-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
 
-      <ol class="flex flex-wrap items-baseline gap-x-2 gap-y-1 font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55">
+      <ol class="hero-anim-fade-up flex flex-wrap items-baseline gap-x-2 gap-y-1 font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55" style="animation-delay: 100ms">
         <li><a href="/" class="hover:text-primary transition-colors">Home</a></li>
         <li aria-hidden="true" class="text-base-content/30">›</li>
         <li><a href="/compare/owner-builder/" class="hover:text-primary transition-colors">Owner Builder Training</a></li>
@@ -140,7 +181,7 @@ const unitOutcomes: Record<string, string> = {
         <li aria-current="page" class="text-base-content">NSW Owner Builder</li>
       </ol>
 
-      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55">
+      <p class="hero-anim-fade-up font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55" style="animation-delay: 150ms">
         Currency reviewed by{' '}
         <a
           href="#section-authorship"
@@ -150,6 +191,9 @@ const unitOutcomes: Record<string, string> = {
       </p>
 
     </div>
+    {/* Animated hairline — replaces the static border-b so it can
+        scaleX-draw on first paint per the typeset entrance. */}
+    <div class="hero-anim-hairline absolute bottom-0 left-0 right-0 h-px bg-base-300/70" aria-hidden="true"></div>
   </nav>
 
   {/* ─────────────────────────────────────────────────────────────────
@@ -167,23 +211,40 @@ const unitOutcomes: Record<string, string> = {
        panel + CTA, which matches the natural decision sequence. The
        reviewer dateline lives in the breadcrumb bar above, not here.
      ───────────────────────────────────────────────────────────────── */}
-  <header class="border-b border-base-300">
+  <header class="hero-masthead border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 pt-12 lg:pt-20 pb-10 lg:pb-14">
 
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-12 lg:gap-x-16 items-start">
 
         {/* ── Left column: title + lede + applies-to ──────────────── */}
         <div>
+          {/* H1 split into word spans for the typeset entrance (Direction
+              A). Each word fades up with a 60ms stagger; spaces stay
+              outside the spans so the title still wraps on mobile. */}
           <h1 class="font-display text-[2.5rem] sm:text-5xl lg:text-[3.75rem] leading-[1.05] tracking-tight font-semibold text-base-content max-w-[18ch]">
-            {c.h1.replace(/ — .*$/, '')}
+            {heroTitleWords.map((word, i) => (
+              <>
+                <span
+                  class="hero-anim-fade-up inline-block"
+                  style={`animation-delay: ${250 + i * 70}ms`}
+                >{word}</span>
+                {i < heroTitleWords.length - 1 && ' '}
+              </>
+            ))}
           </h1>
 
-          <p class="mt-5 lg:mt-7 max-w-[55ch] text-lg lg:text-xl leading-relaxed text-base-content/85">
+          <p class="hero-anim-fade-up mt-5 lg:mt-7 max-w-[55ch] text-lg lg:text-xl leading-relaxed text-base-content/85" style="animation-delay: 500ms">
             The approved education you must complete before applying for an
             Owner Builder Permit when residential work on your home is valued
-            at <strong class="font-semibold text-base-content">$20,000 or more</strong>.
-            Five nationally recognised units, delivered online by{' '}
-            {c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode}).
+            at{' '}
+            <strong
+              data-fact="price"
+              tabindex="0"
+              class="font-semibold text-base-content"
+            >$20,000 or more</strong>.{' '}
+            <span data-fact="units" tabindex="0">Five nationally recognised units</span>,
+            delivered online by{' '}
+            <span data-fact="rto" tabindex="0">{c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode})</span>.
           </p>
 
           {/* Applies-to / Not-for — confirms eligibility above the fold.
@@ -191,7 +252,7 @@ const unitOutcomes: Record<string, string> = {
               icons, no ✓/✕ — that lives in § 04. This is the at-a-glance
               filter that sends the wrong audience away early. */}
           {c.eligibility && (
-            <dl class="mt-8 lg:mt-10 max-w-[55ch] grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-5 gap-y-3 text-base lg:text-[1.0625rem] leading-relaxed">
+            <dl class="hero-anim-fade-up mt-8 lg:mt-10 max-w-[55ch] grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-5 gap-y-3 text-base lg:text-[1.0625rem] leading-relaxed" style="animation-delay: 600ms">
               <dt class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.45rem] leading-none">
                 Applies to
               </dt>
@@ -212,13 +273,17 @@ const unitOutcomes: Record<string, string> = {
             Hairline left border on desktop, no border on mobile. This is
             the single-glance specification card a regulator handbook
             would put in the inside cover: price, format, RTO, button.
-            No card chrome — the hairline and the type carry it. */}
-        <aside class="lg:pt-2 lg:border-l lg:border-base-300 lg:pl-10">
+            No card chrome — the hairline and the type carry it.
+
+            data-fact-target attributes connect specific rows to the
+            prose phrases above so :has() can link them on hover/focus. */}
+        <aside class="hero-anim-fade-up lg:pt-2 lg:border-l lg:border-base-300 lg:pl-10" style="animation-delay: 700ms">
 
           <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
             At a glance
           </p>
 
+          <p data-fact-target="price" class="font-display text-5xl lg:text-6xl font-semibold text-base-content leading-none tracking-tight tabular-nums">
           <p class="font-display text-5xl lg:text-6xl font-semibold text-base-content leading-none tracking-tight tabular-nums lining-nums">
             {formattedPrice}
           </p>
@@ -237,18 +302,18 @@ const unitOutcomes: Record<string, string> = {
             </dt>
             <dd class="text-base-content">Fully online • self-paced</dd>
 
-            <dt class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.2rem]">
+            <dt data-fact-target="rto" class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.2rem]">
               Issued by
             </dt>
-            <dd class="text-base-content">
+            <dd data-fact-target="rto" class="text-base-content">
               {c.deliveryRto.name}<br />
               <span class="font-mono text-xs text-base-content/65">RTO {c.deliveryRto.rtoCode}</span>
             </dd>
 
-            <dt class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.2rem]">
+            <dt data-fact-target="units" class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.2rem]">
               You receive
             </dt>
-            <dd class="text-base-content">{c.credentialAwarded}</dd>
+            <dd data-fact-target="units" class="text-base-content">{c.credentialAwarded}</dd>
           </dl>
 
           <a
@@ -948,7 +1013,7 @@ const unitOutcomes: Record<string, string> = {
        maroon CTA. Hidden on screens narrower than the body column so
        small phones aren't double-CTA'd above the keyboard.
      ───────────────────────────────────────────────────────────────── */}
-  <div class="sticky bottom-0 z-40 hidden md:block bg-base-200/95 backdrop-blur-sm border-t border-base-300">
+  <div class="hero-bottom-bar-coordinated sticky bottom-0 z-40 hidden md:block bg-base-200/95 backdrop-blur-sm border-t border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-6">
       <div class="flex items-baseline gap-5 min-w-0">
         <span class="font-display text-2xl font-semibold text-base-content leading-none">
