@@ -7,30 +7,42 @@
  * tend to pull. Marked with `data-answer-capsule` so AI parsers can find
  * it without relying on positional heuristics.
  *
- * Composition (per .impeccable.md, Reassuring · Australian · Practical):
+ * TWO VARIANTS
+ * ────────────
  *
+ * variant="editorial" (default)
  *   THE SHORT VERSION                              ← mono eyebrow
  *
- *   The answer paragraph, set in DM Sans 500       ← body, weighted but not
- *   at xl/2xl, leading 1.55. Larger and heavier      a heading. The TYPE is
- *   than surrounding body — the type IS the          the container.
- *   container, no card or alert tint required.
+ *   The answer paragraph, set in DM Sans 500       ← body, the TYPE is
+ *   at xl/2xl. Larger and weightier than             the container; no
+ *   surrounding body — the type IS the container.    card, tint, or border.
  *
  *   ─────────────────────                          ← hairline rule
  *   Verified against {Source} on {Date}.           ← mono citation
  *
- * Anti-slop discipline:
- *   - No alert / callout tint
+ * variant="subtle"
+ *   ┌─────────────────────────────────────────┐
+ *   │                                          │
+ *   │  The answer paragraph, set in DM Sans   │   ← Cool Off-White
+ *   │  500 at xl/2xl. Same body treatment       (bg-base-200) block,
+ *   │  as editorial.                            │   no border, no shadow.
+ *   │                                          │
+ *   │  Verified against {Source} on {Date}.   │   ← citation, separated
+ *   │                                          │     by space alone (no
+ *   └─────────────────────────────────────────┘     hairline rule).
+ *
+ *   No eyebrow. The bg tint quietly signals "this is set apart".
+ *   Useful inside a section that already has a heading, or when
+ *   the editorial composition would compete with surrounding chrome.
+ *
+ * Anti-slop discipline (both variants):
+ *   - No alert / callout tint (success/warning/error semantics)
  *   - No info icon
  *   - No side-stripe border (banned absolutely)
  *   - No gradient text (banned absolutely)
- *   - No card / drop shadow
+ *   - No drop shadow, no glow
  *   - Heritage Maroon used in ZERO places by default (the citation
  *     link picks up Maroon on hover only)
- *
- * The component is uncontainered on purpose. If you wrap it in a card,
- * you're undoing its design — the whole point is that the prose itself
- * carries the weight.
  */
 
 interface Source {
@@ -45,10 +57,16 @@ interface Source {
 interface Props {
   /** The canonical answer paragraph. 40–60 words is the sweet spot for AI Overview extraction. */
   text: string;
-  /** Eyebrow override; defaults to "The short version". */
+  /** Eyebrow override; defaults to "The short version". Ignored when variant="subtle". */
   eyebrow?: string;
-  /** Optional source citation rendered as a hairline-rule + mono line below the body. */
+  /** Optional source citation rendered below the body. */
   source?: Source;
+  /**
+   * Visual treatment.
+   *   - "editorial" (default): uncontainered. Eyebrow + body + hairline-rule citation.
+   *   - "subtle": bg-base-200 block. No eyebrow, no hairline. Just body + spaced citation.
+   */
+  variant?: 'editorial' | 'subtle';
   /** Outer wrapper additional classes (for spacing or width overrides). */
   class?: string;
 }
@@ -57,8 +75,19 @@ const {
   text,
   eyebrow = 'The short version',
   source,
+  variant = 'editorial',
   class: cls = '',
 } = Astro.props;
+
+const isSubtle = variant === 'subtle';
+
+const wrapperClasses = isSubtle
+  ? ['bg-base-200 rounded-box p-6 lg:p-8 max-w-prose', cls]
+  : ['max-w-prose', cls];
+
+const sourceWrapperClasses = isSubtle
+  ? 'mt-6'
+  : 'mt-7 lg:mt-9 pt-4 border-t border-base-300 max-w-md';
 
 const formattedDate = source
   ? new Intl.DateTimeFormat('en-AU', {
@@ -69,22 +98,24 @@ const formattedDate = source
   : null;
 ---
 
-<div data-answer-capsule class:list={['max-w-prose', cls]}>
+<div data-answer-capsule class:list={wrapperClasses}>
 
-  {/* Eyebrow — small mono label, regulator-handbook gravitas */}
-  <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
-    {eyebrow}
-  </p>
+  {/* Eyebrow — editorial variant only */}
+  {!isSubtle && (
+    <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
+      {eyebrow}
+    </p>
+  )}
 
-  {/* The answer itself — DM Sans 500 at xl/2xl, leading 1.55. The TYPE
-      is the container; no card, no tint, no border. */}
+  {/* The answer itself — same type treatment in both variants. */}
   <p class="text-xl lg:text-2xl leading-[1.55] font-medium text-base-content">
     {text}
   </p>
 
-  {/* Optional source citation: hairline rule + mono "Verified against ..." */}
+  {/* Optional source citation. Editorial: hairline + max-w-md.
+      Subtle: just spaced below, no rule. */}
   {source && (
-    <div class="mt-7 lg:mt-9 pt-4 border-t border-base-300 max-w-md">
+    <div class:list={sourceWrapperClasses}>
       <p class="font-mono text-xs leading-relaxed text-base-content/55">
         Verified against{' '}
         {source.url ? (
