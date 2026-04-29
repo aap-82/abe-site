@@ -142,11 +142,14 @@ const inclusions = [
             The approved education you must complete before applying for an
             Owner Builder Permit when residential work on your home is valued
             at <strong class="font-semibold text-base-content">$20,000 or more</strong>.
-            Five nationally recognised units, delivered online by
-            {c.deliveryRto.name} ({' '}RTO {c.deliveryRto.rtoCode}{' '}).
+            Five nationally recognised units, delivered online by{' '}
+            {c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode}).
           </p>
 
-          {/* Dateline — like a journal byline */}
+          {/* Dateline — like a journal byline. Authority-signal links use a
+              solid underline (not dotted) so they declare themselves as the
+              primary trust handle above the fold. Source-citation links in
+              marginalia stay dotted (footnote-style). */}
           <div class="mt-7 lg:mt-9 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm text-base-content/70">
             <span class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
               Reviewed
@@ -155,7 +158,7 @@ const inclusions = [
               {formattedReviewDate} by{' '}
               <a
                 href={r.profileUrl}
-                class="text-base-content underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors"
+                class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors"
               >{r.name}</a>,{' '}
               {r.title}.
             </span>
@@ -208,9 +211,9 @@ const inclusions = [
             <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
               See also
             </span>
-            <a href="#section-units" class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors">§ 05 Units of competency</a>
+            <a href="#section-units" class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors">§ 05 Units of competency</a>
             ·{' '}
-            <a href="#section-cost" class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors">§ 06 Cost</a>
+            <a href="#section-cost" class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors">§ 06 Cost</a>
           </p>
         </aside>
 
@@ -220,10 +223,10 @@ const inclusions = [
 
   {/* ─────────────────────────────────────────────────────────────────
        § 03 — How does the course work?
-       Reuses the existing HowItWorksEditorial block — handbook procedure
-       rows already match the v3 voice exactly.
+       Reuses HowItWorksEditorial. The numbered eyebrow keeps § 03 in
+       the same running-head pattern as § 02 / § 04 / § 05 etc.
      ───────────────────────────────────────────────────────────────── */}
-  <HowItWorksEditorial course={course} />
+  <HowItWorksEditorial course={course} eyebrow="03 · How it works" />
 
   {/* ─────────────────────────────────────────────────────────────────
        § 04 — Who this course covers.
@@ -490,7 +493,7 @@ const inclusions = [
             <h3 class="font-display text-2xl lg:text-3xl font-semibold text-base-content tracking-tight">
               <a
                 href={dev.profileUrl}
-                class="underline decoration-dotted decoration-base-300 underline-offset-[6px] hover:text-primary hover:decoration-primary transition-colors"
+                class="underline underline-offset-[6px] decoration-base-content/30 hover:text-primary hover:decoration-primary transition-colors"
               >{dev.name}</a>
             </h3>
             <p class="mt-2 text-base-content/75 text-base leading-relaxed">
@@ -513,7 +516,7 @@ const inclusions = [
           <h3 class="font-display text-2xl lg:text-3xl font-semibold text-base-content tracking-tight">
             <a
               href={r.profileUrl}
-              class="underline decoration-dotted decoration-base-300 underline-offset-[6px] hover:text-primary hover:decoration-primary transition-colors"
+              class="underline underline-offset-[6px] decoration-base-content/30 hover:text-primary hover:decoration-primary transition-colors"
             >{r.name}</a>
           </h3>
           <p class="mt-2 text-base-content/75 text-base leading-relaxed">
@@ -609,19 +612,24 @@ const inclusions = [
   )}
 
   {/* ─────────────────────────────────────────────────────────────────
-       § 09 — Closing colophon + sticky footer enrol.
-       The colophon is set tight in mono, like the inside back cover of
-       a regulator handbook: page version, last review, partner RTO,
-       what this page is and what it isn't (the ABE non-RTO disclosure).
+       § 09 — Closing colophon.
+       Two columns: page edition + source on the left, partner RTO on the
+       right. The "ABE is not an RTO" disclosure is intentionally NOT
+       repeated here — BaseLayout's site-wide footer already runs that
+       statement underneath this section. Doubling it would break the
+       brief's "every word earns its place" rule.
+
+       Bottom padding sized to clear the sticky enrol bar (~60px) so the
+       last paragraph never sits behind it.
      ───────────────────────────────────────────────────────────────── */}
   <footer class="border-b border-base-300">
-    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+    <div class="mx-auto max-w-6xl px-4 pt-14 lg:pt-20 pb-24 lg:pb-28">
 
       <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-6">
         09 · Colophon
       </p>
 
-      <div class="grid lg:grid-cols-3 gap-y-8 lg:gap-x-16 max-w-5xl">
+      <div class="grid lg:grid-cols-2 gap-y-8 lg:gap-x-20 max-w-4xl">
 
         <div class="text-sm leading-relaxed text-base-content/75">
           <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
@@ -642,17 +650,6 @@ const inclusions = [
             (RTO {c.deliveryRto.rtoCode}). The {c.credentialAwarded} is issued
             by {c.deliveryRto.name} and recorded against your USI on the
             National Training Register.
-          </p>
-        </div>
-
-        <div class="text-sm leading-relaxed text-base-content/75">
-          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            ABE is not an RTO
-          </p>
-          <p>
-            ABE Education develops and curates the course content. We are not
-            a Registered Training Organisation; the Statement of Attainment
-            is issued by the partner RTO above, not by ABE.
           </p>
         </div>
 
