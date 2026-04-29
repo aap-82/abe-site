@@ -1,0 +1,618 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { ABE_AUTHORITY } from '@/lib/abe-authority';
+import FaqAccordion from '@/components/content/FaqAccordion.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+
+// Pull a couple of real FAQs so the accordion section reads like the
+// production rendering rather than a Lorem ipsum demo.
+const allFaqs = await getCollection('faqs');
+const sampleFaqs = allFaqs.slice(0, 3);
+
+// Palette swatches — single source of truth lives in src/styles/global.css
+// Grey Design System v1.1. This array mirrors what's in the CSS so the
+// styleguide stays in sync if the spec is updated.
+const palette = [
+  {
+    role: 'Primary',
+    name: 'Heritage Maroon',
+    hex: '#800000',
+    token: '--color-primary',
+    use: 'Primary CTAs, brand accents, active nav. The 10% in the 60-30-10 split. Reserved.',
+    text: '#ffffff',
+  },
+  {
+    role: 'Secondary',
+    name: 'Steel',
+    hex: '#4a5568',
+    token: '--color-secondary',
+    use: 'Secondary buttons, info callouts, tertiary text. Cooler than primary; use sparingly.',
+    text: '#ffffff',
+  },
+  {
+    role: 'Accent',
+    name: 'Steel Pale',
+    hex: '#e2e8f0',
+    token: '--color-accent',
+    use: 'Pill / badge backgrounds, low-emphasis surfaces, the understated highlight.',
+    text: '#1a1a1a',
+  },
+  {
+    role: 'Neutral',
+    name: 'Charcoal',
+    hex: '#1a1a1a',
+    token: '--color-neutral',
+    use: 'Body text, dark surfaces (footer disclosure band). Tinted dark — never pure black.',
+    text: '#ffffff',
+  },
+  {
+    role: 'Base 100',
+    name: 'White',
+    hex: '#ffffff',
+    token: '--color-base-100',
+    use: 'Page background. Tinted white per brand spec — never pure for body surfaces.',
+    text: '#1a1a1a',
+  },
+  {
+    role: 'Base 200',
+    name: 'Cool Off-White',
+    hex: '#f9fafb',
+    token: '--color-base-200',
+    use: 'Alternating section bands, subtle surface contrast.',
+    text: '#1a1a1a',
+  },
+  {
+    role: 'Base 300',
+    name: 'Cool Border',
+    hex: '#e5e7eb',
+    token: '--color-base-300',
+    use: 'Card borders, dividers, table rules.',
+    text: '#1a1a1a',
+  },
+  {
+    role: 'Success',
+    name: 'Success Green',
+    hex: '#059669',
+    token: '--color-success',
+    use: 'Confirmations, "Eligible" badges, verified status.',
+    text: '#ffffff',
+  },
+  {
+    role: 'Warning',
+    name: 'Warning Amber',
+    hex: '#d97706',
+    token: '--color-warning',
+    use: 'Exemption alerts, "review needed" states.',
+    text: '#ffffff',
+  },
+  {
+    role: 'Error',
+    name: 'Error Red',
+    hex: '#dc2626',
+    token: '--color-error',
+    use: 'Excluded states, prohibited claims, validation failures.',
+    text: '#ffffff',
+  },
+];
+
+// Spacing scale — 4pt base, semantic where DaisyUI surfaces it.
+const spacingScale = [
+  { token: 'space-1', px: 4 },
+  { token: 'space-2', px: 8 },
+  { token: 'space-3', px: 12 },
+  { token: 'space-4', px: 16 },
+  { token: 'space-6', px: 24 },
+  { token: 'space-8', px: 32 },
+  { token: 'space-12', px: 48 },
+  { token: 'space-16', px: 64 },
+  { token: 'space-24', px: 96 },
+];
+
+const principles = [
+  {
+    n: '01',
+    name: 'Confidence through correctness, not theatrics',
+    body: 'Every claim is dated and sourced. Verification notes inline. The build-time prohibitedClaims guard exists so visual emphasis never sneaks past the legal boundary. Visual flourish never comes at the expense of regulatory clarity.',
+  },
+  {
+    n: '02',
+    name: 'Heritage Maroon is rare and load-bearing',
+    body: 'The 10% in the 60-30-10 split. Reserve for primary CTAs, the brand wordmark, the active nav link. Never gradient. Never decorative. If it\'s used everywhere, it\'s used nowhere.',
+  },
+  {
+    n: '03',
+    name: 'Plain English at year-9 reading level',
+    body: 'Define jargon at first mention. "You\'ll need" over "applicants must". "The cost is $180" over "investment". Translate regulatory phrases into outcomes — show the unit code AND the plain-English skill.',
+  },
+  {
+    n: '04',
+    name: 'The page is a regulator handbook, not a product page',
+    body: 'Authority signals appear without ceremony at the natural moment they\'re useful. No floating trust badges. No "as featured in" logos. No animated stat counters. The reader should feel they could cite this page in a Service NSW form.',
+  },
+  {
+    n: '05',
+    name: 'Zero JavaScript by default; motion is restrained',
+    body: 'Native <details>/<summary> for accordions and mobile menus. CSS-only hovers and transitions. prefers-reduced-motion honoured strictly. Decoration is typographic and chromatic, not animated.',
+  },
+];
+
+const antiPatterns = [
+  'Maroon-to-cyan gradients on hero text',
+  'Floating maroon glow / pulse effect on the primary CTA',
+  'Stock-photo hard-hat illustrations as section dividers',
+  'Rounded-square icon tiles above every H2',
+  '"Last seat available!" or countdown timers under the price',
+  'Five-star carousels of fake-name testimonials',
+  'Coloured side-stripe borders on cards (banned absolutely)',
+  'Gradient text via background-clip: text (banned absolutely)',
+  'Centred-everything hero with three feature columns of equal width',
+  'Light/dark theme toggle in the header (this is light-only, intentionally)',
+];
+---
+
+<BaseLayout
+  title="Styleguide — ABE Education design system"
+  description="Internal reference for the ABE Education design system: palette, typography, components, and authority-model patterns."
+  noindex
+>
+
+  {/* ─── Title band ─────────────────────────────────────────────────── */}
+  <section class="border-b border-base-300 bg-base-100">
+    <div class="mx-auto max-w-6xl px-4 py-12 lg:py-16">
+      <p class="text-xs uppercase tracking-[0.2em] text-base-content/60 mb-4">
+        Internal · noindex
+      </p>
+      <h1 class="font-display text-4xl lg:text-6xl font-semibold tracking-tight text-base-content">
+        Styleguide
+      </h1>
+      <p class="mt-4 max-w-2xl text-lg text-base-content/80">
+        The ABE Education design system, documented. Brand voice is
+        <strong>Reassuring · Australian · Practical</strong>. Hex values are
+        locked from <a href="/" class="link link-primary">Grey Design System v1.1</a>.
+        Every example below is rendered with the actual production tokens and
+        components — no Lorem ipsum, no stand-in colours.
+      </p>
+
+      <nav class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <a href="#principles" class="link link-hover text-base-content/70 hover:text-primary">Principles</a>
+        <a href="#palette" class="link link-hover text-base-content/70 hover:text-primary">Palette</a>
+        <a href="#typography" class="link link-hover text-base-content/70 hover:text-primary">Typography</a>
+        <a href="#spacing" class="link link-hover text-base-content/70 hover:text-primary">Spacing</a>
+        <a href="#components" class="link link-hover text-base-content/70 hover:text-primary">Components</a>
+        <a href="#authority" class="link link-hover text-base-content/70 hover:text-primary">Authority signals</a>
+        <a href="#anti-patterns" class="link link-hover text-base-content/70 hover:text-primary">Anti-patterns</a>
+      </nav>
+    </div>
+  </section>
+
+  {/* ─── 01 Principles ──────────────────────────────────────────────── */}
+  <section id="principles" class="py-14 lg:py-20 bg-base-200/50 border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4">
+      <p class="font-mono text-xs text-base-content/50 mb-2">01</p>
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Five principles
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        Every UI decision should answer to these. They override stylistic
+        preference. Tension between principle and aesthetic is resolved
+        in favour of the principle.
+      </p>
+
+      <ol class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {principles.map((p) => (
+          <li class="border-t border-primary pt-4">
+            <p class="font-mono text-xs text-primary tracking-wider mb-2">
+              {p.n}
+            </p>
+            <h3 class="font-display text-lg font-semibold mb-2 leading-snug">
+              {p.name}
+            </h3>
+            <p class="text-sm text-base-content/75 leading-relaxed">{p.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {/* ─── 02 Palette ─────────────────────────────────────────────────── */}
+  <section id="palette" class="py-14 lg:py-20 border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4">
+      <p class="font-mono text-xs text-base-content/50 mb-2">02</p>
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Palette
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        Hex-locked from Grey Design System v1.1. Heritage Maroon is the
+        10% in the 60-30-10 split — reserved for CTAs and brand. Status
+        colours appear only in their semantic role.
+      </p>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {palette.map((c) => (
+          <article class="border border-base-300 rounded-box overflow-hidden bg-base-100">
+            <div
+              class="h-24 flex items-end p-4"
+              style={`background:${c.hex};color:${c.text}`}
+            >
+              <span class="font-mono text-xs">{c.hex}</span>
+            </div>
+            <div class="p-4">
+              <p class="text-xs uppercase tracking-wider text-base-content/50 mb-1">
+                {c.role}
+              </p>
+              <h3 class="font-display text-base font-semibold">{c.name}</h3>
+              <p class="font-mono text-xs text-base-content/60 mt-1">{c.token}</p>
+              <p class="text-sm text-base-content/75 mt-3 leading-relaxed">{c.use}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <p class="mt-8 text-sm text-base-content/60 max-w-3xl">
+        Heritage Maroon on white achieves <strong>8.8:1</strong> contrast —
+        comfortably above WCAG AAA for normal text. Charcoal on white is
+        <strong>17.8:1</strong>. Any future accent colour must be tested
+        before adoption.
+      </p>
+    </div>
+  </section>
+
+  {/* ─── 03 Typography ──────────────────────────────────────────────── */}
+  <section id="typography" class="py-14 lg:py-20 bg-base-200/50 border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4">
+      <p class="font-mono text-xs text-base-content/50 mb-2">03</p>
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Typography
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        Display in Archivo (semi-bold), body in DM Sans, code in DM Mono.
+        Self-hosted via the Astro 6 Fonts API — no third-party requests at
+        runtime, automatic preloads and fallback metrics.
+      </p>
+
+      {/* Heading scale */}
+      <div class="grid gap-8 lg:grid-cols-[1fr_2fr]">
+        <div>
+          <h3 class="font-display text-xl font-semibold mb-2">Display scale</h3>
+          <p class="text-sm text-base-content/70">
+            Archivo, used for H1–H6. Letter-spacing tight at large sizes
+            (-0.01em) to prevent the wordspace from looking loose. At least
+            1.25× steps between adjacent sizes for clear hierarchy.
+          </p>
+        </div>
+        <div class="space-y-6">
+          <div class="border-l border-base-300 pl-6">
+            <p class="font-mono text-xs text-base-content/50 mb-1">H1 · 4xl→5xl · 600</p>
+            <p class="font-display text-4xl lg:text-5xl font-semibold leading-tight tracking-tight">
+              The quick maroon fox
+            </p>
+          </div>
+          <div class="border-l border-base-300 pl-6">
+            <p class="font-mono text-xs text-base-content/50 mb-1">H2 · 3xl→4xl · 600</p>
+            <p class="font-display text-3xl lg:text-4xl font-semibold leading-tight tracking-tight">
+              The quick maroon fox
+            </p>
+          </div>
+          <div class="border-l border-base-300 pl-6">
+            <p class="font-mono text-xs text-base-content/50 mb-1">H3 · xl · 600</p>
+            <p class="font-display text-xl font-semibold leading-snug">The quick maroon fox</p>
+          </div>
+          <div class="border-l border-base-300 pl-6">
+            <p class="font-mono text-xs text-base-content/50 mb-1">H4 · lg · 600</p>
+            <p class="font-display text-lg font-semibold leading-snug">The quick maroon fox</p>
+          </div>
+          <div class="border-l border-base-300 pl-6">
+            <p class="font-mono text-xs text-base-content/50 mb-1">H5 · base · 600</p>
+            <p class="font-display text-base font-semibold leading-snug">The quick maroon fox</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Body and mono */}
+      <div class="grid gap-8 lg:grid-cols-[1fr_2fr] mt-16">
+        <div>
+          <h3 class="font-display text-xl font-semibold mb-2">Body & code</h3>
+          <p class="text-sm text-base-content/70">
+            DM Sans 400/500/600 for body. Default body sits at the larger end
+            of typical (~17px on desktop) for the older homeowner audience.
+            Line-length capped at ~65–75ch.
+          </p>
+        </div>
+        <div class="space-y-6">
+          <div class="border-l border-base-300 pl-6">
+            <p class="font-mono text-xs text-base-content/50 mb-1">Lead · lg</p>
+            <p class="text-lg leading-relaxed text-base-content/85 max-w-prose">
+              Permits cover single dwelling-houses, secondary dwellings (granny
+              flats), and dual occupancies in special circumstances.
+            </p>
+          </div>
+          <div class="border-l border-base-300 pl-6">
+            <p class="font-mono text-xs text-base-content/50 mb-1">Body · base</p>
+            <p class="text-base leading-relaxed max-w-prose">
+              Anyone undertaking residential building work in NSW valued over
+              $10,000 must hold an Owner Builder Permit. Permits are administered
+              by Building Commission NSW under the Home Building Act 1989.
+            </p>
+          </div>
+          <div class="border-l border-base-300 pl-6">
+            <p class="font-mono text-xs text-base-content/50 mb-1">Small · sm</p>
+            <p class="text-sm text-base-content/75 max-w-prose">
+              Permit ($10,000) and course ($20,000) thresholds verified against
+              Building Commission NSW on 28 April 2026.
+            </p>
+          </div>
+          <div class="border-l border-base-300 pl-6">
+            <p class="font-mono text-xs text-base-content/50 mb-1">Mono · DM Mono</p>
+            <p class="font-mono text-sm">
+              CPCCWHS2001 · CPCCOM2001 · CPCCCM1011
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ─── 04 Spacing ─────────────────────────────────────────────────── */}
+  <section id="spacing" class="py-14 lg:py-20 border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4">
+      <p class="font-mono text-xs text-base-content/50 mb-2">04</p>
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Spacing
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        4pt scale. Use <code class="font-mono text-sm bg-base-200 px-1.5 py-0.5 rounded">gap</code>
+        between siblings instead of margins. Vary spacing for hierarchy —
+        a heading with extra space above reads as more important.
+      </p>
+
+      <ul class="space-y-3">
+        {spacingScale.map((s) => (
+          <li class="grid grid-cols-[80px_120px_1fr] items-center gap-4 text-sm">
+            <span class="font-mono text-xs text-base-content/60">{s.token}</span>
+            <span class="font-mono text-xs text-base-content/60">{s.px}px</span>
+            <span class="bg-primary h-2 rounded" style={`width:${s.px}px`}></span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* ─── 05 Components ──────────────────────────────────────────────── */}
+  <section id="components" class="py-14 lg:py-20 bg-base-200/50 border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4">
+      <p class="font-mono text-xs text-base-content/50 mb-2">05</p>
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Components
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        DaisyUI v5 semantic classes only. Native HTML where possible
+        (<code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">&lt;details&gt;</code>
+        for accordions, no JS). Hierarchy through weight and size, not colour.
+      </p>
+
+      {/* Buttons */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Buttons</h3>
+        <div class="flex flex-wrap gap-3">
+          <a class="btn btn-primary">Primary</a>
+          <a class="btn btn-primary btn-lg">Primary Large</a>
+          <a class="btn btn-outline">Outline</a>
+          <a class="btn btn-ghost">Ghost</a>
+          <a class="btn btn-secondary">Secondary</a>
+          <a class="btn btn-disabled">Disabled</a>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Primary maroon is the only "buy / enrol" call. Outline is the
+          counterweight ("Learn more"). Ghost is for tertiary nav. Reserve
+          secondary Steel for non-conversion actions only.
+        </p>
+      </div>
+
+      {/* Badges */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Badges</h3>
+        <div class="flex flex-wrap gap-3">
+          <span class="badge badge-primary badge-lg">Primary</span>
+          <span class="badge badge-outline badge-lg">Outline</span>
+          <span class="badge badge-success badge-sm">Eligible</span>
+          <span class="badge badge-error badge-sm">Excluded</span>
+          <span class="badge badge-outline badge-sm">RTO 91826</span>
+          <span class="badge badge-outline badge-sm">ASQA Regulated</span>
+        </div>
+      </div>
+
+      {/* Alerts */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Alerts</h3>
+        <div class="space-y-3 max-w-3xl">
+          <div class="alert bg-primary/5 border border-primary/20 text-base-content">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-primary shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>Answer-capsule alert — primary tinted. Used for the answer paragraph in regulator-handbook sections.</p>
+          </div>
+          <div class="alert bg-accent/10 border border-accent/30 text-base-content">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-accent shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <p><strong>Exemption alert</strong> — accent (Steel Pale) tinted. Used for "you may be exempt" messaging on requirement sections.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Cards</h3>
+        <div class="grid gap-4 md:grid-cols-3">
+          <article class="card bg-base-100 border border-base-300">
+            <div class="card-body p-6">
+              <h4 class="card-title font-display text-base">Default card</h4>
+              <p class="text-sm text-base-content/75">
+                Cool Border, base 100 surface. The workhorse — used for
+                content groupings, comparison cells, profile blocks.
+              </p>
+            </div>
+          </article>
+          <article class="card bg-base-100 border-2 border-primary/30">
+            <div class="card-body p-6">
+              <h4 class="card-title font-display text-base">Emphasis card</h4>
+              <p class="text-sm text-base-content/75">
+                2px primary-tinted border. Reserved for the pricing block
+                and the course developer profile — never decorative.
+              </p>
+            </div>
+          </article>
+          <article class="card bg-base-200 border border-base-300">
+            <div class="card-body p-6">
+              <h4 class="card-title font-display text-base">Subtle card</h4>
+              <p class="text-sm text-base-content/75">
+                Cool Off-White surface. Quiet groupings inside a content
+                column where a Base 100 card would compete with the page.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      {/* Breadcrumbs */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Breadcrumbs</h3>
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Owner Builder Training', href: '/compare/owner-builder/' },
+            { label: 'NSW Owner Builder', href: null },
+          ]}
+        />
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          The current-page leaf renders as plain text (no anchor) — keeps
+          screen readers from announcing a clickable link to the page
+          you're already on.
+        </p>
+      </div>
+
+      {/* FAQ accordion (uses real component + real entries) */}
+      {sampleFaqs.length > 0 && (
+        <div class="mb-12">
+          <h3 class="font-display text-lg font-semibold mb-4">FAQ accordion</h3>
+          <div class="max-w-3xl">
+            <FaqAccordion faqs={sampleFaqs} />
+          </div>
+          <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+            Native <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">&lt;details&gt;</code>
+            element. Open/close behaviour comes from the browser — zero
+            JavaScript shipped. Pairs with FAQPage JSON-LD for AI Overviews.
+          </p>
+        </div>
+      )}
+
+      {/* Mini hero pattern */}
+      <div>
+        <h3 class="font-display text-lg font-semibold mb-4">Hero pattern (compact preview)</h3>
+        <div class="bg-base-200 rounded-box p-8 lg:p-12 border border-base-300">
+          <span class="badge badge-primary badge-lg mb-4">Meets Building Commission NSW requirements</span>
+          <p class="font-display text-3xl lg:text-4xl font-semibold leading-tight tracking-tight max-w-2xl">
+            NSW Owner Builder Course
+            <span class="block text-primary mt-1">Online &amp; Nationally Recognised</span>
+          </p>
+          <p class="mt-4 max-w-xl text-base text-base-content/80">
+            Complete the five units of competency required by Building Commission NSW for an Owner Builder Permit.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a class="btn btn-primary btn-lg">Enrol now — $180</a>
+            <a class="btn btn-ghost btn-lg">How it works</a>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Real hero (in <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">HeroCourse.astro</code>)
+          adds the breadcrumb bar, sticky pricing card, reviewer trust signal,
+          and structured Course / BreadcrumbList / Person JSON-LD.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* ─── 06 Authority signals ───────────────────────────────────────── */}
+  <section id="authority" class="py-14 lg:py-20 border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4">
+      <p class="font-mono text-xs text-base-content/50 mb-2">06</p>
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Authority signals
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        Load-bearing legal/regulatory commitments — these are not aesthetic
+        choices. ABE Education is <strong>not</strong> an RTO. Anything that
+        implies otherwise is a compliance failure caught by the build-time
+        guard in <code class="font-mono text-xs bg-base-200 px-1 py-0.5 rounded">[...slug].astro</code>.
+      </p>
+
+      <div class="grid gap-8 lg:grid-cols-2">
+        <div>
+          <h3 class="font-display text-lg font-semibold mb-3">Prohibited claims</h3>
+          <p class="text-sm text-base-content/75 mb-4">
+            Single source of truth in
+            <code class="font-mono text-xs bg-base-200 px-1 py-0.5 rounded">src/lib/abe-authority.ts</code>.
+            The build fails if any course's metaDescription contains one.
+          </p>
+          <ul class="space-y-2 text-sm font-mono">
+            {ABE_AUTHORITY.prohibitedClaims.map((claim) => (
+              <li class="flex gap-2">
+                <span class="text-error" aria-hidden="true">✗</span>
+                <span>"{claim}"</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="font-display text-lg font-semibold mb-3">Sample disclosure</h3>
+          <p class="text-sm text-base-content/75 mb-4">
+            Generated from
+            <code class="font-mono text-xs bg-base-200 px-1 py-0.5 rounded">ABE_AUTHORITY.deliveryRtoDisclosure(name, code)</code>.
+            Required on every accredited course page.
+          </p>
+          <blockquote class="text-sm leading-relaxed text-base-content/85 bg-base-200 p-4 rounded-box border border-base-300 italic">
+            "{ABE_AUTHORITY.deliveryRtoDisclosure('AlertForce', '91826')}"
+          </blockquote>
+          <p class="mt-4 text-xs text-base-content/60">
+            The footer band uses <code class="font-mono">ABE_AUTHORITY.asqaDisclosure</code> as
+            its sitewide non-RTO disclosure (renders on every page via
+            <code class="font-mono">Footer.astro</code>).
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ─── 07 Anti-patterns ───────────────────────────────────────────── */}
+  <section id="anti-patterns" class="py-14 lg:py-20 bg-base-200/50">
+    <div class="mx-auto max-w-6xl px-4">
+      <p class="font-mono text-xs text-base-content/50 mb-2">07</p>
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Anti-patterns
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        Project-specific AI-slop tells. If a design review answer to "AI made
+        this" would be yes, one of these is probably present. Match-and-refuse.
+      </p>
+
+      <ul class="grid gap-3 md:grid-cols-2 max-w-4xl">
+        {antiPatterns.map((p) => (
+          <li class="flex gap-3 text-sm">
+            <span class="text-error font-mono shrink-0 mt-0.5" aria-hidden="true">✗</span>
+            <span class="text-base-content/85">{p}</span>
+          </li>
+        ))}
+      </ul>
+
+      <p class="mt-10 text-sm text-base-content/60 max-w-2xl">
+        See <code class="font-mono text-xs bg-base-100 px-1.5 py-0.5 rounded border border-base-300">.impeccable.md</code>
+        at the repo root for the full Design Context. See
+        <code class="font-mono text-xs bg-base-100 px-1.5 py-0.5 rounded border border-base-300">docs/abe-astro-build-spec.md</code>
+        for the architecture commitments.
+      </p>
+    </div>
+  </section>
+
+</BaseLayout>

@@ -9,9 +9,14 @@ interface Props {
   title: string;
   description?: string;
   canonical?: string;
+  /**
+   * Set to true on internal-only pages (e.g. /styleguide/) so search engines
+   * skip them. Emits <meta name="robots" content="noindex">.
+   */
+  noindex?: boolean;
 }
 
-const { title, description, canonical } = Astro.props;
+const { title, description, canonical, noindex = false } = Astro.props;
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
@@ -25,6 +30,7 @@ const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toStri
 
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonicalUrl} />
 
     <meta property="og:title" content={title} />
