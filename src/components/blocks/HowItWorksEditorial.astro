@@ -1,0 +1,136 @@
+---
+/**
+ * HowItWorksEditorial — handbook-style alternative to HowItWorksSteps's
+ * three-card grid.
+ *
+ * Aesthetic intent (per .impeccable.md):
+ *   - Reads like a regulator-handbook procedure, not a SaaS landing-page
+ *     "how it works" section. Hand-set hanging-indent numerals, mono meta
+ *     labels, editorial pullquote in place of the alert-box answer capsule
+ *   - Heritage Maroon used in three places only (the §, the step numerals,
+ *     and an emphasis word in the pullquote) — ~10% visual weight per the
+ *     60-30-10 rule
+ *   - Asymmetric type-driven layout. No cards. No icons. No equal beats
+ *   - Hierarchy by weight + size + spacing, not by colour or container
+ *
+ * Anti-AI-slop (.impeccable.md anti-pattern list):
+ *   - Banned: side-stripe borders → not used
+ *   - Banned: gradient text → not used
+ *   - Banned: card-with-icon-and-heading repetition → not used
+ *   - Banned: alert tint on the answer capsule → replaced with editorial
+ *     two-column lead + pullquote
+ *
+ * Zero JS shipped. Copy parameterised on `course` so future product lines
+ * can override duration / RTO name without forking the component.
+ */
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+}
+
+const { course } = Astro.props;
+const c = course.data;
+
+const steps = [
+  {
+    n: '01',
+    title: 'Enrol online',
+    meta: 'About 10 minutes',
+    body: `Sign up through ABE Education, set your password, and you'll get straight access to the course. You'll need a Unique Student Identifier (USI) to enrol — required for all nationally recognised training. Free to create at <a href="https://www.usi.gov.au" class="link link-primary">usi.gov.au</a>.`,
+  },
+  {
+    n: '02',
+    title: 'Work through five units',
+    meta: `${c.duration} · self-paced`,
+    body: `The course is fully online. Read the learner materials, watch the supporting videos, and complete each unit in the order presented. Pause and pick up where you left off — your progress is saved between sessions, no deadlines.`,
+  },
+  {
+    n: '03',
+    title: 'Sit the assessment',
+    meta: `Marked by ${c.deliveryRto.name}`,
+    body: `Each unit has a written assessment you complete inside the platform. Once you've passed all five, ${c.deliveryRto.name} reviews your work and issues your Statement of Attainment — emailed to you and recorded against your USI on the National Training Register.`,
+  },
+];
+---
+
+<section id="section-2" class="py-16 lg:py-24 border-t border-base-300">
+  <div class="mx-auto max-w-5xl px-4">
+
+    {/* ── Heading with handbook section mark ─────────────────────────── */}
+    <header class="mb-12 lg:mb-16 flex items-baseline gap-3 lg:gap-5">
+      <span
+        class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
+        aria-hidden="true"
+      >§</span>
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+        How does the course work?
+      </h2>
+    </header>
+
+    {/* ── Editorial answer capsule — lead column + pullquote ─────────── */}
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_auto] gap-y-8 gap-x-12 lg:gap-x-20 mb-16 lg:mb-24 lg:items-end">
+
+      <p class="text-lg lg:text-xl leading-relaxed text-base-content max-w-prose">
+        Enrol online through ABE Education, complete five units of competency
+        at your own pace, then sit the assessment. {c.deliveryRto.name} verifies
+        your work and issues your Statement of Attainment. You then take that
+        certificate to Service NSW with your White Card and supporting
+        documents to apply for your Owner Builder Permit.
+      </p>
+
+      <aside class="lg:border-l lg:border-base-300 lg:pl-10 lg:max-w-[20rem]">
+        <p class="text-[11px] uppercase tracking-[0.22em] font-mono text-base-content/55 mb-3">
+          At a glance
+        </p>
+        <p class="font-display text-2xl lg:text-3xl font-semibold leading-tight text-base-content">
+          <span class="text-primary">Five units.</span><br />
+          About a day.<br />
+          Fully online.
+        </p>
+      </aside>
+    </div>
+
+    {/* ── Numbered procedure rows — handbook style, no cards ──────────
+        12-column grid that allocates space to: numeral block, title,
+        meta-info (right-aligned on desktop), body paragraph spanning
+        the full content column. Hairline rules between rows; mono
+        eyebrow labels so the page reads like an Australian Standards
+        procedure document. */}
+    <ol class="border-t border-base-300">
+      {steps.map((step) => (
+        <li class="border-b border-base-300 py-10 lg:py-12 grid lg:grid-cols-[7.5rem_minmax(0,1fr)] gap-x-10 lg:gap-x-16">
+
+          {/* numeral column */}
+          <div class="flex lg:flex-col items-baseline lg:items-start gap-3 lg:gap-2 mb-4 lg:mb-0">
+            <span class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 leading-none">
+              Step
+            </span>
+            <span class="font-display text-5xl lg:text-6xl font-semibold text-primary leading-none">
+              {step.n}
+            </span>
+          </div>
+
+          {/* content column: title + meta + body */}
+          <div class="grid gap-y-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-12 lg:items-baseline">
+            <h3 class="font-display text-xl lg:text-2xl font-semibold leading-tight text-base-content">
+              {step.title}
+            </h3>
+            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55 lg:text-right whitespace-nowrap">
+              {step.meta}
+            </p>
+            <p
+              class="lg:col-span-2 max-w-prose text-base lg:text-[1.0625rem] text-base-content/85 leading-relaxed"
+              set:html={step.body}
+            ></p>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <p class="micro-cta mt-10">
+      <a href="#section-3">↓ See what you'll learn</a>
+    </p>
+  </div>
+</section>
