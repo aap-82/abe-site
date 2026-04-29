@@ -63,7 +63,6 @@ const faqEntries = await Promise.all(course.data.faqRefs.map((ref) => getEntry(r
 const faqs = faqEntries.filter((f): f is NonNullable<typeof f> => f != null);
 
 const c = course.data;
-const j = jurisdiction.data;
 const r = reviewer.data;
 
 const formattedPrice = new Intl.NumberFormat('en-AU', {
@@ -94,6 +93,24 @@ const inclusions = [
   'Recorded against your Unique Student Identifier on the National Training Register.',
   'Email and phone support from the partner RTO during business hours.',
 ];
+
+// Plain-English outcome for each unit of competency. Keyed on the unit
+// code so the lookup is independent of array order in frontmatter. The
+// outcome answers "what will I actually be able to do?" in handbook
+// voice — not the regulator phrasing of the unit title. DRAFT copy:
+// reviewer to confirm against current AlertForce learner guides.
+const unitOutcomes: Record<string, string> = {
+  CPCCWHS2001:
+    'Recognise common site hazards and apply the work-health-and-safety procedures that a residential building site is required to follow.',
+  CPCCOM2001:
+    'Read building plans, elevations, and specifications so you can check what your builder is actually proposing — and spot a discrepancy before it goes in the ground.',
+  CPCCCM1011:
+    'Estimate quantities and costs for materials and trades — the basis for the project value you declare on your Owner Builder Permit application.',
+  CPCCOM1013:
+    'Sequence the trades, deliveries, and inspections so the build moves through stages in the right order, without gaps or expensive standbys.',
+  CPCCOM1014:
+    'Brief your builders, log conversations, and document instructions in writing so the record holds up if something needs to be resolved later.',
+};
 ---
 
 <BaseLayout
@@ -103,7 +120,40 @@ const inclusions = [
 >
 
   {/* ─────────────────────────────────────────────────────────────────
-       MASTHEAD — title + lede + applies-to + dated byline + fact panel.
+       BREADCRUMB BAR — navigation on the left, freshness signal on the
+       right. Replaces the old "running head" eyebrow that sat inside
+       the masthead. Per page-type-engine §4: › separator (U+203A),
+       <nav aria-label="Breadcrumb">, current page non-clickable with
+       aria-current. The currency-reviewer line on the right is the
+       AI-Overview / E-E-A-T freshness signal — name links to the
+       on-page #section-authorship anchor, date is the reviewer's last
+       check.
+     ───────────────────────────────────────────────────────────────── */}
+  <nav aria-label="Breadcrumb" class="border-b border-base-300/70 bg-base-100">
+    <div class="mx-auto max-w-6xl px-4 py-3 lg:py-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+
+      <ol class="flex flex-wrap items-baseline gap-x-2 gap-y-1 font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55">
+        <li><a href="/" class="hover:text-primary transition-colors">Home</a></li>
+        <li aria-hidden="true" class="text-base-content/30">›</li>
+        <li><a href="/compare/owner-builder/" class="hover:text-primary transition-colors">Owner Builder Training</a></li>
+        <li aria-hidden="true" class="text-base-content/30">›</li>
+        <li aria-current="page" class="text-base-content">NSW Owner Builder</li>
+      </ol>
+
+      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55">
+        Currency reviewed by{' '}
+        <a
+          href="#section-authorship"
+          class="text-base-content underline underline-offset-[3px] decoration-base-content/40 hover:text-primary hover:decoration-primary transition-colors"
+        >{r.name}</a>{' '}
+        · {formattedReviewDateShort}
+      </p>
+
+    </div>
+  </nav>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       MASTHEAD — title + lede + applies-to + fact panel.
 
        The fast-mover personas (WA / QLD OB pattern: 320 + 128 customers,
        single-session, compliance-motivated) want four answers above the
@@ -113,22 +163,16 @@ const inclusions = [
        the lede answers "is this for me" before they have to find § 04.
 
        On mobile, the fact panel stacks BELOW the title block — the
-       reading order on phone is title → lede → eligibility → byline →
-       fact panel + CTA, which matches the natural decision sequence.
+       reading order on phone is title → lede → eligibility → fact
+       panel + CTA, which matches the natural decision sequence. The
+       reviewer dateline lives in the breadcrumb bar above, not here.
      ───────────────────────────────────────────────────────────────── */}
   <header class="border-b border-base-300">
-    <div class="mx-auto max-w-6xl px-4 pt-12 lg:pt-16 pb-10 lg:pb-14">
-
-      {/* eyebrow row — running head + jurisdiction + filed-under */}
-      <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 mb-8 lg:mb-12 font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
-        <span aria-label="Jurisdiction">NSW • {j.regulator.shortName ?? j.regulator.name}</span>
-        <span aria-hidden="true" class="text-base-content/30">/</span>
-        <span>Owner Builder • Permit Education</span>
-      </div>
+    <div class="mx-auto max-w-6xl px-4 pt-10 lg:pt-14 pb-10 lg:pb-14">
 
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-12 lg:gap-x-16 items-start">
 
-        {/* ── Left column: title + lede + applies-to + byline ───────── */}
+        {/* ── Left column: title + lede + applies-to ──────────────── */}
         <div>
           <h1 class="font-display text-[2.5rem] sm:text-5xl lg:text-[3.75rem] leading-[1.05] tracking-tight font-semibold text-base-content max-w-[18ch]">
             {c.h1.replace(/ — .*$/, '')}
@@ -162,22 +206,6 @@ const inclusions = [
               </dd>
             </dl>
           )}
-
-          {/* Dateline — like a journal byline. The course content is
-              authored by the RTO; this line records who keeps the page
-              CURRENT (legislation, regulator names, fees, unit codes). */}
-          <div class="mt-8 lg:mt-10 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm text-base-content/70">
-            <span class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
-              Currency reviewed
-            </span>
-            <span>
-              {formattedReviewDate} by{' '}
-              <a
-                href={r.profileUrl}
-                class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors"
-              >{r.name}</a>, Compliance &amp; Currency Reviewer.
-            </span>
-          </div>
         </div>
 
         {/* ── Right column: fact panel ──────────────────────────────────
@@ -252,6 +280,13 @@ const inclusions = [
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
             02 • In short
           </p>
+          {/* Question H2 → answer capsule body. AI Overview citation
+              patterns reward question-format headings followed by a
+              40–60 word direct answer. The plain-English question is
+              also what older homeowners actually scan for. */}
+          <h2 class="font-display text-2xl lg:text-3xl font-semibold tracking-tight text-base-content mb-5 lg:mb-6 max-w-prose">
+            What is the NSW Owner Builder Course?
+          </h2>
           <p class="text-xl lg:text-2xl leading-[1.55] font-medium text-base-content max-w-prose">
             {c.answerCapsule}
           </p>
@@ -299,10 +334,13 @@ const inclusions = [
   <HowItWorksEditorial course={course} eyebrow="03 • How it works" />
 
   {/* ─────────────────────────────────────────────────────────────────
-       § 04 — Who this course covers.
-       Eligibility as a typographic definition list — NOT pill cards.
-       Hand-set ✓ in maroon and ✕ in charcoal/55, mono unit codes,
-       hairline rules. Two columns on desktop sharing a single rule.
+       § 04 — What this course doesn't cover.
+       The masthead's "Applies to" line above the fold confirms the
+       right cohort early. § 04's job is the warning side: the building
+       types this course does NOT clear you for, so a wrong applicant
+       turns away before they pay. Single column, hand-set ✕ in mono,
+       hairline rules. The ✓ list has been retired here because it
+       duplicated the masthead.
      ───────────────────────────────────────────────────────────────── */}
   <section id="section-eligibility" class="bg-base-200/60 border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
@@ -310,36 +348,20 @@ const inclusions = [
       <header class="mb-10 lg:mb-14">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            04 • Eligibility
+            04 • Outside scope
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-            Who this course covers — and who it doesn't
+            What this course doesn't cover
           </h2>
         </div>
       </header>
 
       {c.eligibility && (
-        <div class="grid lg:grid-cols-2 gap-y-12 lg:gap-x-16">
+        <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
 
-          {/* Eligible */}
           <div>
             <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-5">
-              Covered — apply with this course
-            </p>
-            <ul class="border-t border-base-300">
-              {c.eligibility.eligible.map((item: string) => (
-                <li class="border-b border-base-300 py-4 grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-3 items-baseline">
-                  <span class="font-display text-lg text-primary leading-none" aria-hidden="true">✓</span>
-                  <span class="text-base lg:text-[1.0625rem] text-base-content">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Excluded */}
-          <div>
-            <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-5">
-              Not covered — different pathway needed
+              Different pathway needed
             </p>
             <ul class="border-t border-base-300">
               {c.eligibility.excluded.map((item: string) => (
@@ -350,6 +372,28 @@ const inclusions = [
               ))}
             </ul>
           </div>
+
+          {/* Marginalia — points back to the at-a-glance "Applies to"
+              in the masthead so readers who land here understand where
+              the positive list lives. */}
+          <aside class="lg:pt-7 lg:border-l lg:border-base-300 lg:pl-8 space-y-4 text-[13px] leading-relaxed text-base-content/60">
+            <p>
+              <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+                For the positive list
+              </span>
+              See <a href="#top" class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors">"Applies to"</a> at the top of this page — single dwelling-house, secondary dwelling, dual occupancy.
+            </p>
+            <p>
+              <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+                Not sure?
+              </span>
+              <a
+                href="https://www.nsw.gov.au/housing-and-construction/building-or-renovating-a-home/owner-builder/when-a-permit-needed"
+                class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors"
+                rel="noopener"
+              >Building Commission&nbsp;NSW</a> publishes the full list of permit categories.
+            </p>
+          </aside>
 
         </div>
       )}
@@ -402,11 +446,22 @@ const inclusions = [
                 {unit.code}
               </span>
               <div class="col-start-2 sm:col-start-3">
-                <p class="text-base lg:text-[1.0625rem] text-base-content leading-snug">
+                {/* Regulator title kept verbatim (the unit-of-competency
+                    name from training.gov.au) — given more weight so it
+                    reads as a label for the outcome below. */}
+                <p class="text-base lg:text-[1.0625rem] font-medium text-base-content leading-snug">
                   {unit.title}
                 </p>
+                {/* Plain-English outcome — what the learner will
+                    actually be able to do, in handbook voice. Lookup
+                    keyed on unit code. */}
+                {unitOutcomes[unit.code] && (
+                  <p class="mt-2 max-w-prose text-[15px] lg:text-base text-base-content/80 leading-relaxed">
+                    {unitOutcomes[unit.code]}
+                  </p>
+                )}
                 {unit.superseded && (
-                  <p class="mt-1 font-mono text-[11px] text-base-content/55">
+                  <p class="mt-2 font-mono text-[11px] text-base-content/55">
                     Supersedes {unit.superseded}
                   </p>
                 )}
@@ -476,6 +531,19 @@ const inclusions = [
           <p class="font-display font-semibold text-base-content leading-none tracking-tight text-7xl sm:text-8xl lg:text-[8.5rem]">
             {formattedPrice}
           </p>
+          {/* Regulatory legitimacy line — sits between the price and
+              the format meta-line so the reason this $180 has any
+              value (it's the regulator-approved education for a
+              permit application) reads next to the number itself. */}
+          <p class="mt-5 lg:mt-6 max-w-prose text-base lg:text-[1.0625rem] text-base-content/85 leading-relaxed">
+            Approved by{' '}
+            <a
+              href="https://www.nsw.gov.au/housing-and-construction/building-or-renovating-a-home/owner-builder/when-a-permit-needed"
+              class="font-semibold text-base-content underline decoration-base-content/40 underline-offset-[3px] hover:text-primary hover:decoration-primary transition-colors"
+              rel="noopener"
+            >Building Commission&nbsp;NSW</a>{' '}
+            for Owner Builder Permit applications.
+          </p>
           <p class="mt-4 font-mono text-xs uppercase tracking-[0.18em] text-base-content/55">
             One-off • GST included • {c.duration}
           </p>
@@ -532,7 +600,7 @@ const inclusions = [
   <section id="section-authorship" class="border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-      <header class="mb-10 lg:mb-14">
+      <header class="mb-8 lg:mb-10">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             07 • Course authority
@@ -542,6 +610,22 @@ const inclusions = [
           </h2>
         </div>
       </header>
+
+      {/* Answer capsule — explains the dual-authority model in one
+          paragraph before the two cards land it visually. AI Overview
+          / voice-search citation pattern: question H2 → 40–60 word
+          plain-English answer → expanded detail. */}
+      <p class="mb-12 lg:mb-16 max-w-[55ch] text-lg lg:text-xl leading-relaxed text-base-content/85">
+        This course follows a dual-authority model. The five units of
+        competency are authored and assessed by{' '}
+        <strong class="font-semibold text-base-content">{c.deliveryRto.name}</strong>,
+        the registered training organisation that delivers the course.
+        Their content is independently reviewed for currency by{' '}
+        <strong class="font-semibold text-base-content">{r.name}</strong>,
+        who keeps legislation references, regulator names, fees, and
+        unit-code citations accurate as the regulatory landscape
+        changes.
+      </p>
 
       <div class="grid lg:grid-cols-2 gap-y-12 lg:gap-x-20">
 
@@ -605,7 +689,106 @@ const inclusions = [
   </section>
 
   {/* ─────────────────────────────────────────────────────────────────
-       § 08 — Frequently asked questions.
+       § 08 — What stands behind this course.
+       Trust signals as a numbered procedure index, matching the
+       inclusions list in § 06. Four substantive claims: regulator
+       approval, national recognition, independent currency review,
+       and operational track record. Hairlined, no cards, no icon
+       tiles. Body link UP to /compare/owner-builder/ (the closest
+       existing hub) sits in item 04. Cross-links to /white-card-nsw,
+       /insurance, /project-advisory are deferred until those pages
+       exist — flagging here so they're not forgotten.
+     ───────────────────────────────────────────────────────────────── */}
+  <section id="section-why-abe" class="border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+
+      <header class="mb-10 lg:mb-14">
+        <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+          08 • What stands behind this course
+        </p>
+        <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+          Why this course is fit for permit applications
+        </h2>
+      </header>
+
+      <ol class="border-t border-base-300 max-w-3xl">
+        <li class="border-b border-base-300 py-6 lg:py-7 grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-5 lg:gap-x-8">
+          <span class="font-mono text-xs uppercase tracking-[0.18em] text-primary leading-none pt-[0.3rem]">01</span>
+          <div>
+            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+              Regulator approval
+            </p>
+            <p class="text-base lg:text-[1.0625rem] text-base-content leading-relaxed">
+              Approved by{' '}
+              <a
+                href="https://www.nsw.gov.au/housing-and-construction/building-or-renovating-a-home/owner-builder/when-a-permit-needed"
+                class="font-medium text-base-content underline decoration-base-content/40 underline-offset-[3px] hover:text-primary hover:decoration-primary transition-colors"
+                rel="noopener"
+              >Building Commission&nbsp;NSW</a>{' '}
+              for Owner Builder Permit applications. The course content
+              meets the requirements published in the regulator's permit
+              guide.
+            </p>
+          </div>
+        </li>
+        <li class="border-b border-base-300 py-6 lg:py-7 grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-5 lg:gap-x-8">
+          <span class="font-mono text-xs uppercase tracking-[0.18em] text-primary leading-none pt-[0.3rem]">02</span>
+          <div>
+            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+              Nationally recognised
+            </p>
+            <p class="text-base lg:text-[1.0625rem] text-base-content leading-relaxed">
+              Five units of competency issued as a Statement of Attainment by{' '}
+              <a
+                href={`https://training.gov.au/Organisation/Details/${c.deliveryRto.rtoCode}`}
+                class="font-medium text-base-content underline decoration-base-content/40 underline-offset-[3px] hover:text-primary hover:decoration-primary transition-colors"
+                rel="noopener"
+              >{c.deliveryRto.name}</a>, RTO {c.deliveryRto.rtoCode}, and
+              recorded against your Unique Student Identifier on the
+              National Training Register.
+            </p>
+          </div>
+        </li>
+        <li class="border-b border-base-300 py-6 lg:py-7 grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-5 lg:gap-x-8">
+          <span class="font-mono text-xs uppercase tracking-[0.18em] text-primary leading-none pt-[0.3rem]">03</span>
+          <div>
+            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+              Independent currency review
+            </p>
+            <p class="text-base lg:text-[1.0625rem] text-base-content leading-relaxed">
+              <a
+                href="#section-authorship"
+                class="font-medium text-base-content underline decoration-base-content/40 underline-offset-[3px] hover:text-primary hover:decoration-primary transition-colors"
+              >{r.name}</a>, Compliance &amp; Currency Reviewer, checks
+              legislation references, regulator names, and fee thresholds
+              against the source documents. Last reviewed{' '}
+              {formattedReviewDate}.
+            </p>
+          </div>
+        </li>
+        <li class="border-b border-base-300 py-6 lg:py-7 grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-5 lg:gap-x-8">
+          <span class="font-mono text-xs uppercase tracking-[0.18em] text-primary leading-none pt-[0.3rem]">04</span>
+          <div>
+            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+              Australian, since 2007
+            </p>
+            <p class="text-base lg:text-[1.0625rem] text-base-content leading-relaxed">
+              Australian-owned online training provider. 31,000+ students
+              supported across NSW, ACT, QLD, TAS, and WA.{' '}
+              <a
+                href="/compare/owner-builder/"
+                class="font-medium text-base-content underline decoration-base-content/40 underline-offset-[3px] hover:text-primary hover:decoration-primary transition-colors"
+              >Compare Owner Builder requirements by state</a>.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       § 09 — Frequently asked questions.
        Native <details> in handbook voice: hand-set Q.01, Q.02 markers,
        hairline separators, no chevrons-in-circles, no cards, no tints.
        Each summary opens to expose the answer typeset like body copy.
@@ -616,7 +799,7 @@ const inclusions = [
 
         <header class="mb-10 lg:mb-14">
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            08 • Common questions
+            09 • Common questions
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
             What builders ask before they enrol
