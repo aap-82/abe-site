@@ -1,0 +1,688 @@
+---
+/**
+ * Course page v3 — "The Handbook" — internal layout variant.
+ *
+ * The third full composition of the NSW Owner Builder course page. v1
+ * (live, /courses/nsw-owner-builder-course/) is mockup-faithful and
+ * card-driven. v2 (/styleguide/course-v2/) exercises every DaisyUI
+ * component. v3 commits in the OPPOSITE direction: strip cards, strip
+ * components, push the .impeccable.md "regulator handbook crossed with
+ * editorial publication" voice to its limit.
+ *
+ * Aesthetic — committed direction
+ * ───────────────────────────────
+ *   - Type-driven. The TYPE is the container. No hero card. No tinted
+ *     boxes around content. Hairline rules, not background bands.
+ *   - § section marks (silcrow / pilcrow). Heritage Maroon used in three
+ *     load-bearing places: the §s, hand-set numerals, and the primary CTA.
+ *   - Marginalia layout on desktop ≥1024px — body in a 65ch column,
+ *     small-caps mono asides hang in a right-margin track holding
+ *     verification dates, RTO codes, source-document references.
+ *     Marginalia collapses inline on mobile (footnote-style).
+ *   - All-caps DM Mono running heads at the top of each major section,
+ *     letter-spaced like a journal contents page.
+ *   - Hand-set hanging-indent numerals for procedure rows. No icons.
+ *
+ * Anti-AI-slop (.impeccable.md anti-pattern list, all enforced)
+ * ─────────────────────────────────────────────────────────────
+ *   - Banned: side-stripe borders → not used
+ *   - Banned: gradient text → not used
+ *   - Banned: card-with-icon-and-heading repetition → not used
+ *   - Banned: rounded-square icon tiles above every H2 → not used
+ *   - Banned: countdown timers / scarcity / "limited spots" → not used
+ *   - Banned: five-star carousels → not used
+ *   - Banned: floating maroon glow on the CTA → not used
+ *
+ * Internal-only. noindex. Pulls the same NSW data as the canonical page
+ * but emits no Course JSON-LD (would conflict with the live page's schema).
+ */
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+import HowItWorksEditorial from '@/components/blocks/HowItWorksEditorial.astro';
+
+const course = await getEntry('courses', 'nsw-owner-builder-course');
+if (!course) {
+  throw new Error(
+    'NSW Owner Builder course not found — required for /styleguide/course-v3/. ' +
+      'Check src/content/courses/nsw-owner-builder.md frontmatter slug.',
+  );
+}
+
+const jurisdiction = await getEntry(course.data.jurisdiction);
+const reviewer = await getEntry(course.data.reviewer);
+const developer = course.data.developer ? await getEntry(course.data.developer) : null;
+if (!jurisdiction || !reviewer) {
+  throw new Error('Course references could not be resolved (jurisdiction or reviewer missing).');
+}
+
+const faqEntries = await Promise.all(course.data.faqRefs.map((ref) => getEntry(ref)));
+const faqs = faqEntries.filter((f): f is NonNullable<typeof f> => f != null);
+
+const c = course.data;
+const j = jurisdiction.data;
+const r = reviewer.data;
+const dev = developer?.data;
+
+const formattedPrice = new Intl.NumberFormat('en-AU', {
+  style: 'currency',
+  currency: c.priceCurrency,
+  maximumFractionDigits: 0,
+}).format(c.price);
+
+const formattedReviewDate = new Intl.DateTimeFormat('en-AU', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(new Date(c.lastReviewed));
+
+const formattedReviewDateShort = new Intl.DateTimeFormat('en-AU', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+}).format(new Date(c.lastReviewed));
+
+// Inclusions for the cost section. Keep as plain editorial list — five
+// numbered items rendered as a procedure index, not a checklist with ticks.
+const unitCodesString = c.unitCodes?.join(', ') ?? '';
+const inclusions = [
+  `Five units of competency: ${unitCodesString}.`,
+  'Self-paced online learning with progress saved between sessions.',
+  `Statement of Attainment issued by ${c.deliveryRto.name} (RTO ${c.deliveryRto.rtoCode}) on completion.`,
+  'Recorded against your Unique Student Identifier on the National Training Register.',
+  'Email and phone support from the partner RTO during business hours.',
+];
+---
+
+<BaseLayout
+  title="NSW Owner Builder Course (v3 — handbook composition, internal)"
+  description="Internal handbook-composition variant of the NSW Owner Builder course page"
+  noindex
+>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       MASTHEAD — chapter opener.
+       The page identifies itself like a regulator handbook contents
+       page: jurisdiction code, chapter number, document type, and a
+       silcrow that anchors the brand colour. No hero card. No image.
+       Just type and one hairline.
+     ───────────────────────────────────────────────────────────────── */}
+  <header class="border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 pt-12 lg:pt-16 pb-10 lg:pb-14">
+
+      {/* eyebrow row — running head + jurisdiction + filed-under */}
+      <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 mb-10 lg:mb-14 font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
+        <span aria-label="Jurisdiction">NSW · {j.regulator.shortName ?? j.regulator.name}</span>
+        <span aria-hidden="true" class="text-base-content/30">/</span>
+        <span>Owner Builder · Permit Education</span>
+        <span aria-hidden="true" class="text-base-content/30">/</span>
+        <span>Edition {c.contentVersion}</span>
+      </div>
+
+      <div class="grid lg:grid-cols-[7rem_minmax(0,1fr)] gap-x-8 lg:gap-x-12 items-start">
+
+        {/* silcrow + chapter numeral — handbook chapter opener */}
+        <div class="flex lg:flex-col items-baseline lg:items-start gap-3 lg:gap-3 mb-6 lg:mb-0 select-none">
+          <span
+            class="font-display text-6xl lg:text-7xl text-primary leading-none font-medium"
+            aria-hidden="true"
+          >§</span>
+          <span class="font-mono text-xs uppercase tracking-[0.22em] text-base-content/55 lg:mt-1">
+            Chapter 01
+          </span>
+        </div>
+
+        {/* title block */}
+        <div>
+          <h1 class="font-display text-[2.25rem] sm:text-5xl lg:text-[3.75rem] leading-[1.05] tracking-tight font-semibold text-base-content max-w-[18ch]">
+            {c.h1.replace(/ — .*$/, '')}
+          </h1>
+
+          <p class="mt-5 lg:mt-7 max-w-[55ch] text-lg lg:text-xl leading-relaxed text-base-content/85">
+            The approved education you must complete before applying for an
+            Owner Builder Permit when residential work on your home is valued
+            at <strong class="font-semibold text-base-content">$20,000 or more</strong>.
+            Five nationally recognised units, delivered online by
+            {c.deliveryRto.name} ({' '}RTO {c.deliveryRto.rtoCode}{' '}).
+          </p>
+
+          {/* Dateline — like a journal byline */}
+          <div class="mt-7 lg:mt-9 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm text-base-content/70">
+            <span class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
+              Reviewed
+            </span>
+            <span>
+              {formattedReviewDate} by{' '}
+              <a
+                href={r.profileUrl}
+                class="text-base-content underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors"
+              >{r.name}</a>,{' '}
+              {r.title}.
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       § 02 — THE SHORT VERSION.
+       Editorial AnswerCapsule (uncontainered, type-as-container) with
+       the verified-source citation hairlined below. No card.
+     ───────────────────────────────────────────────────────────────── */}
+  <section id="section-short" class="border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+      <div class="grid lg:grid-cols-[minmax(0,720px)_minmax(0,260px)] gap-y-8 lg:gap-x-16">
+
+        <div>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
+            § 02 · The short version
+          </p>
+          <p class="text-xl lg:text-2xl leading-[1.55] font-medium text-base-content max-w-prose">
+            {c.answerCapsule}
+          </p>
+        </div>
+
+        {/* Marginalia — small-caps mono asides */}
+        <aside class="lg:pt-9 lg:border-l lg:border-base-300 lg:pl-8 space-y-5 text-sm leading-relaxed text-base-content/75">
+          <p>
+            <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+              Threshold
+            </span>
+            Permit required at <strong class="font-semibold text-base-content">$10,000</strong>;
+            course required at <strong class="font-semibold text-base-content">$20,000</strong>
+            (residential building work, NSW).
+          </p>
+          <p>
+            <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+              Verified
+            </span>
+            <a
+              href="https://www.nsw.gov.au/housing-and-construction/building-or-renovating-a-home/owner-builder/when-a-permit-needed"
+              class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors"
+              rel="noopener"
+            >Building Commission&nbsp;NSW</a>{' '}— {formattedReviewDateShort}.
+          </p>
+          <p>
+            <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+              See also
+            </span>
+            <a href="#section-units" class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors">§ 05 Units of competency</a>
+            ·{' '}
+            <a href="#section-cost" class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors">§ 06 Cost</a>
+          </p>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       § 03 — How does the course work?
+       Reuses the existing HowItWorksEditorial block — handbook procedure
+       rows already match the v3 voice exactly.
+     ───────────────────────────────────────────────────────────────── */}
+  <HowItWorksEditorial course={course} />
+
+  {/* ─────────────────────────────────────────────────────────────────
+       § 04 — Who this course covers.
+       Eligibility as a typographic definition list — NOT pill cards.
+       Hand-set ✓ in maroon and ✕ in charcoal/55, mono unit codes,
+       hairline rules. Two columns on desktop sharing a single rule.
+     ───────────────────────────────────────────────────────────────── */}
+  <section id="section-eligibility" class="bg-base-200/60 border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+
+      <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
+        <span
+          class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
+          aria-hidden="true"
+        >§</span>
+        <div>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            04 · Eligibility
+          </p>
+          <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+            Who this course covers — and who it doesn't
+          </h2>
+        </div>
+      </header>
+
+      {c.eligibility && (
+        <div class="grid lg:grid-cols-2 gap-y-12 lg:gap-x-16">
+
+          {/* Eligible */}
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-5">
+              Covered — apply with this course
+            </p>
+            <ul class="border-t border-base-300">
+              {c.eligibility.eligible.map((item: string) => (
+                <li class="border-b border-base-300 py-4 grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-3 items-baseline">
+                  <span class="font-display text-lg text-primary leading-none" aria-hidden="true">✓</span>
+                  <span class="text-base lg:text-[1.0625rem] text-base-content">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Excluded */}
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-5">
+              Not covered — different pathway needed
+            </p>
+            <ul class="border-t border-base-300">
+              {c.eligibility.excluded.map((item: string) => (
+                <li class="border-b border-base-300 py-4 grid grid-cols-[1.5rem_minmax(0,1fr)] gap-x-3 items-baseline">
+                  <span class="font-mono text-base text-base-content/55 leading-none" aria-hidden="true">✕</span>
+                  <span class="text-base lg:text-[1.0625rem] text-base-content/85">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        </div>
+      )}
+
+      {c.exemptionNote && (
+        <p class="mt-12 lg:mt-14 max-w-prose text-sm leading-relaxed text-base-content/75">
+          <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            Exemption note
+          </span>
+          {c.exemptionNote}
+        </p>
+      )}
+
+      <p class="micro-cta mt-10">
+        <a href="#section-units">↓ Read the unit specifications</a>
+      </p>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       § 05 — Units of competency.
+       Australian-Standards-style numbered specification index. No card,
+       no zebra, no shadow. Mono unit codes left-aligned in a fixed
+       column; plain-English title in the body column; superseded codes
+       hang as a small mono note. Hairlines between rows.
+     ───────────────────────────────────────────────────────────────── */}
+  <section id="section-units" class="border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+
+      <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
+        <span
+          class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
+          aria-hidden="true"
+        >§</span>
+        <div>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            05 · Units of competency
+          </p>
+          <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+            Five nationally recognised units
+          </h2>
+        </div>
+      </header>
+
+      <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,260px)] gap-y-8 lg:gap-x-16">
+
+        <ol class="border-t border-base-300">
+          {(c.units ?? []).map((unit: { code: string; title: string; superseded?: string }, i: number) => (
+            <li class="border-b border-base-300 py-6 lg:py-7 grid grid-cols-[2.5rem_minmax(0,1fr)] sm:grid-cols-[2.5rem_minmax(0,11rem)_minmax(0,1fr)] gap-x-5 lg:gap-x-8 items-baseline">
+              <span class="font-mono text-xs uppercase tracking-[0.18em] text-base-content/55 leading-none">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="font-mono text-sm text-base-content leading-tight col-span-2 sm:col-span-1">
+                {unit.code}
+              </span>
+              <div class="col-start-2 sm:col-start-3">
+                <p class="text-base lg:text-[1.0625rem] text-base-content leading-snug">
+                  {unit.title}
+                </p>
+                {unit.superseded && (
+                  <p class="mt-1 font-mono text-[11px] text-base-content/55">
+                    Supersedes {unit.superseded}
+                  </p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        {/* Marginalia */}
+        <aside class="lg:pt-7 lg:border-l lg:border-base-300 lg:pl-8 space-y-5 text-sm leading-relaxed text-base-content/75">
+          <p>
+            <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+              Verifiable on
+            </span>
+            <a
+              href={`https://training.gov.au/Organisation/Details/${c.deliveryRto.rtoCode}`}
+              class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors"
+              rel="noopener"
+            >training.gov.au</a>{' '}using RTO Code {c.deliveryRto.rtoCode}.
+          </p>
+          <p>
+            <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+              Issuer
+            </span>
+            {c.credentialAwarded} issued by {c.deliveryRto.name} on completion.
+          </p>
+          <p>
+            <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+              Recorded
+            </span>
+            Against your USI on the National Training Register.
+          </p>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       § 06 — Cost & inclusions.
+       Editorial figure block. The price is set as a single hand-set
+       Archivo numeral — no card, no shadow, no border. A hairline rule
+       sits below it; inclusions follow as a numbered procedure index.
+       The single CTA is a maroon button. Nothing else competes.
+     ───────────────────────────────────────────────────────────────── */}
+  <section id="section-cost" class="bg-base-200/60 border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+
+      <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
+        <span
+          class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
+          aria-hidden="true"
+        >§</span>
+        <div>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            06 · Cost &amp; what you receive
+          </p>
+          <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+            One fee. Everything included.
+          </h2>
+        </div>
+      </header>
+
+      <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-y-12 lg:gap-x-20 items-start">
+
+        {/* Price figure */}
+        <div>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-3">
+            The cost is
+          </p>
+          <p class="font-display font-semibold text-base-content leading-none tracking-tight text-7xl sm:text-8xl lg:text-[8.5rem]">
+            {formattedPrice}
+          </p>
+          <p class="mt-4 font-mono text-xs uppercase tracking-[0.18em] text-base-content/55">
+            One-off · GST included · {c.duration}
+          </p>
+
+          <div class="mt-10 max-w-md">
+            <a
+              href={c.enrolUrl}
+              class="btn btn-primary btn-lg w-full sm:w-auto sm:min-w-[20rem] font-semibold"
+            >
+              Enrol now — {formattedPrice}
+            </a>
+            <p class="mt-4 font-mono text-[11px] text-base-content/55">
+              Issued by {c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode}).
+              No subscription. No add-ons.
+            </p>
+          </div>
+        </div>
+
+        {/* Inclusions — numbered procedure index */}
+        <div>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-5">
+            Your fee covers
+          </p>
+          <ol class="border-t border-base-300">
+            {inclusions.map((item: string, i: number) => (
+              <li class="border-b border-base-300 py-4 grid grid-cols-[2rem_minmax(0,1fr)] gap-x-4 items-baseline">
+                <span class="font-mono text-xs uppercase tracking-[0.18em] text-primary leading-none">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span class="text-base lg:text-[1.0625rem] text-base-content leading-snug">{item}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       § 07 — Authored & reviewed by.
+       Editorial byline. NO avatars. NO credential pills. NO cards.
+       Just two named experts as a typographic byline with a dated
+       review note — the way you'd see authorship on a journal article.
+       Photos and full credentials live on each expert's profile page;
+       this is the at-a-glance authority signal in handbook voice.
+     ───────────────────────────────────────────────────────────────── */}
+  <section id="section-authorship" class="border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+
+      <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
+        <span
+          class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
+          aria-hidden="true"
+        >§</span>
+        <div>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            07 · Authorship
+          </p>
+          <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+            Authored, then independently reviewed
+          </h2>
+        </div>
+      </header>
+
+      <div class="grid lg:grid-cols-2 gap-y-12 lg:gap-x-20">
+
+        {dev && (
+          <article>
+            <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-3">
+              Developed by
+            </p>
+            <h3 class="font-display text-2xl lg:text-3xl font-semibold text-base-content tracking-tight">
+              <a
+                href={dev.profileUrl}
+                class="underline decoration-dotted decoration-base-300 underline-offset-[6px] hover:text-primary hover:decoration-primary transition-colors"
+              >{dev.name}</a>
+            </h3>
+            <p class="mt-2 text-base-content/75 text-base leading-relaxed">
+              {dev.title}{dev.organisation ? `, ${dev.organisation}` : ''}.
+              {' '}
+              {dev.yearsInIndustry && `${dev.yearsInIndustry} years in the Australian construction industry.`}
+            </p>
+            {dev.bios?.short && (
+              <p class="mt-4 max-w-prose text-base-content leading-relaxed">
+                {dev.bios.short}
+              </p>
+            )}
+          </article>
+        )}
+
+        <article>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-3">
+            Independently reviewed by
+          </p>
+          <h3 class="font-display text-2xl lg:text-3xl font-semibold text-base-content tracking-tight">
+            <a
+              href={r.profileUrl}
+              class="underline decoration-dotted decoration-base-300 underline-offset-[6px] hover:text-primary hover:decoration-primary transition-colors"
+            >{r.name}</a>
+          </h3>
+          <p class="mt-2 text-base-content/75 text-base leading-relaxed">
+            {r.title}{r.organisation ? `, ${r.organisation}` : ''}.
+            {' '}
+            {r.yearsInIndustry && `${r.yearsInIndustry} years across the Australian VET sector.`}
+          </p>
+          {r.bios?.short && (
+            <p class="mt-4 max-w-prose text-base-content leading-relaxed">
+              {r.bios.short}
+            </p>
+          )}
+          <p class="mt-5 font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
+            Last review · {formattedReviewDate}
+          </p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       § 08 — Frequently asked questions.
+       Native <details> in handbook voice: hand-set Q.01, Q.02 markers,
+       hairline separators, no chevrons-in-circles, no cards, no tints.
+       Each summary opens to expose the answer typeset like body copy.
+     ───────────────────────────────────────────────────────────────── */}
+  {faqs.length > 0 && (
+    <section id="section-faqs" class="bg-base-200/60 border-b border-base-300">
+      <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+
+        <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
+          <span
+            class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
+            aria-hidden="true"
+          >§</span>
+          <div>
+            <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+              08 · Common questions
+            </p>
+            <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+              What builders ask before they enrol
+            </h2>
+          </div>
+        </header>
+
+        <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,260px)] gap-y-8 lg:gap-x-16">
+
+          <ol class="border-t border-base-300 max-w-prose">
+            {faqs.map((faq, i) => (
+              <li class="border-b border-base-300">
+                <details class="group">
+                  <summary class="cursor-pointer list-none py-5 lg:py-6 grid grid-cols-[3rem_minmax(0,1fr)_1.25rem] gap-x-4 items-baseline hover:text-primary transition-colors">
+                    <span class="font-mono text-xs uppercase tracking-[0.18em] text-base-content/55 leading-none">
+                      Q.{String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span class="font-display text-lg lg:text-xl font-medium text-base-content leading-snug group-hover:text-primary transition-colors">
+                      {faq.data.question}
+                    </span>
+                    <span
+                      class="font-mono text-base text-base-content/55 group-open:rotate-45 transition-transform leading-none justify-self-end"
+                      aria-hidden="true"
+                    >+</span>
+                  </summary>
+                  <div class="pl-[3.75rem] pr-4 pb-6 -mt-1 text-base lg:text-[1.0625rem] text-base-content/85 leading-relaxed prose prose-sm max-w-none prose-a:text-primary prose-a:underline prose-a:decoration-dotted prose-a:underline-offset-[3px]">
+                    <p>{faq.data.answer}</p>
+                  </div>
+                </details>
+              </li>
+            ))}
+          </ol>
+
+          {/* Marginalia */}
+          <aside class="lg:pt-6 lg:border-l lg:border-base-300 lg:pl-8 space-y-5 text-sm leading-relaxed text-base-content/75">
+            <p>
+              <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+                Still unsure?
+              </span>
+              Email <a href="mailto:hello@abeeducation.edu.au" class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors">hello@abeeducation.edu.au</a>{' '}
+              — replies within one business day, Sydney time.
+            </p>
+            <p>
+              <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
+                Phone
+              </span>
+              02 8005 7382, 9am–5pm AEST.
+            </p>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* ─────────────────────────────────────────────────────────────────
+       § 09 — Closing colophon + sticky footer enrol.
+       The colophon is set tight in mono, like the inside back cover of
+       a regulator handbook: page version, last review, partner RTO,
+       what this page is and what it isn't (the ABE non-RTO disclosure).
+     ───────────────────────────────────────────────────────────────── */}
+  <footer class="border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+
+      <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-6">
+        09 · Colophon
+      </p>
+
+      <div class="grid lg:grid-cols-3 gap-y-8 lg:gap-x-16 max-w-5xl">
+
+        <div class="text-sm leading-relaxed text-base-content/75">
+          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            About this page
+          </p>
+          <p>
+            Edition {c.contentVersion}, last reviewed {formattedReviewDate} by{' '}
+            {r.name}. Source: <a href="https://www.nsw.gov.au/housing-and-construction/building-or-renovating-a-home/owner-builder" class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors" rel="noopener">Building Commission&nbsp;NSW</a>.
+          </p>
+        </div>
+
+        <div class="text-sm leading-relaxed text-base-content/75">
+          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            Training is delivered by
+          </p>
+          <p>
+            <strong class="font-semibold text-base-content">{c.deliveryRto.name}</strong>{' '}
+            (RTO {c.deliveryRto.rtoCode}). The {c.credentialAwarded} is issued
+            by {c.deliveryRto.name} and recorded against your USI on the
+            National Training Register.
+          </p>
+        </div>
+
+        <div class="text-sm leading-relaxed text-base-content/75">
+          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            ABE is not an RTO
+          </p>
+          <p>
+            ABE Education develops and curates the course content. We are not
+            a Registered Training Organisation; the Statement of Attainment
+            is issued by the partner RTO above, not by ABE.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  {/* ─────────────────────────────────────────────────────────────────
+       Sticky bottom enrol — handbook footer dock.
+       Cool Off-White (Base 200) bg, hairline top, mono price + single
+       maroon CTA. Hidden on screens narrower than the body column so
+       small phones aren't double-CTA'd above the keyboard.
+     ───────────────────────────────────────────────────────────────── */}
+  <div class="sticky bottom-0 z-40 hidden md:block bg-base-200/95 backdrop-blur-sm border-t border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-6">
+      <div class="flex items-baseline gap-5 min-w-0">
+        <span class="font-display text-2xl font-semibold text-base-content leading-none">
+          {formattedPrice}
+        </span>
+        <span class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 truncate">
+          NSW Owner Builder · {c.duration} · Online
+        </span>
+      </div>
+      <a
+        href={c.enrolUrl}
+        class="btn btn-primary btn-sm sm:btn-md font-semibold whitespace-nowrap"
+      >
+        Enrol now
+      </a>
+    </div>
+  </div>
+
+</BaseLayout>
