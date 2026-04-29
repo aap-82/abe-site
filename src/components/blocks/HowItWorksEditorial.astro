@@ -28,9 +28,16 @@ import type { CollectionEntry } from 'astro:content';
 
 interface Props {
   course: CollectionEntry<'courses'>;
+  /**
+   * Optional all-caps mono running-head label rendered above the H2,
+   * e.g. "03 · How it works". Used by the v3 handbook composition to
+   * keep numbered-section parity across the page. Omit on v1, where
+   * the section header is just § + h2.
+   */
+  eyebrow?: string;
 }
 
-const { course } = Astro.props;
+const { course, eyebrow } = Astro.props;
 const c = course.data;
 
 const steps = [
@@ -58,15 +65,29 @@ const steps = [
 <section id="section-2" class="py-16 lg:py-24 border-t border-base-300">
   <div class="mx-auto max-w-5xl px-4">
 
-    {/* ── Heading with handbook section mark ─────────────────────────── */}
+    {/* ── Heading with handbook section mark.
+        When `eyebrow` is provided, the running-head label sits above
+        the h2 (matches the v3 handbook composition's other sections).
+        When omitted, just the § + h2 (the v1 live-page treatment). */}
     <header class="mb-12 lg:mb-16 flex items-baseline gap-3 lg:gap-5">
       <span
         class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
         aria-hidden="true"
       >§</span>
-      <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-        How does the course work?
-      </h2>
+      {eyebrow ? (
+        <div>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            {eyebrow}
+          </p>
+          <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+            How does the course work?
+          </h2>
+        </div>
+      ) : (
+        <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+          How does the course work?
+        </h2>
+      )}
     </header>
 
     {/* ── Editorial answer capsule — lead column + pullquote ─────────── */}
