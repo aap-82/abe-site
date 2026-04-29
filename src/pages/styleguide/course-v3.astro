@@ -168,7 +168,7 @@ const unitOutcomes: Record<string, string> = {
        reviewer dateline lives in the breadcrumb bar above, not here.
      ───────────────────────────────────────────────────────────────── */}
   <header class="border-b border-base-300">
-    <div class="mx-auto max-w-6xl px-4 pt-10 lg:pt-14 pb-10 lg:pb-14">
+    <div class="mx-auto max-w-6xl px-4 pt-12 lg:pt-20 pb-10 lg:pb-14">
 
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-12 lg:gap-x-16 items-start">
 
@@ -273,7 +273,13 @@ const unitOutcomes: Record<string, string> = {
        the verified-source citation hairlined below. No card.
      ───────────────────────────────────────────────────────────────── */}
   <section id="section-short" class="bg-base-200/60 border-b border-base-300">
-    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+    {/* Vertical rhythm note — § 02 carries more breathing room than the
+        adjacent sections (py-16 lg:py-24 vs the page's standard
+        py-14 lg:py-20). This is the canonical answer block, the
+        section AI Overviews are most likely to cite, and the place
+        the page's voice lands first. The extra padding makes it read
+        as a primary peak in the vertical rhythm. */}
+    <div class="mx-auto max-w-6xl px-4 py-16 lg:py-24">
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
 
         <div>
@@ -345,16 +351,27 @@ const unitOutcomes: Record<string, string> = {
   <section id="section-eligibility" class="bg-base-200/60 border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-      <header class="mb-10 lg:mb-14">
+      <header class="mb-8 lg:mb-10">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             04 • Outside scope
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-            What this course doesn't cover
+            Which projects sit outside this course?
           </h2>
         </div>
       </header>
+
+      {/* Answer capsule — sets up the warning list and points to the
+          exemption note for licence-holders who don't need the course. */}
+      <p class="mb-10 lg:mb-14 max-w-[55ch] text-lg lg:text-xl leading-relaxed text-base-content/85">
+        Strata renovations, commercial premises, hotels and tourist
+        accommodation, and moveable dwellings (including caravans) sit
+        outside this course's scope. They need a different licensing
+        pathway — usually a builder's licence rather than an Owner
+        Builder Permit. A handful of existing NSW credentials also
+        exempt you from the course requirement; see the note below.
+      </p>
 
       {c.eligibility && (
         <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
@@ -423,16 +440,28 @@ const unitOutcomes: Record<string, string> = {
   <section id="section-units" class="border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-      <header class="mb-10 lg:mb-14">
+      <header class="mb-8 lg:mb-10">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             05 • Units of competency
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-            Five nationally recognised units
+            What will you learn?
           </h2>
         </div>
       </header>
+
+      {/* Answer capsule — frames the unit list as the practical skill
+          set behind the regulator phrasing. Five units, what each
+          unlocks for the learner, who assesses them. */}
+      <p class="mb-10 lg:mb-14 max-w-[55ch] text-lg lg:text-xl leading-relaxed text-base-content/85">
+        Five units of competency cover the core skills an Owner Builder
+        needs to manage a residential build safely and legally: WHS on
+        a building site, reading plans and specifications, basic
+        estimation and costing, sequencing trades and inspections, and
+        documenting site communication. Each unit is nationally
+        recognised and assessed by {c.deliveryRto.name}.
+      </p>
 
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
 
@@ -508,18 +537,35 @@ const unitOutcomes: Record<string, string> = {
        The single CTA is a maroon button. Nothing else competes.
      ───────────────────────────────────────────────────────────────── */}
   <section id="section-cost" class="bg-base-200/60 border-b border-base-300">
-    <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
+    {/* Vertical rhythm note — § 06 also runs py-16 lg:py-24, matching
+        § 02. The decision moment (price + CTA) deserves the same
+        breathing as the canonical answer. Together § 02 and § 06 form
+        the page's two visual peaks; the rest sits on the standard
+        py-14 lg:py-20 baseline. */}
+    <div class="mx-auto max-w-6xl px-4 py-16 lg:py-24">
 
-      <header class="mb-10 lg:mb-14">
+      <header class="mb-8 lg:mb-10">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             06 • Cost &amp; what you receive
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-            One fee. Everything included.
+            How much does the course cost?
           </h2>
         </div>
       </header>
+
+      {/* Answer capsule — gives the price + what's included in plain
+          English before the big-display figure and inclusions list
+          land it visually. */}
+      <p class="mb-10 lg:mb-14 max-w-[55ch] text-lg lg:text-xl leading-relaxed text-base-content/85">
+        The course costs {formattedPrice} with GST included — a one-off
+        fee, not a subscription. It covers the five units of
+        competency, online learning, assessments marked by{' '}
+        {c.deliveryRto.name}, your Statement of Attainment, and email
+        and phone support during business hours. The price stays the
+        same whether you finish in a day or over a fortnight.
+      </p>
 
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-y-12 lg:gap-x-20 items-start">
 
@@ -606,7 +652,7 @@ const unitOutcomes: Record<string, string> = {
             07 • Course authority
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-            Who writes the course, and who keeps it current
+            Who writes the course, and who keeps it current?
           </h2>
         </div>
       </header>
@@ -702,14 +748,27 @@ const unitOutcomes: Record<string, string> = {
   <section id="section-why-abe" class="border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-      <header class="mb-10 lg:mb-14">
+      <header class="mb-8 lg:mb-10">
         <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
           08 • What stands behind this course
         </p>
         <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-          Why this course is fit for permit applications
+          Why is this course fit for permit applications?
         </h2>
       </header>
+
+      {/* Answer capsule — names the four substantive things before the
+          numbered procedure index lays them out. */}
+      <p class="mb-10 lg:mb-14 max-w-[55ch] text-lg lg:text-xl leading-relaxed text-base-content/85">
+        Four substantive things stand behind this course: it's approved
+        by Building Commission NSW for Owner Builder Permit
+        applications; the five units of competency are nationally
+        recognised and issued as a Statement of Attainment by{' '}
+        {c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode}); an
+        independent compliance reviewer keeps the page accurate against
+        current legislation; and ABE Education has supported 31,000+
+        students since 2007.
+      </p>
 
       <ol class="border-t border-base-300 max-w-3xl">
         <li class="border-b border-base-300 py-6 lg:py-7 grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-5 lg:gap-x-8">
@@ -797,14 +856,27 @@ const unitOutcomes: Record<string, string> = {
     <section id="section-faqs" class="bg-base-200/60 border-b border-base-300">
       <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-        <header class="mb-10 lg:mb-14">
+        <header class="mb-8 lg:mb-10">
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             09 • Common questions
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-            What builders ask before they enrol
+            What do builders ask before they enrol?
           </h2>
         </header>
+
+        {/* Answer capsule — names the four areas before the question
+            list opens. Helps fast scanners find the cluster they care
+            about; AI Overviews tend to cite this preview line over
+            individual FAQ answers. */}
+        <p class="mb-10 lg:mb-14 max-w-[55ch] text-lg lg:text-xl leading-relaxed text-base-content/85">
+          The nine questions below cover the four areas Owner Builders
+          most often ask about before they enrol — when a permit is
+          required and at what threshold, who delivers the course and
+          how to verify the RTO with ASQA, course logistics like
+          duration and White Card inclusion, and what counts as
+          Owner Builder work once your permit is issued.
+        </p>
 
         <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
 
