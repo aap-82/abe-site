@@ -143,3 +143,137 @@ h1, h2, h3, h4, h5, h6 {
     transform: none;
   }
 }
+
+/* ─── Hero overdrive — only used by /styleguide/course-v3/ ──────────────
+   Three layered effects for the masthead, all restrained per the brand:
+
+   A) Typeset entrance — on first paint, the masthead reveals like a
+      printed page being typeset. Breadcrumb hairline draws across,
+      H1 reveals word-by-word, lede + applies-to + fact panel cascade
+      in. All exponential ease-out, no bounce, ~1.4s total.
+
+   B) Scroll-driven sticky fact bar — as the user scrolls past the
+      masthead, a thin sticky bar slides in below the global nav
+      with $180 + course name + Enrol button, so the regulator-handbook
+      reference card stays available throughout the read. Pure CSS
+      via animation-timeline: scroll(). Falls back to silent in
+      Firefox (the existing bottom bar covers that case).
+
+   C) Linked prose ↔ fact panel — hovering specific phrases in the
+      lede (the RTO mention) highlights the corresponding row in the
+      fact panel via :has(). Connects prose to data without colour
+      decoration. Zero JS.
+
+   prefers-reduced-motion: all entrance and scroll animations short-
+   circuit; the page renders as a static editorial composition. */
+
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(0.75rem); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-hairline-draw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes hero-fact-bar-reveal {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes hero-bottom-bar-fade {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(100%); }
+}
+
+.hero-anim-fade-up {
+  opacity: 0;
+  animation: hero-fade-up 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* animation-delay set per-element via inline style */
+}
+
+.hero-anim-hairline {
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: hero-hairline-draw 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
+}
+
+/* The sticky top fact bar (Direction B). Hidden by default; shown via
+   scroll-driven animation in supporting browsers. Falls back to
+   permanently-hidden in Firefox (the bottom enrol bar is always
+   present, so price + CTA still reachable). */
+.hero-top-fact-bar {
+  position: fixed;
+  top: 4rem; /* matches DaisyUI navbar height */
+  left: 0;
+  right: 0;
+  z-index: 25;
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+@supports (animation-timeline: scroll()) {
+  .hero-top-fact-bar {
+    animation: hero-fact-bar-reveal linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 220px 380px;
+  }
+  /* Pair: fade out the existing bottom enrol bar over the same range,
+     so we never have two competing CTAs visible at once. */
+  .hero-bottom-bar-coordinated {
+    animation: hero-bottom-bar-fade linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 240px 380px;
+  }
+}
+
+/* Direction C — :has() prose ↔ fact panel linking. When a phrase in the
+   lede is hovered/focused, the matching fact-panel row picks up the
+   primary maroon at low opacity. Brand rule: maroon stays rare and
+   load-bearing — this is interaction, not decoration, and only shows
+   on intentional pointer/keyboard contact. */
+.hero-masthead:has([data-fact="rto"]:hover) [data-fact-target="rto"],
+.hero-masthead:has([data-fact="rto"]:focus-visible) [data-fact-target="rto"],
+.hero-masthead:has([data-fact="units"]:hover) [data-fact-target="units"],
+.hero-masthead:has([data-fact="units"]:focus-visible) [data-fact-target="units"],
+.hero-masthead:has([data-fact="price"]:hover) [data-fact-target="price"],
+.hero-masthead:has([data-fact="price"]:focus-visible) [data-fact-target="price"] {
+  color: var(--color-primary);
+  transition: color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hero-masthead [data-fact-target] {
+  transition: color 220ms ease-out;
+}
+
+.hero-masthead [data-fact] {
+  cursor: help;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--color-base-300);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 180ms ease-out;
+}
+
+.hero-masthead [data-fact]:hover,
+.hero-masthead [data-fact]:focus-visible {
+  text-decoration-color: var(--color-primary);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-anim-fade-up,
+  .hero-anim-hairline {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .hero-top-fact-bar,
+  .hero-bottom-bar-coordinated {
+    animation: none;
+    transition: none;
+  }
+}
