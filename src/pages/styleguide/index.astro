@@ -383,7 +383,7 @@ const antiPatterns = [
           <li class="grid grid-cols-[80px_120px_1fr] items-center gap-4 text-sm">
             <span class="font-mono text-xs text-base-content/60">{s.token}</span>
             <span class="font-mono text-xs text-base-content/60">{s.px}px</span>
-            <span class="bg-primary h-2 rounded" style={`width:${s.px}px`}></span>
+            <span class={`bg-primary h-2 rounded bar-w-${s.px}`}></span>
           </li>
         ))}
       </ul>
@@ -403,7 +403,7 @@ const antiPatterns = [
         for accordions, no JS). Hierarchy through weight and size, not colour.
       </p>
 
-      {/* Buttons */}
+      {/* ─── Buttons ─────────────────────────────── */}
       <div class="mb-12">
         <h3 class="font-display text-lg font-semibold mb-4">Buttons</h3>
         <div class="flex flex-wrap gap-3">
@@ -421,39 +421,202 @@ const antiPatterns = [
         </p>
       </div>
 
-      {/* Badges */}
+      {/* ─── Indicator ────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Indicator</h3>
+        <div class="flex flex-wrap gap-8 items-center">
+          <div class="indicator">
+            <span class="indicator-item indicator-end indicator-top badge badge-secondary">Updated Apr 2026</span>
+            <a class="btn btn-primary">View NSW course</a>
+          </div>
+          <div class="indicator">
+            <span class="indicator-item badge badge-success">New</span>
+            <a class="btn btn-outline">QLD Owner Builder</a>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Small overlay badge on a button or card. Use sparingly — best for
+          flagging "Updated" / "New" on hub pages so returning users spot
+          changes. Never use to manufacture urgency.
+        </p>
+      </div>
+
+      {/* ─── Badges ───────────────────────────────── */}
       <div class="mb-12">
         <h3 class="font-display text-lg font-semibold mb-4">Badges</h3>
-        <div class="flex flex-wrap gap-3">
+        <div class="flex flex-wrap gap-3 items-center">
           <span class="badge badge-primary badge-lg">Primary</span>
           <span class="badge badge-outline badge-lg">Outline</span>
           <span class="badge badge-success badge-sm">Eligible</span>
           <span class="badge badge-error badge-sm">Excluded</span>
           <span class="badge badge-outline badge-sm">RTO 91826</span>
           <span class="badge badge-outline badge-sm">ASQA Regulated</span>
+          <span class="badge badge-outline badge-sm">Standards for RTOs 2025</span>
         </div>
       </div>
 
-      {/* Alerts */}
+      {/* ─── Status ───────────────────────────────── */}
       <div class="mb-12">
-        <h3 class="font-display text-lg font-semibold mb-4">Alerts</h3>
-        <div class="space-y-3 max-w-3xl">
-          <div class="alert bg-primary/5 border border-primary/20 text-base-content">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-primary shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p>Answer-capsule alert — primary tinted. Used for the answer paragraph in regulator-handbook sections.</p>
-          </div>
-          <div class="alert bg-accent/10 border border-accent/30 text-base-content">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-accent shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-            <p><strong>Exemption alert</strong> — accent (Steel Pale) tinted. Used for "you may be exempt" messaging on requirement sections.</p>
-          </div>
+        <h3 class="font-display text-lg font-semibold mb-4">Status</h3>
+        <div class="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm">
+          <span class="inline-flex items-center gap-2"><span class="status status-success" aria-hidden="true"></span> All Verified</span>
+          <span class="inline-flex items-center gap-2"><span class="status status-warning" aria-hidden="true"></span> Partially Verified</span>
+          <span class="inline-flex items-center gap-2"><span class="status status-error" aria-hidden="true"></span> Pending review</span>
+          <span class="inline-flex items-center gap-2"><span class="status status-info" aria-hidden="true"></span> In progress</span>
         </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Tiny coloured dot for status indication. Used on the experts page
+          for verification state, on hub pages for course-availability state.
+          Always paired with a label — colour alone never carries meaning.
+        </p>
       </div>
 
-      {/* Cards */}
+      {/* ─── Stats ────────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Stats</h3>
+        <div class="stats stats-vertical sm:stats-horizontal shadow-sm border border-base-300 bg-base-100">
+          <div class="stat py-3">
+            <div class="stat-title text-xs">RTO Partner</div>
+            <div class="stat-value text-base text-primary font-display">AlertForce</div>
+            <div class="stat-desc text-xs">RTO 91826 · ASQA</div>
+          </div>
+          <div class="stat py-3">
+            <div class="stat-title text-xs">Students Trained</div>
+            <div class="stat-value text-base text-primary font-display">31,000+</div>
+            <div class="stat-desc text-xs">Since 2007</div>
+          </div>
+          <div class="stat py-3">
+            <div class="stat-title text-xs">Course Duration</div>
+            <div class="stat-value text-base text-primary font-display">8–12 hrs</div>
+            <div class="stat-desc text-xs">Self-paced</div>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Used in the hero trust bar on every course page. Tightened from
+          DaisyUI defaults: <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">stat-value</code>
+          dropped to <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">text-base</code>
+          (instead of the default 4xl) so trust facts read as facts, not as
+          marketing-page hero numbers. Anti-pattern flagged in
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">.impeccable.md</code>:
+          giant counter-up animations.
+        </p>
+      </div>
+
+      {/* ─── Avatar ───────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Avatar</h3>
+        <div class="flex flex-wrap gap-10 items-center">
+          <div class="flex items-center gap-3">
+            <div class="avatar">
+              <div class="w-16 rounded-full ring-2 ring-base-300 bg-base-200 overflow-hidden">
+                <img src="/images/experts/Dominic-Ogburn-ABE-Education-CEO-Course-Creator.webp" alt="Dominic Ogburn headshot" />
+              </div>
+            </div>
+            <div>
+              <p class="font-display font-semibold text-sm">Image avatar</p>
+              <p class="text-sm text-base-content/70">Real expert headshot</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="avatar avatar-placeholder">
+              <div class="w-16 rounded-full bg-primary text-primary-content">
+                <span class="font-display font-semibold text-lg">WS</span>
+              </div>
+            </div>
+            <div>
+              <p class="font-display font-semibold text-sm">Initials placeholder</p>
+              <p class="text-sm text-base-content/70">Used when headshot file isn't uploaded yet</p>
+            </div>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Both variants live in <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">HeroCourse.astro</code>
+          and <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">CourseAuthorship.astro</code>.
+          The placeholder degrades gracefully — never a broken image — so
+          headshot upload doesn't gate publishing.
+        </p>
+      </div>
+
+      {/* ─── Table ────────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Table</h3>
+        <div class="overflow-x-auto rounded-box border border-base-300 bg-base-100">
+          <table class="table table-zebra">
+            <thead class="bg-base-200">
+              <tr>
+                <th class="font-display">Unit code</th>
+                <th class="font-display">Unit title</th>
+                <th class="font-display">Superseded versions accepted</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="bg-base-200 px-2 py-1 rounded text-sm font-mono text-primary">CPCCWHS2001</code></td>
+                <td>Apply WHS requirements, policies and procedures in the construction industry</td>
+                <td class="text-xs text-base-content/60 font-mono">CPCCOHS2001A</td>
+              </tr>
+              <tr>
+                <td><code class="bg-base-200 px-2 py-1 rounded text-sm font-mono text-primary">CPCCOM2001</code></td>
+                <td>Read and interpret plans and specifications</td>
+                <td class="text-xs text-base-content/60 font-mono">CPCCCM2001 / CPCCCM2001A</td>
+              </tr>
+              <tr>
+                <td><code class="bg-base-200 px-2 py-1 rounded text-sm font-mono text-primary">CPCCCM1011</code></td>
+                <td>Undertake basic estimation and costing</td>
+                <td class="text-xs text-base-content/60 font-mono">CPCCCM1011A</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">table-zebra</code>
+          for alternating row colours when scanning long lists matters
+          (units of competency, role-separation table, fee breakdown).
+          Always wrap in
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">overflow-x-auto rounded-box border border-base-300</code>
+          so it survives narrow viewports.
+        </p>
+      </div>
+
+      {/* ─── List ─────────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">List</h3>
+        <ul class="list bg-base-100 rounded-box border border-base-300 max-w-2xl">
+          <li class="p-4 pb-2 text-xs uppercase tracking-wider text-base-content/60">Required documents for permit application</li>
+          <li class="list-row">
+            <div><span class="text-success font-mono">✓</span></div>
+            <div>
+              <div class="font-medium">Council or water rates notice</div>
+              <div class="text-sm text-base-content/70">Less than 1 year old, OR Certificate of Title from NSW Land Registry Services</div>
+            </div>
+          </li>
+          <li class="list-row">
+            <div><span class="text-success font-mono">✓</span></div>
+            <div>
+              <div class="font-medium">Approved DA or CDC</div>
+              <div class="text-sm text-base-content/70">Application number alone is not enough</div>
+            </div>
+          </li>
+          <li class="list-row">
+            <div><span class="text-success font-mono">✓</span></div>
+            <div>
+              <div class="font-medium">Current White Card</div>
+              <div class="text-sm text-base-content/70">SafeWork NSW Statement of Training also accepted within 60 days</div>
+            </div>
+          </li>
+        </ul>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          DaisyUI v5 <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">list</code>
+          + <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">list-row</code>
+          for two-column item layouts (icon + content). Use for short
+          itemised content where each row deserves its own visual gutter.
+          For prose-tight bullets, fall back to a plain
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">&lt;ul&gt;</code>.
+        </p>
+      </div>
+
+      {/* ─── Cards ────────────────────────────────── */}
       <div class="mb-12">
         <h3 class="font-display text-lg font-semibold mb-4">Cards</h3>
         <div class="grid gap-4 md:grid-cols-3">
@@ -487,7 +650,124 @@ const antiPatterns = [
         </div>
       </div>
 
-      {/* Breadcrumbs */}
+      {/* ─── Alerts ───────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Alerts</h3>
+        <div class="space-y-3 max-w-3xl">
+          <div class="alert bg-primary/5 border border-primary/20 text-base-content">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-primary shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>Answer-capsule alert — primary tinted. Used for the answer paragraph in regulator-handbook sections.</p>
+          </div>
+          <div class="alert bg-accent/10 border border-accent/30 text-base-content">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-accent shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <p><strong>Exemption alert</strong> — accent (Steel Pale) tinted. Used for "you may be exempt" messaging on requirement sections.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Progress ─────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Progress</h3>
+        <div class="space-y-4 max-w-md">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>Course progress</span>
+              <span class="font-mono text-base-content/70">3 / 5 units</span>
+            </div>
+            <progress class="progress progress-primary w-full" value="60" max="100"></progress>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>Assessment</span>
+              <span class="font-mono text-success">Submitted</span>
+            </div>
+            <progress class="progress progress-success w-full" value="100" max="100"></progress>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>Certificate issuance</span>
+              <span class="font-mono text-base-content/60">Pending RTO review</span>
+            </div>
+            <progress class="progress progress-warning w-full" value="20" max="100"></progress>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Reserved for student-state pages (post-enrol). Don't use for
+          marketing-page completion bars — that's the manufactured-progress
+          anti-pattern.
+        </p>
+      </div>
+
+      {/* ─── Radial progress ──────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Radial progress</h3>
+        <div class="flex flex-wrap gap-6 items-center">
+          <div class="radial-progress text-primary radial-30" role="progressbar" aria-label="30 percent">30%</div>
+          <div class="radial-progress text-primary radial-60" role="progressbar" aria-label="60 percent">60%</div>
+          <div class="radial-progress text-success radial-100" role="progressbar" aria-label="100 percent">100%</div>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Same use case as linear progress (post-enrol student state). The
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">--value</code>
+          custom property normally goes on an inline
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">style</code>
+          attribute, but CSP strips those — define each value as a class in
+          the page-level
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">&lt;style&gt;</code>
+          block (see
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">.radial-30 { '{' }--value:30{ '}' }</code>
+          at the bottom of this file).
+        </p>
+      </div>
+
+      {/* ─── Tooltip ──────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Tooltip</h3>
+        <div class="flex flex-wrap gap-x-8 gap-y-3 items-center">
+          <div class="tooltip tooltip-bottom" data-tip="Verified against Building Commission NSW on 28 April 2026">
+            <button class="btn btn-ghost btn-sm">Hover to see source</button>
+          </div>
+          <div class="tooltip tooltip-bottom tooltip-primary" data-tip="A nationally recognised qualification — five units of competency under the Australian Skills Quality Authority framework">
+            <span class="link link-primary text-sm cursor-help">What's a Statement of Attainment?</span>
+          </div>
+          <div class="tooltip tooltip-right" data-tip="Australian Skills Quality Authority — the national VET regulator">
+            <span class="badge badge-outline badge-sm cursor-help">ASQA</span>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Native CSS tooltip via
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">data-tip</code>
+          attribute. Zero JS. Use for verification-source hovers and
+          regulator-acronym definitions inline in body copy. Tooltip
+          content must duplicate critical info elsewhere (touch devices
+          can't hover).
+        </p>
+      </div>
+
+      {/* ─── Divider ──────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Divider</h3>
+        <div class="space-y-2 max-w-md">
+          <p class="text-xs text-base-content/60 font-mono">Plain</p>
+          <div class="divider"></div>
+          <p class="text-xs text-base-content/60 font-mono mt-6">With label</p>
+          <div class="divider">OR</div>
+          <p class="text-xs text-base-content/60 font-mono mt-6">Primary-tinted</p>
+          <div class="divider divider-primary">Section break</div>
+        </div>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          For mid-section breaks where a full
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">&lt;section&gt;</code>
+          boundary is overkill. The labelled variant doubles as a soft
+          headline alternative — great for pricing breakdowns.
+        </p>
+      </div>
+
+      {/* ─── Breadcrumbs ──────────────────────────── */}
       <div class="mb-12">
         <h3 class="font-display text-lg font-semibold mb-4">Breadcrumbs</h3>
         <Breadcrumbs
@@ -504,7 +784,69 @@ const antiPatterns = [
         </p>
       </div>
 
-      {/* FAQ accordion (uses real component + real entries) */}
+      {/* ─── Steps ────────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Steps</h3>
+        <ul class="steps steps-vertical lg:steps-horizontal">
+          <li class="step step-primary">Enrol online</li>
+          <li class="step step-primary">Complete five units</li>
+          <li class="step step-primary">Sit assessment</li>
+          <li class="step">Apply for permit</li>
+        </ul>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Compact alternative to the numbered step cards in
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">HowItWorksSteps.astro</code>.
+          Use for sticky-header progress on student-state pages, or
+          collapsed mobile views where the full card grid is too tall.
+        </p>
+      </div>
+
+      {/* ─── Timeline ─────────────────────────────── */}
+      <div class="mb-12">
+        <h3 class="font-display text-lg font-semibold mb-4">Timeline</h3>
+        <ul class="timeline timeline-vertical max-w-2xl">
+          <li>
+            <div class="timeline-start mb-2 font-mono text-xs">28 Apr 2026</div>
+            <div class="timeline-middle">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 text-success" aria-hidden="true">
+                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="timeline-end timeline-box">Compliance and currency review by Warwick Smith</div>
+            <hr class="bg-primary"/>
+          </li>
+          <li>
+            <hr class="bg-primary"/>
+            <div class="timeline-start mb-2 font-mono text-xs">15 Apr 2026</div>
+            <div class="timeline-middle">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 text-success" aria-hidden="true">
+                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="timeline-end timeline-box">Content version 2026.1 published</div>
+            <hr class="bg-base-300"/>
+          </li>
+          <li>
+            <hr class="bg-base-300"/>
+            <div class="timeline-start mb-2 font-mono text-xs">May 2007</div>
+            <div class="timeline-middle">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 text-base-content/40" aria-hidden="true">
+                <circle cx="10" cy="10" r="6" />
+              </svg>
+            </div>
+            <div class="timeline-end timeline-box">ABE Education founded</div>
+          </li>
+        </ul>
+        <p class="mt-3 text-sm text-base-content/70 max-w-prose">
+          Vertical timeline for content review history, course version
+          changelog, or expert-credential dates. The connector
+          <code class="font-mono text-xs bg-base-100 px-1 py-0.5 rounded border border-base-300">&lt;hr&gt;</code>
+          tinted primary marks the most-recent active period; older
+          history fades to base-300.
+        </p>
+      </div>
+
+      {/* ─── FAQ accordion ────────────────────────── */}
       {sampleFaqs.length > 0 && (
         <div class="mb-12">
           <h3 class="font-display text-lg font-semibold mb-4">FAQ accordion</h3>
@@ -519,7 +861,7 @@ const antiPatterns = [
         </div>
       )}
 
-      {/* Mini hero pattern */}
+      {/* ─── Hero pattern ─────────────────────────── */}
       <div>
         <h3 class="font-display text-lg font-semibold mb-4">Hero pattern (compact preview)</h3>
         <div class="bg-base-200 rounded-box p-8 lg:p-12 border border-base-300">
@@ -627,11 +969,13 @@ const antiPatterns = [
     </div>
   </section>
 
-  {/* Palette swatch backgrounds — defined as classes (not inline styles)
-      so they pass through CSP. Astro 6 auto-hashes <style> blocks. Add a
-      new colour: append an entry to the `palette` array above and a
-      matching .swatch-<slug> rule here. */}
+  {/* Page-level demo CSS — these need to be CLASSES (not inline styles)
+      because CSP (security.csp: true in astro.config.mjs) strips inline
+      `style="..."` attributes. Astro 6 hashes <style> blocks at build
+      time and adds the matching sha256 to the CSP allowlist. */}
   <style>
+    /* Palette swatch backgrounds — section 02. Add a new colour: append
+       an entry to the `palette` array above and a matching rule here. */
     .swatch-primary    { background: #800000; color: #ffffff; }
     .swatch-secondary  { background: #4a5568; color: #ffffff; }
     .swatch-accent     { background: #e2e8f0; color: #1a1a1a; }
@@ -642,6 +986,25 @@ const antiPatterns = [
     .swatch-success    { background: #059669; color: #ffffff; }
     .swatch-warning    { background: #d97706; color: #ffffff; }
     .swatch-error      { background: #dc2626; color: #ffffff; }
+
+    /* Spacing-scale demo bars — section 04. Each rule's name embeds the
+       pixel width of the corresponding entry in the spacingScale array. */
+    .bar-w-4   { width: 4px; }
+    .bar-w-8   { width: 8px; }
+    .bar-w-12  { width: 12px; }
+    .bar-w-16  { width: 16px; }
+    .bar-w-24  { width: 24px; }
+    .bar-w-32  { width: 32px; }
+    .bar-w-48  { width: 48px; }
+    .bar-w-64  { width: 64px; }
+    .bar-w-96  { width: 96px; }
+
+    /* Radial-progress demo values — section 05 components.
+       DaisyUI's radial-progress reads --value as a CSS custom property;
+       inline style attributes would normally set it but CSP blocks those. */
+    .radial-30   { --value: 30; }
+    .radial-60   { --value: 60; }
+    .radial-100  { --value: 100; }
   </style>
 
 </BaseLayout>
