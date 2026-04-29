@@ -308,3 +308,12 @@ p {
     animation: none;
   }
 }
+
+/* Section eyebrows — semibold for stronger structural cue (per
+   v3-eyebrows-semibold-patch). Establishes them as section markers
+   distinct from feature labels (DURATION / FORMAT / AT A GLANCE),
+   which stay regular weight. The data-section-eyebrow attribute
+   already scopes this to exactly the 8 section running heads. */
+[data-section-eyebrow] {
+  font-weight: 600;
+}
