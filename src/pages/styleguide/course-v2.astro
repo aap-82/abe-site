@@ -1,0 +1,615 @@
+---
+/**
+ * Course page v2 — internal layout variant under /styleguide/course-v2/.
+ *
+ * Renders the same NSW Owner Builder data as the live page at
+ * /courses/nsw-owner-builder-course/ but with all 12 new components
+ * from the styleguide expansion. noindex so search engines don't see
+ * it as a duplicate. No Course JSON-LD emitted (would conflict with
+ * the canonical course page's schema).
+ *
+ * Components exercised (one new component per visual region):
+ *   1. Status        — top breadcrumb row dots
+ *   2. Stats         — hero trust card
+ *   3. Tooltip       — ASQA / RTO / fee hover hints
+ *   4. Indicator     — "Apr 2026 refresh" overlay on the enrol CTA + pricing card
+ *   5. Steps         — your-journey horizontal track in hero
+ *   6. Divider       — primary-tinted dividers between major sections
+ *   7. List          — eligibility (eligible / excluded) + required documents
+ *   8. Table         — units-of-competency with tooltip on each unit code
+ *   9. Progress      — per-unit progress bars (post-enrol preview)
+ *  10. Radial progress — overall completion dial
+ *  11. Avatar        — Dominic + Warwick in the timeline
+ *  12. Timeline      — vertical course-history timeline (replaces CourseAuthorship cards)
+ */
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import FaqAccordion from '@/components/content/FaqAccordion.astro';
+
+// Pull the same NSW data the live page uses
+const course = await getEntry('courses', 'nsw-owner-builder-course');
+if (!course) {
+  throw new Error(
+    'NSW Owner Builder course not found — required for /styleguide/course-v2/. ' +
+      'Check src/content/courses/nsw-owner-builder.md frontmatter slug.',
+  );
+}
+
+const jurisdiction = await getEntry(course.data.jurisdiction);
+const reviewer = await getEntry(course.data.reviewer);
+const developer = course.data.developer ? await getEntry(course.data.developer) : null;
+if (!jurisdiction || !reviewer) {
+  throw new Error('Course references could not be resolved (jurisdiction or reviewer missing).');
+}
+
+const faqEntries = await Promise.all(course.data.faqRefs.map((ref) => getEntry(ref)));
+const faqs = faqEntries.filter((f): f is NonNullable<typeof f> => f != null);
+
+const c = course.data;
+const j = jurisdiction.data;
+const r = reviewer.data;
+const dev = developer?.data;
+
+const formattedPrice = new Intl.NumberFormat('en-AU', {
+  style: 'currency',
+  currency: c.priceCurrency,
+  maximumFractionDigits: 0,
+}).format(c.price);
+
+const formattedReviewDate = new Intl.DateTimeFormat('en-AU', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+}).format(new Date(c.lastReviewed));
+
+// Fake per-unit progress for the post-enrol preview section
+const unitProgress = [
+  { code: 'CPCCWHS2001', label: 'Apply WHS requirements', value: 100, status: 'Submitted', tone: 'success' as const },
+  { code: 'CPCCOM2001', label: 'Read & interpret plans', value: 60, status: 'In progress', tone: 'primary' as const },
+  { code: 'CPCCCM1011', label: 'Estimation & costing', value: 25, status: 'Started', tone: 'primary' as const },
+  { code: 'CPCCOM1013', label: 'Plan & organise work', value: 0, status: 'Not started', tone: 'base' as const },
+  { code: 'CPCCOM1014', label: 'Workplace communication', value: 0, status: 'Not started', tone: 'base' as const },
+];
+---
+
+<BaseLayout
+  title="NSW Owner Builder Course (v2 — internal styleguide)"
+  description="Internal layout variant exploring the expanded DaisyUI v5 component set"
+  noindex
+>
+
+  {/* ── Top bar: breadcrumbs + status indicators ────────────────────────── */}
+  <section class="bg-base-200/60 border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-sm">
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Owner Builder Training', href: '/compare/owner-builder/' },
+          { label: 'NSW Owner Builder', href: null },
+        ]}
+      />
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs">
+        <span class="inline-flex items-center gap-2">
+          <span class="status status-success" aria-hidden="true"></span>
+          <span class="text-base-content/70">Reviewed {formattedReviewDate}</span>
+        </span>
+        <span class="inline-flex items-center gap-2">
+          <span class="status status-success" aria-hidden="true"></span>
+          <span class="text-base-content/70">Live · v{c.contentVersion}</span>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Hero: badges + H1 + answer + Indicator CTA + Stats sidecar + Steps ── */}
+  <section class="border-b border-base-300">
+    <div class="mx-auto max-w-6xl px-4 py-12 lg:py-16">
+
+      <div class="grid lg:grid-cols-12 gap-8 lg:gap-12">
+
+        {/* Left column */}
+        <div class="lg:col-span-7">
+          <div class="flex flex-wrap gap-2 mb-5">
+            <span class="badge badge-primary badge-lg">Meets {j.regulator.name}</span>
+            <div class="tooltip tooltip-bottom" data-tip={`Verifiable on training.gov.au using RTO Code ${c.deliveryRto.rtoCode}`}>
+              <span class="badge badge-outline badge-lg cursor-help">{c.deliveryRto.name} · RTO {c.deliveryRto.rtoCode}</span>
+            </div>
+            <div class="tooltip tooltip-bottom" data-tip="Australian Skills Quality Authority — the national VET regulator">
+              <span class="badge badge-outline badge-lg cursor-help">ASQA Regulated</span>
+            </div>
+          </div>
+
+          <h1 class="font-display text-4xl lg:text-5xl font-semibold tracking-tight text-base-content mb-4">
+            {c.h1}
+          </h1>
+
+          <p class="text-lg text-base-content/85 leading-relaxed max-w-xl mb-6">
+            {c.answerCapsule}
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="indicator">
+              <span class="indicator-item indicator-end indicator-top badge badge-secondary">Apr 2026 refresh</span>
+              <a class="btn btn-primary btn-lg" href={c.enrolUrl}>
+                Enrol now — {formattedPrice}
+              </a>
+            </div>
+            <a class="btn btn-ghost btn-lg" href="#how-it-works">How it works</a>
+          </div>
+        </div>
+
+        {/* Right column — Stats trust card with Tooltips */}
+        <aside class="lg:col-span-5 lg:pt-2">
+          <div class="stats stats-vertical w-full shadow-sm border border-base-300 bg-base-100">
+            <div class="stat">
+              <div class="stat-title text-xs">RTO Partner</div>
+              <div class="stat-value text-base text-primary font-display">{c.deliveryRto.name}</div>
+              <div class="stat-desc text-xs">
+                <div class="tooltip tooltip-right" data-tip="National Training Register — public ASQA registry">
+                  <a href={`https://training.gov.au/Organisation/Details/${c.deliveryRto.rtoCode}`} class="link link-hover decoration-dotted underline-offset-2" rel="noopener" target="_blank">
+                    RTO {c.deliveryRto.rtoCode} · ASQA
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="stat">
+              <div class="stat-title text-xs">Students Trained</div>
+              <div class="stat-value text-base text-primary font-display">31,000+</div>
+              <div class="stat-desc text-xs">Since {new Date('2007-05-01').getFullYear()}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-title text-xs">Course Duration</div>
+              <div class="stat-value text-base text-primary font-display">{c.duration}</div>
+              <div class="stat-desc text-xs">Self-paced &middot; {c.courseMode}</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      {/* Steps — your journey */}
+      <div class="mt-14">
+        <p class="text-xs uppercase tracking-[0.18em] text-base-content/55 mb-3 font-mono">Your journey</p>
+        <ul class="steps w-full">
+          <li class="step step-primary">Enrol online</li>
+          <li class="step step-primary">Complete five units</li>
+          <li class="step step-primary">Sit assessment</li>
+          <li class="step">Apply for permit</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  {/* ── Eligibility — Lists ────────────────────────────────────────────── */}
+  <section id="eligibility" class="py-12 lg:py-16">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="divider divider-primary mb-10">Course requirements</div>
+
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        What's eligible and what you'll need
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        To apply for an NSW Owner Builder Permit you must be at least 18, hold
+        a current White Card, own the land, and have an approved DA or CDC.
+      </p>
+
+      {c.eligibility && (
+        <div class="grid lg:grid-cols-2 gap-6 mb-12">
+          <ul class="list bg-base-100 rounded-box border border-base-300">
+            <li class="p-4 pb-2 text-xs uppercase tracking-wider text-base-content/60 flex items-center gap-2">
+              <span class="status status-success" aria-hidden="true"></span>
+              Properties covered
+            </li>
+            {c.eligibility.eligible.map((item) => (
+              <li class="list-row">
+                <div><span class="text-success font-mono" aria-hidden="true">✓</span></div>
+                <div class="text-sm">{item}</div>
+              </li>
+            ))}
+          </ul>
+
+          <ul class="list bg-base-100 rounded-box border border-base-300">
+            <li class="p-4 pb-2 text-xs uppercase tracking-wider text-base-content/60 flex items-center gap-2">
+              <span class="status status-error" aria-hidden="true"></span>
+              Properties not covered
+            </li>
+            {c.eligibility.excluded.map((item) => (
+              <li class="list-row">
+                <div><span class="text-error font-mono" aria-hidden="true">✗</span></div>
+                <div class="text-sm">{item}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {c.requirements && c.requirements.length > 0 && (
+        <>
+          <h3 class="font-display text-xl font-semibold mb-4">Required documents</h3>
+          <ul class="list bg-base-100 rounded-box border border-base-300 max-w-3xl">
+            {c.requirements.map((item, i) => (
+              <li class="list-row">
+                <div>
+                  <span class="font-mono text-xs text-base-content/45">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                </div>
+                <div class="text-sm">{item}</div>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  </section>
+
+  {/* ── Units — Table with Tooltips on unit codes ──────────────────────── */}
+  <section class="py-12 lg:py-16 bg-base-200/50 border-y border-base-300">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="divider divider-primary mb-10">What you'll learn</div>
+
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Five units of competency
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-8">
+        Hover any unit code for the full title from the National Training Register.
+      </p>
+
+      <div class="overflow-x-auto rounded-box border border-base-300 bg-base-100">
+        <table class="table table-zebra">
+          <thead class="bg-base-200">
+            <tr>
+              <th class="font-display">Unit code</th>
+              <th class="font-display">What you'll do</th>
+              <th class="font-display text-right">Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="tooltip tooltip-right" data-tip="CPCCWHS2001 — Apply WHS requirements, policies and procedures in the construction industry">
+                  <code class="bg-base-200 px-2 py-1 rounded text-sm font-mono text-primary cursor-help">CPCCWHS2001</code>
+                </div>
+              </td>
+              <td>Stay safe on a construction site</td>
+              <td class="text-right text-xs text-base-content/60 font-mono">Site safety</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tooltip tooltip-right" data-tip="CPCCOM2001 — Read and interpret plans and specifications">
+                  <code class="bg-base-200 px-2 py-1 rounded text-sm font-mono text-primary cursor-help">CPCCOM2001</code>
+                </div>
+              </td>
+              <td>Read a set of building plans</td>
+              <td class="text-right text-xs text-base-content/60 font-mono">Drawings</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tooltip tooltip-right" data-tip="CPCCCM1011 — Undertake basic estimation and costing">
+                  <code class="bg-base-200 px-2 py-1 rounded text-sm font-mono text-primary cursor-help">CPCCCM1011</code>
+                </div>
+              </td>
+              <td>Estimate labour and materials</td>
+              <td class="text-right text-xs text-base-content/60 font-mono">Budget</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tooltip tooltip-right" data-tip="CPCCOM1013 — Plan and organise work">
+                  <code class="bg-base-200 px-2 py-1 rounded text-sm font-mono text-primary cursor-help">CPCCOM1013</code>
+                </div>
+              </td>
+              <td>Plan and sequence the build</td>
+              <td class="text-right text-xs text-base-content/60 font-mono">Sequencing</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tooltip tooltip-right" data-tip="CPCCOM1014 — Conduct workplace communication">
+                  <code class="bg-base-200 px-2 py-1 rounded text-sm font-mono text-primary cursor-help">CPCCOM1014</code>
+                </div>
+              </td>
+              <td>Communicate with tradies and certifiers</td>
+              <td class="text-right text-xs text-base-content/60 font-mono">Communication</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Post-enrol preview — Progress + Radial progress ────────────────── */}
+  <section id="how-it-works" class="py-12 lg:py-16">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="divider divider-primary mb-10">How it works</div>
+
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Once you enrol, here's what you'll see
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        {c.deliveryRto.name} hosts the learning portal. Your dashboard tracks
+        unit completion and assessment outcome in real time — no chasing
+        progress emails.
+      </p>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+
+        {/* Linear unit progress card */}
+        <div class="card bg-base-100 border border-base-300 lg:col-span-2">
+          <div class="card-body p-6">
+            <h3 class="card-title font-display text-base mb-4">Unit-by-unit progress</h3>
+            <div class="space-y-4">
+              {unitProgress.map((u) => (
+                <div>
+                  <div class="flex justify-between items-center text-sm mb-1.5 gap-2">
+                    <span class="flex items-center gap-2 min-w-0">
+                      <code class="font-mono text-xs text-base-content/55 shrink-0">{u.code}</code>
+                      <span class="truncate">{u.label}</span>
+                    </span>
+                    <span class={`font-mono text-xs shrink-0 ${u.tone === 'success' ? 'text-success' : u.tone === 'primary' ? 'text-primary' : 'text-base-content/55'}`}>
+                      {u.status}
+                    </span>
+                  </div>
+                  <progress
+                    class={`progress w-full ${u.tone === 'success' ? 'progress-success' : u.tone === 'primary' ? 'progress-primary' : ''}`}
+                    value={u.value}
+                    max="100"
+                    aria-label={`${u.label} ${u.value}% complete`}
+                  ></progress>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Radial overview card */}
+        <div class="card bg-base-100 border-2 border-primary/30">
+          <div class="card-body p-6 items-center text-center">
+            <h3 class="card-title font-display text-base mb-4 self-start">Overall</h3>
+            <div class="radial-progress text-primary radial-60 mb-4" role="progressbar" aria-label="60 percent complete">
+              <span class="font-display font-semibold">60%</span>
+            </div>
+            <p class="text-sm text-base-content/80 leading-relaxed">
+              <strong class="text-base-content">3 of 5 units</strong> with progress<br />
+              <span class="text-base-content/60 text-xs">Estimated 5 hrs remaining</span>
+            </p>
+            <div class="divider my-2"></div>
+            <p class="text-xs text-base-content/60 inline-flex items-center gap-2">
+              <span class="status status-warning" aria-hidden="true"></span>
+              Awaiting RTO assessor sign-off
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  {/* ── Pricing — Indicator + Table ────────────────────────────────────── */}
+  <section class="py-12 lg:py-16 bg-base-200/50 border-y border-base-300">
+    <div class="mx-auto max-w-4xl px-4">
+      <div class="divider divider-primary mb-10">Cost</div>
+
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        How much does it cost?
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-10">
+        One fee covers training, assessment, and your Statement of Attainment.
+        The {j.regulator.name} permit fee is set separately.
+      </p>
+
+      <div class="indicator w-full">
+        <span class="indicator-item indicator-end indicator-top badge badge-primary mr-6 mt-1">Apr 2026 refresh</span>
+        <div class="card bg-base-100 border-2 border-primary/30 w-full">
+          <div class="card-body p-8">
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-5xl font-display font-semibold text-primary">{formattedPrice}</span>
+              <span class="text-base-content/60 text-sm">{c.priceCurrency}</span>
+            </div>
+            <p class="text-sm text-base-content/70">one-off payment &middot; GST included</p>
+
+            <div class="divider my-5"></div>
+
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <td>ABE Education course fee</td>
+                  <td class="text-right font-semibold">{formattedPrice}</td>
+                </tr>
+                <tr>
+                  <td>{c.deliveryRto.name} Statement of Attainment</td>
+                  <td class="text-right text-success font-medium">Included</td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="tooltip tooltip-right" data-tip="Set by Service NSW — see the live fees page">
+                      <span class="cursor-help underline decoration-dotted underline-offset-2">{j.regulator.name} permit fee</span>
+                    </div>
+                  </td>
+                  <td class="text-right text-sm text-base-content/70">Paid separately</td>
+                </tr>
+                <tr>
+                  <td>White Card (if you don't have one)</td>
+                  <td class="text-right text-sm text-base-content/70">Separate course</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <a href={c.enrolUrl} class="btn btn-primary btn-block btn-lg mt-6">
+              Enrol now — {formattedPrice}
+            </a>
+            <p class="text-xs text-base-content/55 text-center mt-3">
+              Secure checkout via {c.deliveryRto.name === 'AlertForce' ? 'AlertForce' : 'partner RTO'}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ── Authority — Timeline with Avatars ──────────────────────────────── */}
+  <section class="py-12 lg:py-16">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="divider divider-primary mb-10">Authority</div>
+
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+        Course history
+      </h2>
+      <p class="text-base-content/70 max-w-2xl mb-12">
+        Two-stage development. Course content built by a licensed builder;
+        legislative currency reviewed independently by a 27-year VET-sector
+        compliance specialist.
+      </p>
+
+      <ul class="timeline timeline-vertical max-w-4xl">
+        {/* Most recent — compliance review by reviewer */}
+        <li>
+          <div class="timeline-start font-mono text-xs mb-2 text-base-content/65">{formattedReviewDate}</div>
+          <div class="timeline-middle">
+            <div class="avatar avatar-placeholder">
+              <div class="w-12 rounded-full bg-primary text-primary-content ring-2 ring-base-300">
+                <span class="font-display font-semibold text-sm">
+                  {r.name.split(/\s+/).map((p) => p[0]).slice(0, 2).join('')}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-end timeline-box max-w-md">
+            <p class="font-display font-semibold">Compliance & currency review</p>
+            <p class="text-sm text-base-content/75 mt-1.5 leading-relaxed">
+              By <a href={r.profileUrl} class="link link-primary">{r.name}</a>,
+              {' '}{r.title ?? r.role} at {r.organisation}.
+              {' '}{r.yearsInIndustry}+ years in the Australian VET sector.
+            </p>
+            <div class="mt-2 flex items-center gap-2 text-xs">
+              <span class="status status-success" aria-hidden="true"></span>
+              <span class="text-base-content/65">{r.verificationStatus}</span>
+            </div>
+          </div>
+          <hr class="bg-primary"/>
+        </li>
+
+        {/* Content version published */}
+        <li>
+          <hr class="bg-primary"/>
+          <div class="timeline-start font-mono text-xs mb-2 text-base-content/65">15 Apr 2026</div>
+          <div class="timeline-middle">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-6 w-6 text-success" aria-hidden="true">
+              <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="timeline-end timeline-box max-w-md">
+            <p class="font-display font-semibold">Content version {c.contentVersion} published</p>
+            <p class="text-sm text-base-content/75 mt-1.5 leading-relaxed">
+              Aligned with current {j.regulator.name} requirements. Five CPC unit
+              codes verified against the National Training Register.
+            </p>
+          </div>
+          <hr class="bg-primary"/>
+        </li>
+
+        {/* Course developer */}
+        {dev && developer && (
+          <li>
+            <hr class="bg-primary"/>
+            <div class="timeline-start font-mono text-xs mb-2 text-base-content/65">Course developer</div>
+            <div class="timeline-middle">
+              {dev.headshotPath ? (
+                <div class="avatar">
+                  <div class="w-12 rounded-full ring-2 ring-base-300 bg-base-200 overflow-hidden">
+                    <img src={dev.headshotPath} alt={`${dev.name} headshot`} loading="lazy" decoding="async" />
+                  </div>
+                </div>
+              ) : (
+                <div class="avatar avatar-placeholder">
+                  <div class="w-12 rounded-full bg-primary text-primary-content ring-2 ring-base-300">
+                    <span class="font-display font-semibold text-sm">
+                      {dev.name.split(/\s+/).map((p) => p[0]).slice(0, 2).join('')}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div class="timeline-end timeline-box max-w-md">
+              <p class="font-display font-semibold">
+                Developed by <a href={dev.profileUrl} class="link link-primary">{dev.name}</a>
+              </p>
+              <p class="text-sm text-base-content/75 mt-1.5 leading-relaxed">
+                {dev.title ?? dev.role}, {dev.organisation}.
+                {' '}{dev.yearsInIndustry}+ years in Australian residential construction.
+              </p>
+            </div>
+            <hr class="bg-base-300"/>
+          </li>
+        )}
+
+        {/* Origin */}
+        <li>
+          <hr class="bg-base-300"/>
+          <div class="timeline-start font-mono text-xs mb-2 text-base-content/55">May 2007</div>
+          <div class="timeline-middle">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 text-base-content/40" aria-hidden="true">
+              <circle cx="10" cy="10" r="6" />
+            </svg>
+          </div>
+          <div class="timeline-end timeline-box max-w-md">
+            <p class="font-display font-semibold">ABE Education founded</p>
+            <p class="text-sm text-base-content/75 mt-1.5 leading-relaxed">
+              31,000+ students trained across NSW, ACT, QLD, TAS, and WA since.
+            </p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  {/* ── FAQs ───────────────────────────────────────────────────────────── */}
+  {faqs.length > 0 && (
+    <section class="py-12 lg:py-16 bg-base-200/50 border-y border-base-300">
+      <div class="mx-auto max-w-4xl px-4">
+        <div class="divider divider-primary mb-10">Questions</div>
+
+        <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-2">
+          Frequently asked questions
+        </h2>
+        <p class="text-base-content/70 mb-8">
+          Everything builders ask before they enrol.
+        </p>
+
+        <FaqAccordion faqs={faqs} />
+      </div>
+    </section>
+  )}
+
+  {/* ── Final CTA ──────────────────────────────────────────────────────── */}
+  <section class="bg-primary text-primary-content py-16 lg:py-20">
+    <div class="mx-auto max-w-4xl px-4 text-center">
+      <h2 class="font-display text-3xl lg:text-4xl font-semibold mb-4 text-primary-content">
+        Get your Statement of Attainment in your inbox.
+      </h2>
+      <p class="text-primary-content/85 mb-8 max-w-2xl mx-auto">
+        Self-paced. Nationally recognised via {c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode}).
+        Accepted by {j.regulator.name}.
+      </p>
+      <a
+        href={c.enrolUrl}
+        class="btn btn-block sm:btn-wide bg-primary-content text-primary hover:bg-primary-content/90 border-0 btn-lg"
+      >
+        Enrol now — {formattedPrice}
+      </a>
+    </div>
+  </section>
+
+  {/* ── Internal note (variant signpost) ───────────────────────────────── */}
+  <section class="bg-base-200 py-8 border-t border-base-300">
+    <div class="mx-auto max-w-4xl px-4 text-center">
+      <p class="text-sm text-base-content/70">
+        Internal v2 layout under
+        <code class="font-mono text-xs bg-base-100 px-1.5 py-0.5 rounded border border-base-300">/styleguide/course-v2/</code>
+        &middot; <a href="/courses/nsw-owner-builder-course/" class="link link-primary">View the live v1 page</a>
+        &middot; <a href="/styleguide/" class="link link-primary">Back to styleguide</a>
+      </p>
+    </div>
+  </section>
+
+</BaseLayout>
