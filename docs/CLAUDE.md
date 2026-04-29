@@ -87,6 +87,16 @@ For SEO-optimised page content (homepage, state pages, course pages),
 delegate to the **`abe-seo-content-engine`** skill. It enforces the ABE
 authority model, generates schema markup, and is tuned for AI Overview / GEO.
 
+## When doing design / UI work
+
+Read [.impeccable.md](../.impeccable.md) at the repo root *first*. It
+captures the committed Design Context — brand voice (Reassuring · Australian
+· Practical), the Heritage Maroon palette and font commitments from Grey
+Design System v1.1, the explicit anti-references (no SaaS landing-page
+gradients, no competitor hard-sell patterns), and the five Design Principles
+that should guide every UI decision on this codebase. Do not infer design
+context from the codebase alone — `.impeccable.md` is the source of truth.
+
 ## Out-of-scope reminders
 
 - Don't add `@astrojs/cloudflare` adapter — `output: 'static'` is intentional
