@@ -55,6 +55,16 @@ const categories: Category[] = [
       { href: '#', label: 'WA CPD' },
     ],
   },
+  // Internal styleguide + course layout variants. Pages are noindex'd so
+  // they won't appear in search; the menu is just a quick-jump for review.
+  {
+    label: 'Styleguide',
+    links: [
+      { href: '/styleguide/', label: 'Overview', active: isActive('/styleguide/') },
+      { href: '/styleguide/course-v2/', label: 'Course v2 — DaisyUI', active: isActive('/styleguide/course-v2/') },
+      { href: '/styleguide/course-v3/', label: 'Course v3 — Handbook', active: isActive('/styleguide/course-v3/') },
+    ],
+  },
 ];
 
 // Flat list for mobile menu
