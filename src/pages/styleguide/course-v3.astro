@@ -101,40 +101,34 @@ const inclusions = [
 >
 
   {/* ─────────────────────────────────────────────────────────────────
-       MASTHEAD — chapter opener.
-       The page identifies itself like a regulator handbook contents
-       page: jurisdiction code, chapter number, document type, and a
-       silcrow that anchors the brand colour. No hero card. No image.
-       Just type and one hairline.
+       MASTHEAD — title + lede + applies-to + dated byline + fact panel.
+
+       The fast-mover personas (WA / QLD OB pattern: 320 + 128 customers,
+       single-session, compliance-motivated) want four answers above the
+       fold: is this the right course, how much, how long, and who issues
+       the certificate. The fact panel on the right answers all four
+       without scrolling. The applies-to / not-for definition list under
+       the lede answers "is this for me" before they have to find § 04.
+
+       On mobile, the fact panel stacks BELOW the title block — the
+       reading order on phone is title → lede → eligibility → byline →
+       fact panel + CTA, which matches the natural decision sequence.
      ───────────────────────────────────────────────────────────────── */}
   <header class="border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 pt-12 lg:pt-16 pb-10 lg:pb-14">
 
       {/* eyebrow row — running head + jurisdiction + filed-under */}
-      <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 mb-10 lg:mb-14 font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
-        <span aria-label="Jurisdiction">NSW · {j.regulator.shortName ?? j.regulator.name}</span>
+      <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2 mb-8 lg:mb-12 font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
+        <span aria-label="Jurisdiction">NSW • {j.regulator.shortName ?? j.regulator.name}</span>
         <span aria-hidden="true" class="text-base-content/30">/</span>
-        <span>Owner Builder · Permit Education</span>
-        <span aria-hidden="true" class="text-base-content/30">/</span>
-        <span>Edition {c.contentVersion}</span>
+        <span>Owner Builder • Permit Education</span>
       </div>
 
-      <div class="grid lg:grid-cols-[7rem_minmax(0,1fr)] gap-x-8 lg:gap-x-12 items-start">
+      <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-12 lg:gap-x-16 items-start">
 
-        {/* silcrow + chapter numeral — handbook chapter opener */}
-        <div class="flex lg:flex-col items-baseline lg:items-start gap-3 lg:gap-3 mb-6 lg:mb-0 select-none">
-          <span
-            class="font-display text-6xl lg:text-7xl text-primary leading-none font-medium"
-            aria-hidden="true"
-          >§</span>
-          <span class="font-mono text-xs uppercase tracking-[0.22em] text-base-content/55 lg:mt-1">
-            Chapter 01
-          </span>
-        </div>
-
-        {/* title block */}
+        {/* ── Left column: title + lede + applies-to + byline ───────── */}
         <div>
-          <h1 class="font-display text-[2.25rem] sm:text-5xl lg:text-[3.75rem] leading-[1.05] tracking-tight font-semibold text-base-content max-w-[18ch]">
+          <h1 class="font-display text-[2.5rem] sm:text-5xl lg:text-[3.75rem] leading-[1.05] tracking-tight font-semibold text-base-content max-w-[18ch]">
             {c.h1.replace(/ — .*$/, '')}
           </h1>
 
@@ -146,11 +140,29 @@ const inclusions = [
             {c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode}).
           </p>
 
-          {/* Dateline — like a journal byline. Authority-signal links use a
-              solid underline (not dotted) so they declare themselves as the
-              primary trust handle above the fold. Source-citation links in
-              marginalia stay dotted (footnote-style). */}
-          <div class="mt-7 lg:mt-9 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm text-base-content/70">
+          {/* Applies-to / Not-for — confirms eligibility above the fold.
+              Mono labels on the left, body answers on the right. No
+              icons, no ✓/✕ — that lives in § 04. This is the at-a-glance
+              filter that sends the wrong audience away early. */}
+          {c.eligibility && (
+            <dl class="mt-8 lg:mt-10 max-w-[55ch] grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-5 gap-y-3 text-base lg:text-[1.0625rem] leading-relaxed">
+              <dt class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.45rem] leading-none">
+                Applies to
+              </dt>
+              <dd class="text-base-content">
+                {c.eligibility.eligible.join(', ')}.
+              </dd>
+              <dt class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.45rem] leading-none">
+                Not for
+              </dt>
+              <dd class="text-base-content/75">
+                {c.eligibility.excluded.join(', ')}.
+              </dd>
+            </dl>
+          )}
+
+          {/* Dateline — like a journal byline. */}
+          <div class="mt-8 lg:mt-10 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm text-base-content/70">
             <span class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
               Reviewed
             </span>
@@ -164,6 +176,61 @@ const inclusions = [
             </span>
           </div>
         </div>
+
+        {/* ── Right column: fact panel ──────────────────────────────────
+            Hairline left border on desktop, no border on mobile. This is
+            the single-glance specification card a regulator handbook
+            would put in the inside cover: price, format, RTO, button.
+            No card chrome — the hairline and the type carry it. */}
+        <aside class="lg:pt-2 lg:border-l lg:border-base-300 lg:pl-10">
+
+          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
+            At a glance
+          </p>
+
+          <p class="font-display text-5xl lg:text-6xl font-semibold text-base-content leading-none tracking-tight">
+            {formattedPrice}
+          </p>
+          <p class="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55">
+            One-off • GST included
+          </p>
+
+          <dl class="mt-7 grid grid-cols-[5.5rem_minmax(0,1fr)] gap-x-4 gap-y-3 text-sm leading-snug border-t border-base-300 pt-5">
+            <dt class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.2rem]">
+              Duration
+            </dt>
+            <dd class="text-base-content">{c.duration}</dd>
+
+            <dt class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.2rem]">
+              Format
+            </dt>
+            <dd class="text-base-content">Fully online • self-paced</dd>
+
+            <dt class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.2rem]">
+              Issued by
+            </dt>
+            <dd class="text-base-content">
+              {c.deliveryRto.name}<br />
+              <span class="font-mono text-xs text-base-content/65">RTO {c.deliveryRto.rtoCode}</span>
+            </dd>
+
+            <dt class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 pt-[0.2rem]">
+              You receive
+            </dt>
+            <dd class="text-base-content">{c.credentialAwarded}</dd>
+          </dl>
+
+          <a
+            href={c.enrolUrl}
+            class="btn btn-primary btn-md mt-7 w-full font-semibold"
+          >
+            Enrol now — {formattedPrice}
+          </a>
+          <p class="mt-3 font-mono text-[10px] text-base-content/55 leading-relaxed">
+            No subscription. No add-ons.
+          </p>
+
+        </aside>
       </div>
 
     </div>
@@ -174,13 +241,13 @@ const inclusions = [
        Editorial AnswerCapsule (uncontainered, type-as-container) with
        the verified-source citation hairlined below. No card.
      ───────────────────────────────────────────────────────────────── */}
-  <section id="section-short" class="border-b border-base-300">
+  <section id="section-short" class="bg-base-200/60 border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
-      <div class="grid lg:grid-cols-[minmax(0,720px)_minmax(0,260px)] gap-y-8 lg:gap-x-16">
+      <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
 
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
-            § 02 · The short version
+            02 • In short
           </p>
           <p class="text-xl lg:text-2xl leading-[1.55] font-medium text-base-content max-w-prose">
             {c.answerCapsule}
@@ -188,7 +255,7 @@ const inclusions = [
         </div>
 
         {/* Marginalia — small-caps mono asides */}
-        <aside class="lg:pt-9 lg:border-l lg:border-base-300 lg:pl-8 space-y-5 text-sm leading-relaxed text-base-content/75">
+        <aside class="lg:pt-9 lg:border-l lg:border-base-300 lg:pl-8 space-y-4 text-[13px] leading-relaxed text-base-content/60">
           <p>
             <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
               Threshold
@@ -211,9 +278,9 @@ const inclusions = [
             <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
               See also
             </span>
-            <a href="#section-units" class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors">§ 05 Units of competency</a>
-            ·{' '}
-            <a href="#section-cost" class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors">§ 06 Cost</a>
+            <a href="#section-units" class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors">Units of competency</a>
+            •{' '}
+            <a href="#section-cost" class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors">Cost &amp; inclusions</a>
           </p>
         </aside>
 
@@ -226,7 +293,7 @@ const inclusions = [
        Reuses HowItWorksEditorial. The numbered eyebrow keeps § 03 in
        the same running-head pattern as § 02 / § 04 / § 05 etc.
      ───────────────────────────────────────────────────────────────── */}
-  <HowItWorksEditorial course={course} eyebrow="03 · How it works" />
+  <HowItWorksEditorial course={course} eyebrow="03 • How it works" />
 
   {/* ─────────────────────────────────────────────────────────────────
        § 04 — Who this course covers.
@@ -237,14 +304,10 @@ const inclusions = [
   <section id="section-eligibility" class="bg-base-200/60 border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-      <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
-        <span
-          class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
-          aria-hidden="true"
-        >§</span>
+      <header class="mb-10 lg:mb-14">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            04 · Eligibility
+            04 • Eligibility
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
             Who this course covers — and who it doesn't
@@ -313,14 +376,10 @@ const inclusions = [
   <section id="section-units" class="border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-      <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
-        <span
-          class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
-          aria-hidden="true"
-        >§</span>
+      <header class="mb-10 lg:mb-14">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            05 · Units of competency
+            05 • Units of competency
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
             Five nationally recognised units
@@ -328,7 +387,7 @@ const inclusions = [
         </div>
       </header>
 
-      <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,260px)] gap-y-8 lg:gap-x-16">
+      <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
 
         <ol class="border-t border-base-300">
           {(c.units ?? []).map((unit: { code: string; title: string; superseded?: string }, i: number) => (
@@ -354,7 +413,7 @@ const inclusions = [
         </ol>
 
         {/* Marginalia */}
-        <aside class="lg:pt-7 lg:border-l lg:border-base-300 lg:pl-8 space-y-5 text-sm leading-relaxed text-base-content/75">
+        <aside class="lg:pt-7 lg:border-l lg:border-base-300 lg:pl-8 space-y-4 text-[13px] leading-relaxed text-base-content/60">
           <p>
             <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
               Verifiable on
@@ -393,14 +452,10 @@ const inclusions = [
   <section id="section-cost" class="bg-base-200/60 border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-      <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
-        <span
-          class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
-          aria-hidden="true"
-        >§</span>
+      <header class="mb-10 lg:mb-14">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            06 · Cost &amp; what you receive
+            06 • Cost &amp; what you receive
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
             One fee. Everything included.
@@ -419,7 +474,7 @@ const inclusions = [
             {formattedPrice}
           </p>
           <p class="mt-4 font-mono text-xs uppercase tracking-[0.18em] text-base-content/55">
-            One-off · GST included · {c.duration}
+            One-off • GST included • {c.duration}
           </p>
 
           <div class="mt-10 max-w-md">
@@ -468,14 +523,10 @@ const inclusions = [
   <section id="section-authorship" class="border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-      <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
-        <span
-          class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
-          aria-hidden="true"
-        >§</span>
+      <header class="mb-10 lg:mb-14">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            07 · Authorship
+            07 • Authorship
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
             Authored, then independently reviewed
@@ -501,9 +552,9 @@ const inclusions = [
               {' '}
               {dev.yearsInIndustry && `${dev.yearsInIndustry} years in the Australian construction industry.`}
             </p>
-            {dev.bios?.short && (
+            {(dev.bios?.ultraShort ?? dev.bios?.short) && (
               <p class="mt-4 max-w-prose text-base-content leading-relaxed">
-                {dev.bios.short}
+                {dev.bios.ultraShort ?? dev.bios.short}
               </p>
             )}
           </article>
@@ -524,13 +575,13 @@ const inclusions = [
             {' '}
             {r.yearsInIndustry && `${r.yearsInIndustry} years across the Australian VET sector.`}
           </p>
-          {r.bios?.short && (
+          {(r.bios?.ultraShort ?? r.bios?.short) && (
             <p class="mt-4 max-w-prose text-base-content leading-relaxed">
-              {r.bios.short}
+              {r.bios.ultraShort ?? r.bios.short}
             </p>
           )}
           <p class="mt-5 font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
-            Last review · {formattedReviewDate}
+            Last review • {formattedReviewDate}
           </p>
         </article>
 
@@ -548,22 +599,16 @@ const inclusions = [
     <section id="section-faqs" class="bg-base-200/60 border-b border-base-300">
       <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
-        <header class="mb-10 lg:mb-14 flex items-baseline gap-3 lg:gap-5">
-          <span
-            class="font-mono text-base lg:text-xl text-primary tracking-wider leading-none select-none"
-            aria-hidden="true"
-          >§</span>
-          <div>
-            <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-              08 · Common questions
-            </p>
-            <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-              What builders ask before they enrol
-            </h2>
-          </div>
+        <header class="mb-10 lg:mb-14">
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+            08 • Common questions
+          </p>
+          <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
+            What builders ask before they enrol
+          </h2>
         </header>
 
-        <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,260px)] gap-y-8 lg:gap-x-16">
+        <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
 
           <ol class="border-t border-base-300 max-w-prose">
             {faqs.map((faq, i) => (
@@ -590,7 +635,7 @@ const inclusions = [
           </ol>
 
           {/* Marginalia */}
-          <aside class="lg:pt-6 lg:border-l lg:border-base-300 lg:pl-8 space-y-5 text-sm leading-relaxed text-base-content/75">
+          <aside class="lg:pt-6 lg:border-l lg:border-base-300 lg:pl-8 space-y-4 text-[13px] leading-relaxed text-base-content/60">
             <p>
               <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-1">
                 Still unsure?
@@ -611,51 +656,12 @@ const inclusions = [
     </section>
   )}
 
-  {/* ─────────────────────────────────────────────────────────────────
-       § 09 — Closing colophon.
-       Two columns: page edition + source on the left, partner RTO on the
-       right. The "ABE is not an RTO" disclosure is intentionally NOT
-       repeated here — BaseLayout's site-wide footer already runs that
-       statement underneath this section. Doubling it would break the
-       brief's "every word earns its place" rule.
-
-       Bottom padding sized to clear the sticky enrol bar (~60px) so the
-       last paragraph never sits behind it.
-     ───────────────────────────────────────────────────────────────── */}
-  <footer class="border-b border-base-300">
-    <div class="mx-auto max-w-6xl px-4 pt-14 lg:pt-20 pb-24 lg:pb-28">
-
-      <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-6">
-        09 · Colophon
-      </p>
-
-      <div class="grid lg:grid-cols-2 gap-y-8 lg:gap-x-20 max-w-4xl">
-
-        <div class="text-sm leading-relaxed text-base-content/75">
-          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            About this page
-          </p>
-          <p>
-            Edition {c.contentVersion}, last reviewed {formattedReviewDate} by{' '}
-            {r.name}. Source: <a href="https://www.nsw.gov.au/housing-and-construction/building-or-renovating-a-home/owner-builder" class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors" rel="noopener">Building Commission&nbsp;NSW</a>.
-          </p>
-        </div>
-
-        <div class="text-sm leading-relaxed text-base-content/75">
-          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            Training is delivered by
-          </p>
-          <p>
-            <strong class="font-semibold text-base-content">{c.deliveryRto.name}</strong>{' '}
-            (RTO {c.deliveryRto.rtoCode}). The {c.credentialAwarded} is issued
-            by {c.deliveryRto.name} and recorded against your USI on the
-            National Training Register.
-          </p>
-        </div>
-
-      </div>
-    </div>
-  </footer>
+  {/* §09 colophon removed — BaseLayout's site-wide footer already
+      runs the partner-RTO disclosure and the "ABE is not an RTO"
+      statement. The colophon was duplicating that information.
+      Bottom padding handled by an empty spacer so the sticky enrol
+      bar doesn't overlap the FAQ section. */}
+  <div class="h-16 lg:h-20"></div>
 
   {/* ─────────────────────────────────────────────────────────────────
        Sticky bottom enrol — handbook footer dock.
@@ -670,7 +676,7 @@ const inclusions = [
           {formattedPrice}
         </span>
         <span class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 truncate">
-          NSW Owner Builder · {c.duration} · Online
+          NSW Owner Builder • {c.duration} • Online
         </span>
       </div>
       <a
