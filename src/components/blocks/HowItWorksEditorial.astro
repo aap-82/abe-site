@@ -91,8 +91,12 @@ const steps = [
       </header>
     )}
 
-    {/* ── Editorial answer capsule — lead column + pullquote ─────────── */}
-    <div class="grid lg:grid-cols-[minmax(0,1fr)_auto] gap-y-8 gap-x-12 lg:gap-x-20 mb-16 lg:mb-24 lg:items-end">
+    {/* ── Editorial answer capsule — lead column + pullquote ───────────
+        Grid mirrors the v3 page's marginalia rhythm (§ 02 / 05 / 08):
+        right column fixed at 18rem with a 4rem gap, so the pullquote's
+        hairline left border lands on the same x as the page's other
+        marginalia tracks. */}
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16 mb-16 lg:mb-24 lg:items-end">
 
       <p class="text-lg lg:text-xl leading-relaxed text-base-content max-w-prose">
         Enrol online through ABE Education, complete five units of competency
@@ -102,7 +106,7 @@ const steps = [
         documents to apply for your Owner Builder Permit.
       </p>
 
-      <aside class="lg:border-l lg:border-base-300 lg:pl-10 lg:max-w-[20rem]">
+      <aside class="lg:border-l lg:border-base-300 lg:pl-8">
         <p class="text-[11px] uppercase tracking-[0.22em] font-mono text-base-content/55 mb-3">
           At a glance
         </p>
@@ -129,7 +133,7 @@ const steps = [
             <span class="font-mono text-[10px] uppercase tracking-[0.22em] text-base-content/55 leading-none">
               Step
             </span>
-            <span class="font-display text-5xl lg:text-6xl font-semibold text-primary leading-none">
+            <span class="font-display text-5xl lg:text-6xl font-semibold text-primary leading-none tabular-nums lining-nums">
               {step.n}
             </span>
           </div>

@@ -58,6 +58,21 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.01em;
 }
 
+/* Display headings get balanced wrapping so two-line H1/H2 don't end on a
+   single-word orphan — supported in all modern browsers as of mid-2024.
+   Limited to h1–h3 because h4–h6 are often inside dense lists where
+   balance reflows would fight the surrounding rhythm. */
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* Body paragraphs get pretty wrapping — same idea, but tuned for prose:
+   the algorithm only adjusts the LAST few lines, so it's cheap on long
+   passages. No effect on single-line labels (no wrap to fix). */
+p {
+  text-wrap: pretty;
+}
+
 /* ─── Custom utilities matching the mockup ─────────────────────────── */
 
 @utility verification-note {
