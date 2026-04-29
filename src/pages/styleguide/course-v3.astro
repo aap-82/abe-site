@@ -119,6 +119,11 @@ const unitOutcomes: Record<string, string> = {
   noindex
 >
 
+  {/* Reading-progress hairline — fixed at the top of the viewport,
+      grows from 0% to 100% width as the user scrolls. Steel rather
+      than Heritage Maroon to keep maroon rare and load-bearing. */}
+  <div class="reading-progress" aria-hidden="true"></div>
+
   {/* ─────────────────────────────────────────────────────────────────
        HERO OVERDRIVE — STICKY TOP FACT BAR (Direction B).
        Hidden until the user scrolls past the masthead, then slides
@@ -165,7 +170,7 @@ const unitOutcomes: Record<string, string> = {
         <li aria-hidden="true" class="text-base-content/30">›</li>
         <li><a href="/compare/owner-builder/" class="hover:text-primary transition-colors">Owner Builder Training</a></li>
         <li aria-hidden="true" class="text-base-content/30">›</li>
-        <li aria-current="page" class="text-base-content">NSW Owner Builder</li>
+        <li aria-current="page" class="text-base-content"><span data-current-section>NSW Owner Builder</span></li>
       </ol>
 
       <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-base-content/55">
@@ -311,7 +316,7 @@ const unitOutcomes: Record<string, string> = {
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] gap-y-8 lg:gap-x-16">
 
         <div>
-          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
+          <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-4">
             02 • In short
           </p>
           {/* Question H2 → answer capsule body. AI Overview citation
@@ -386,7 +391,7 @@ const unitOutcomes: Record<string, string> = {
 
       <header class="mb-8 lg:mb-10">
         <div>
-          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+          <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             04 • Outside scope
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
@@ -479,7 +484,7 @@ const unitOutcomes: Record<string, string> = {
 
       <header class="mb-8 lg:mb-10">
         <div>
-          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+          <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             05 • Units of competency
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
@@ -583,7 +588,7 @@ const unitOutcomes: Record<string, string> = {
 
       <header class="mb-8 lg:mb-10">
         <div>
-          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+          <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             06 • Cost &amp; what you receive
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
@@ -685,7 +690,7 @@ const unitOutcomes: Record<string, string> = {
 
       <header class="mb-8 lg:mb-10">
         <div>
-          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+          <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             07 • Course authority
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
@@ -786,7 +791,7 @@ const unitOutcomes: Record<string, string> = {
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
       <header class="mb-8 lg:mb-10">
-        <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+        <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
           08 • What stands behind this course
         </p>
         <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
@@ -894,7 +899,7 @@ const unitOutcomes: Record<string, string> = {
       <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
 
         <header class="mb-8 lg:mb-10">
-          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
+          <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
             09 • Common questions
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
@@ -994,5 +999,49 @@ const unitOutcomes: Record<string, string> = {
       </a>
     </div>
   </div>
+
+  {/* Section-aware breadcrumb — single Intersection Observer that
+      tracks which section is currently in the upper-middle of the
+      viewport and updates the breadcrumb's "NSW Owner Builder" label
+      to include the active section ("§ 05 Units"). Only piece of the
+      whole-page motion polish that needs JS — everything else is CSS.
+
+      Observer fires only on threshold crossings, not on every scroll
+      pixel, so it's cheap. Map state by section ID; pick the topmost
+      currently-intersecting one in DOM order. */}
+  <script is:inline>
+    (() => {
+      const target = document.querySelector('[data-current-section]');
+      if (!target) return;
+      const baseLabel = 'NSW Owner Builder';
+      const sections = [
+        { id: 'section-short', label: '§ 02 In short' },
+        { id: 'section-2', label: '§ 03 How it works' },
+        { id: 'section-eligibility', label: '§ 04 Outside scope' },
+        { id: 'section-units', label: '§ 05 Units' },
+        { id: 'section-cost', label: '§ 06 Cost' },
+        { id: 'section-authorship', label: '§ 07 Authorship' },
+        { id: 'section-why-abe', label: '§ 08 Why ABE' },
+        { id: 'section-faqs', label: '§ 09 FAQs' },
+      ];
+      const states = new Map();
+      let lastText = baseLabel;
+      const update = () => {
+        const active = sections.find(s => states.get(s.id));
+        const next = active ? `${baseLabel} · ${active.label}` : baseLabel;
+        if (next === lastText) return;
+        lastText = next;
+        target.textContent = next;
+      };
+      const observer = new IntersectionObserver((entries) => {
+        for (const e of entries) states.set(e.target.id, e.isIntersecting);
+        update();
+      }, { rootMargin: '-25% 0px -55% 0px' });
+      for (const s of sections) {
+        const el = document.getElementById(s.id);
+        if (el) observer.observe(el);
+      }
+    })();
+  </script>
 
 </BaseLayout>

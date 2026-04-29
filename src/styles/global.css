@@ -214,3 +214,97 @@ p {
     transition: none;
   }
 }
+
+/* ─── Whole-page motion polish (A / B / D) ─────────────────────────────
+   Three additional motion layers that serve READING and NAVIGATION
+   rather than decoration. Each is tied to a real interaction:
+   - A: scroll position → progress bar
+   - B: <details> open/close → smooth height
+   - D: in-page anchor click → target acknowledgement flash
+   Direction C (section-aware breadcrumb) lives in course-v3.astro
+   as an inline IntersectionObserver script — it's the one effect
+   that can't be done in pure CSS. */
+
+/* A — Reading-progress hairline.
+   Steel (not Heritage Maroon) so the brand's "rare and load-bearing"
+   rule on maroon stays intact. 1px line, top of viewport, scroll-driven.
+   Falls back to invisible in browsers without scroll-driven animations. */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-secondary);
+  transform: scaleX(0);
+  transform-origin: left center;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+@supports (animation-timeline: scroll()) {
+  .reading-progress {
+    animation: reading-progress-fill linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 100%;
+  }
+}
+
+@keyframes reading-progress-fill {
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress { display: none; }
+}
+
+/* B — FAQ smooth open/close.
+   Modern <details>::details-content + interpolate-size lets us
+   transition height: auto. Scoped to the FAQ section so DaisyUI's
+   menu/collapse rules elsewhere on the site don't get re-styled.
+   Older browsers fall back to instant snap (no harm). */
+@supports (interpolate-size: allow-keywords) {
+  #section-faqs details::details-content {
+    overflow: hidden;
+    height: 0;
+    opacity: 0;
+    interpolate-size: allow-keywords;
+    transition-property: content-visibility, height, opacity;
+    transition-duration: 320ms;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    transition-behavior: allow-discrete;
+  }
+  #section-faqs details[open]::details-content {
+    height: auto;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #section-faqs details::details-content {
+    transition: none;
+    interpolate-size: numeric-only;
+  }
+}
+
+/* D — Anchor-link target acknowledgement.
+   When a same-page anchor click lands on a section, the section's
+   eyebrow flashes Heritage Maroon for ~250ms then fades back to
+   the standard faded-charcoal over the rest of the 1.2s. Triggered
+   by the CSS :target pseudo-class — zero JS. */
+@keyframes section-target-flash {
+  0%   { color: var(--color-primary); }
+  20%  { color: var(--color-primary); }
+  100% { color: rgba(26, 26, 26, 0.55); }
+}
+
+:target [data-section-eyebrow] {
+  animation: section-target-flash 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :target [data-section-eyebrow] {
+    animation: none;
+  }
+}
