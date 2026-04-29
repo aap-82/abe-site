@@ -13,86 +13,91 @@ const sampleFaqs = allFaqs.slice(0, 3);
 // Palette swatches — single source of truth lives in src/styles/global.css
 // Grey Design System v1.1. This array mirrors what's in the CSS so the
 // styleguide stays in sync if the spec is updated.
+//
+// Each entry's `slug` matches a `.swatch-<slug>` class defined in the
+// <style> block below. Inline style attributes can't be used because
+// CSP (security.csp: true in astro.config.mjs) strips them — Astro 6
+// only hashes <style> blocks, not inline `style=""` attributes.
 const palette = [
   {
+    slug: 'primary',
     role: 'Primary',
     name: 'Heritage Maroon',
     hex: '#800000',
     token: '--color-primary',
     use: 'Primary CTAs, brand accents, active nav. The 10% in the 60-30-10 split. Reserved.',
-    text: '#ffffff',
   },
   {
+    slug: 'secondary',
     role: 'Secondary',
     name: 'Steel',
     hex: '#4a5568',
     token: '--color-secondary',
     use: 'Secondary buttons, info callouts, tertiary text. Cooler than primary; use sparingly.',
-    text: '#ffffff',
   },
   {
+    slug: 'accent',
     role: 'Accent',
     name: 'Steel Pale',
     hex: '#e2e8f0',
     token: '--color-accent',
     use: 'Pill / badge backgrounds, low-emphasis surfaces, the understated highlight.',
-    text: '#1a1a1a',
   },
   {
+    slug: 'neutral',
     role: 'Neutral',
     name: 'Charcoal',
     hex: '#1a1a1a',
     token: '--color-neutral',
     use: 'Body text, dark surfaces (footer disclosure band). Tinted dark — never pure black.',
-    text: '#ffffff',
   },
   {
+    slug: 'base-100',
     role: 'Base 100',
     name: 'White',
     hex: '#ffffff',
     token: '--color-base-100',
     use: 'Page background. Tinted white per brand spec — never pure for body surfaces.',
-    text: '#1a1a1a',
   },
   {
+    slug: 'base-200',
     role: 'Base 200',
     name: 'Cool Off-White',
     hex: '#f9fafb',
     token: '--color-base-200',
     use: 'Alternating section bands, subtle surface contrast.',
-    text: '#1a1a1a',
   },
   {
+    slug: 'base-300',
     role: 'Base 300',
     name: 'Cool Border',
     hex: '#e5e7eb',
     token: '--color-base-300',
     use: 'Card borders, dividers, table rules.',
-    text: '#1a1a1a',
   },
   {
+    slug: 'success',
     role: 'Success',
     name: 'Success Green',
     hex: '#059669',
     token: '--color-success',
     use: 'Confirmations, "Eligible" badges, verified status.',
-    text: '#ffffff',
   },
   {
+    slug: 'warning',
     role: 'Warning',
     name: 'Warning Amber',
     hex: '#d97706',
     token: '--color-warning',
     use: 'Exemption alerts, "review needed" states.',
-    text: '#ffffff',
   },
   {
+    slug: 'error',
     role: 'Error',
     name: 'Error Red',
     hex: '#dc2626',
     token: '--color-error',
     use: 'Excluded states, prohibited claims, validation failures.',
-    text: '#ffffff',
   },
 ];
 
@@ -231,12 +236,11 @@ const antiPatterns = [
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {palette.map((c) => (
           <article class="border border-base-300 rounded-box overflow-hidden bg-base-100">
-            {/* The colour itself fills the top of the card, role + name + hex
-                + token overlaid in the colour's contrast text colour. */}
-            <div
-              class="h-44 p-6 flex flex-col justify-between"
-              style={`background:${c.hex};color:${c.text}`}
-            >
+            {/* The colour itself fills the top of the card; role + name +
+                hex + token overlaid in the colour's contrast text colour.
+                See the <style> block at the bottom of this file — inline
+                style attributes are blocked by CSP. */}
+            <div class={`h-44 p-6 flex flex-col justify-between swatch-${c.slug}`}>
               <header>
                 <p class="text-[11px] uppercase tracking-[0.18em] opacity-75 mb-1.5">
                   {c.role}
@@ -622,5 +626,22 @@ const antiPatterns = [
       </p>
     </div>
   </section>
+
+  {/* Palette swatch backgrounds — defined as classes (not inline styles)
+      so they pass through CSP. Astro 6 auto-hashes <style> blocks. Add a
+      new colour: append an entry to the `palette` array above and a
+      matching .swatch-<slug> rule here. */}
+  <style>
+    .swatch-primary    { background: #800000; color: #ffffff; }
+    .swatch-secondary  { background: #4a5568; color: #ffffff; }
+    .swatch-accent     { background: #e2e8f0; color: #1a1a1a; }
+    .swatch-neutral    { background: #1a1a1a; color: #ffffff; }
+    .swatch-base-100   { background: #ffffff; color: #1a1a1a; }
+    .swatch-base-200   { background: #f9fafb; color: #1a1a1a; }
+    .swatch-base-300   { background: #e5e7eb; color: #1a1a1a; }
+    .swatch-success    { background: #059669; color: #ffffff; }
+    .swatch-warning    { background: #d97706; color: #ffffff; }
+    .swatch-error      { background: #dc2626; color: #ffffff; }
+  </style>
 
 </BaseLayout>
