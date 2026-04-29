@@ -51,7 +51,10 @@ if (!course) {
 
 const jurisdiction = await getEntry(course.data.jurisdiction);
 const reviewer = await getEntry(course.data.reviewer);
-const developer = course.data.developer ? await getEntry(course.data.developer) : null;
+// developer field removed — see § 07. NSW OB units are RTO-authored,
+// so course-content authority belongs to AlertForce, not an ABE staff
+// member. Other state OB pages (when built) keep the ABE-developer
+// pattern because they're a different delivery model.
 if (!jurisdiction || !reviewer) {
   throw new Error('Course references could not be resolved (jurisdiction or reviewer missing).');
 }
@@ -62,7 +65,6 @@ const faqs = faqEntries.filter((f): f is NonNullable<typeof f> => f != null);
 const c = course.data;
 const j = jurisdiction.data;
 const r = reviewer.data;
-const dev = developer?.data;
 
 const formattedPrice = new Intl.NumberFormat('en-AU', {
   style: 'currency',
@@ -161,18 +163,19 @@ const inclusions = [
             </dl>
           )}
 
-          {/* Dateline — like a journal byline. */}
+          {/* Dateline — like a journal byline. The course content is
+              authored by the RTO; this line records who keeps the page
+              CURRENT (legislation, regulator names, fees, unit codes). */}
           <div class="mt-8 lg:mt-10 flex flex-wrap items-baseline gap-x-6 gap-y-2 text-sm text-base-content/70">
             <span class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
-              Reviewed
+              Currency reviewed
             </span>
             <span>
               {formattedReviewDate} by{' '}
               <a
                 href={r.profileUrl}
                 class="text-base-content underline underline-offset-[4px] decoration-base-content/40 hover:decoration-primary hover:text-primary transition-colors"
-              >{r.name}</a>,{' '}
-              {r.title}.
+              >{r.name}</a>, Compliance &amp; Currency Reviewer.
             </span>
           </div>
         </div>
@@ -513,12 +516,18 @@ const inclusions = [
   </section>
 
   {/* ─────────────────────────────────────────────────────────────────
-       § 07 — Authored & reviewed by.
-       Editorial byline. NO avatars. NO credential pills. NO cards.
-       Just two named experts as a typographic byline with a dated
-       review note — the way you'd see authorship on a journal article.
-       Photos and full credentials live on each expert's profile page;
-       this is the at-a-glance authority signal in handbook voice.
+       § 07 — Course authority.
+       Two-card editorial byline with content-authority on the LEFT
+       (the RTO that authors and assesses the units) and currency
+       review on the RIGHT (the named expert who keeps legislation,
+       regulator names, fees and unit codes accurate over time).
+
+       The course awards five nationally recognised units of
+       competency and issues a Statement of Attainment — these are
+       RTO functions. ABE Education is the enrolment partner and
+       online platform, NOT the content author. Naming an ABE staff
+       member here as "Course Developer" would misattribute the
+       authorship and conflict with the dual-pathway authority model.
      ───────────────────────────────────────────────────────────────── */}
   <section id="section-authorship" class="border-b border-base-300">
     <div class="mx-auto max-w-6xl px-4 py-14 lg:py-20">
@@ -526,43 +535,48 @@ const inclusions = [
       <header class="mb-10 lg:mb-14">
         <div>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-2">
-            07 • Authorship
+            07 • Course authority
           </p>
           <h2 class="font-display text-3xl lg:text-4xl font-semibold tracking-tight text-base-content">
-            Authored, then independently reviewed
+            Who writes the course, and who keeps it current
           </h2>
         </div>
       </header>
 
       <div class="grid lg:grid-cols-2 gap-y-12 lg:gap-x-20">
 
-        {dev && (
-          <article>
-            <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-3">
-              Developed by
-            </p>
-            <h3 class="font-display text-2xl lg:text-3xl font-semibold text-base-content tracking-tight">
-              <a
-                href={dev.profileUrl}
-                class="underline underline-offset-[6px] decoration-base-content/30 hover:text-primary hover:decoration-primary transition-colors"
-              >{dev.name}</a>
-            </h3>
-            <p class="mt-2 text-base-content/75 text-base leading-relaxed">
-              {dev.title}{dev.organisation ? `, ${dev.organisation}` : ''}.
-              {' '}
-              {dev.yearsInIndustry && `${dev.yearsInIndustry} years in the Australian construction industry.`}
-            </p>
-            {(dev.bios?.ultraShort ?? dev.bios?.short) && (
-              <p class="mt-4 max-w-prose text-base-content leading-relaxed">
-                {dev.bios.ultraShort ?? dev.bios.short}
-              </p>
-            )}
-          </article>
-        )}
-
+        {/* ── Left card: RTO content authority ─────────────────────── */}
         <article>
           <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-3">
-            Independently reviewed by
+            Course content
+          </p>
+          <h3 class="font-display text-2xl lg:text-3xl font-semibold text-base-content tracking-tight">
+            <a
+              href={`https://training.gov.au/Organisation/Details/${c.deliveryRto.rtoCode}`}
+              class="underline underline-offset-[6px] decoration-base-content/30 hover:text-primary hover:decoration-primary transition-colors"
+              rel="noopener"
+            >{c.deliveryRto.name}</a>
+          </h3>
+          <p class="mt-2 text-base-content/75 text-base leading-relaxed">
+            Registered Training Organisation, RTO {c.deliveryRto.rtoCode}.
+          </p>
+          <p class="mt-4 max-w-prose text-base-content leading-relaxed">
+            {c.deliveryRto.name} authors and assesses the five
+            nationally recognised units of competency that make up
+            this course, and issues your Statement of Attainment on
+            completion. {c.deliveryRto.name} is registered with the
+            Australian Skills Quality Authority (ASQA) and listed on
+            the National Training Register.
+          </p>
+          <p class="mt-5 font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
+            Verifiable on training.gov.au
+          </p>
+        </article>
+
+        {/* ── Right card: independent currency reviewer ────────────── */}
+        <article>
+          <p class="font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55 mb-3">
+            Currency reviewed by
           </p>
           <h3 class="font-display text-2xl lg:text-3xl font-semibold text-base-content tracking-tight">
             <a
@@ -571,17 +585,18 @@ const inclusions = [
             >{r.name}</a>
           </h3>
           <p class="mt-2 text-base-content/75 text-base leading-relaxed">
-            {r.title}{r.organisation ? `, ${r.organisation}` : ''}.
+            Compliance &amp; Currency Reviewer{r.organisation ? `, ${r.organisation}` : ''}.
             {' '}
             {r.yearsInIndustry && `${r.yearsInIndustry} years across the Australian VET sector.`}
           </p>
-          {(r.bios?.ultraShort ?? r.bios?.short) && (
-            <p class="mt-4 max-w-prose text-base-content leading-relaxed">
-              {r.bios.ultraShort ?? r.bios.short}
-            </p>
-          )}
+          <p class="mt-4 max-w-prose text-base-content leading-relaxed">
+            Reviews legislation references, regulator names, fee
+            thresholds, and unit-code currency to keep this page
+            accurate as the regulatory landscape changes — independently
+            of {c.deliveryRto.name} and ABE Education.
+          </p>
           <p class="mt-5 font-mono text-[11px] uppercase tracking-[0.22em] text-base-content/55">
-            Last review • {formattedReviewDate}
+            Last currency review • {formattedReviewDate}
           </p>
         </article>
 
