@@ -319,5 +319,5 @@ p {
    which stay regular weight. The data-section-eyebrow attribute
    already scopes this to exactly the 8 section running heads. */
 [data-section-eyebrow] {
-  font-weight: 600;
+  font-weight: 500;
 }
