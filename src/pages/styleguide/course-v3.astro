@@ -125,37 +125,6 @@ const unitOutcomes: Record<string, string> = {
   <div class="reading-progress" aria-hidden="true"></div>
 
   {/* ─────────────────────────────────────────────────────────────────
-       HERO OVERDRIVE — STICKY TOP FACT BAR (Direction B).
-       Hidden until the user scrolls past the masthead, then slides
-       down via animation-timeline: scroll(). Carries the regulator-
-       handbook reference card (price + course + Enrol) into the rest
-       of the page so the decision data stays one click away. Pure CSS
-       animation keyed off scroll position — no JS shipped. Falls back
-       to permanently-hidden in browsers without scroll-driven anims;
-       the existing bottom bar covers that case. Desktop only — mobile
-       keeps the sticky bottom bar pattern unchanged.
-     ───────────────────────────────────────────────────────────────── */}
-  <aside class="hero-top-fact-bar bg-base-100/95 backdrop-blur-sm border-b border-base-300 hidden lg:block" aria-hidden="true">
-    <div class="mx-auto max-w-6xl px-4 h-12 flex items-center justify-between gap-6">
-      <div class="flex items-baseline gap-5 min-w-0">
-        <span class="font-display text-xl font-semibold text-base-content leading-none tabular-nums">
-          {formattedPrice}
-        </span>
-        <span class="font-mono text-[11px] uppercase tracking-[0.22em] text-secondary truncate">
-          NSW Owner Builder · Approved by Building Commission&nbsp;NSW
-        </span>
-      </div>
-      <a
-        href={c.enrolUrl}
-        tabindex="-1"
-        class="btn btn-primary btn-sm font-semibold whitespace-nowrap"
-      >
-        Enrol now — {formattedPrice}
-      </a>
-    </div>
-  </aside>
-
-  {/* ─────────────────────────────────────────────────────────────────
        BREADCRUMB BAR — navigation on the left, freshness signal on the
        right. Per page-type-engine §4: › separator (U+203A),
        <nav aria-label="Breadcrumb">, current page non-clickable with
@@ -325,7 +294,7 @@ const unitOutcomes: Record<string, string> = {
 
         <div>
           <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-secondary mb-4">
-            02 • In short
+            <span class="text-primary mr-1.5" aria-hidden="true">§</span>02 • In short
           </p>
           {/* Question H2 → answer capsule body. AI Overview citation
               patterns reward question-format headings followed by a
@@ -359,10 +328,10 @@ const unitOutcomes: Record<string, string> = {
               Verified
             </span>
             <a
-              href="https://www.nsw.gov.au/housing-and-construction/building-or-renovating-a-home/owner-builder/when-a-permit-needed"
+              href={`https://training.gov.au/Organisation/Details/${c.deliveryRto.rtoCode}`}
               class="underline decoration-dotted underline-offset-[3px] hover:text-primary transition-colors"
               rel="noopener"
-            >Building Commission&nbsp;NSW</a>{' '}— {formattedReviewDateShort}.
+            >training.gov.au</a>{' '}— RTO {c.deliveryRto.rtoCode}, {formattedReviewDateShort}.
           </p>
           <p>
             <span class="block font-mono text-[10px] uppercase tracking-[0.22em] text-secondary mb-1">
@@ -400,7 +369,7 @@ const unitOutcomes: Record<string, string> = {
       <header class="mb-8 lg:mb-10">
         <div>
           <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-secondary mb-2">
-            04 • Outside scope
+            <span class="text-primary mr-1.5" aria-hidden="true">§</span>04 • Outside scope
           </p>
           <h2 class="font-display text-3xl lg:text-[2.875rem] font-semibold tracking-tight lg:tracking-[-0.03em] lg:leading-[1.05] text-base-content">
             Which projects sit outside this course?
@@ -493,7 +462,7 @@ const unitOutcomes: Record<string, string> = {
       <header class="mb-8 lg:mb-10">
         <div>
           <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-secondary mb-2">
-            05 • Units of competency
+            <span class="text-primary mr-1.5" aria-hidden="true">§</span>05 • Units of competency
           </p>
           <h2 class="font-display text-3xl lg:text-[2.875rem] font-semibold tracking-tight lg:tracking-[-0.03em] lg:leading-[1.05] text-base-content">
             What will you learn?
@@ -597,25 +566,13 @@ const unitOutcomes: Record<string, string> = {
       <header class="mb-8 lg:mb-10">
         <div>
           <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-secondary mb-2">
-            06 • Cost &amp; what you receive
+            <span class="text-primary mr-1.5" aria-hidden="true">§</span>06 • Cost &amp; what you receive
           </p>
           <h2 class="font-display text-3xl lg:text-[2.875rem] font-semibold tracking-tight lg:tracking-[-0.03em] lg:leading-[1.05] text-base-content">
             How much does the course cost?
           </h2>
         </div>
       </header>
-
-      {/* Answer capsule — gives the price + what's included in plain
-          English before the big-display figure and inclusions list
-          land it visually. */}
-      <p class="mb-10 lg:mb-14 max-w-[55ch] text-lg leading-relaxed text-base-content/85">
-        The course costs {formattedPrice} with GST included — a one-off
-        fee, not a subscription. It covers the five units of
-        competency, online learning, assessments marked by{' '}
-        {c.deliveryRto.name}, your Statement of Attainment, and email
-        and phone support during business hours. The price stays the
-        same whether you finish in a day or over a fortnight.
-      </p>
 
       <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-y-12 lg:gap-x-20 items-start">
 
@@ -699,7 +656,7 @@ const unitOutcomes: Record<string, string> = {
       <header class="mb-8 lg:mb-10">
         <div>
           <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-secondary mb-2">
-            07 • Course authority
+            <span class="text-primary mr-1.5" aria-hidden="true">§</span>07 • Course authority
           </p>
           <h2 class="font-display text-3xl lg:text-[2.875rem] font-semibold tracking-tight lg:tracking-[-0.03em] lg:leading-[1.05] text-base-content">
             Who writes the course, and who keeps it current?
@@ -800,43 +757,25 @@ const unitOutcomes: Record<string, string> = {
 
       <header class="mb-8 lg:mb-10">
         <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-secondary mb-2">
-          08 • What stands behind this course
+          <span class="text-primary mr-1.5" aria-hidden="true">§</span>08 • What stands behind this course
         </p>
         <h2 class="font-display text-3xl lg:text-[2.875rem] font-semibold tracking-tight lg:tracking-[-0.03em] lg:leading-[1.05] text-base-content">
           Why is this course fit for permit applications?
         </h2>
       </header>
 
-      {/* Answer capsule — names the four substantive things before the
-          numbered procedure index lays them out. */}
-      <p class="mb-10 lg:mb-14 max-w-[55ch] text-lg leading-relaxed text-base-content/85">
-        Four substantive things stand behind this course: it's approved
-        by Building Commission NSW for Owner Builder Permit
-        applications; the five units of competency are nationally
-        recognised and issued as a Statement of Attainment by{' '}
-        {c.deliveryRto.name} (RTO {c.deliveryRto.rtoCode}); an
-        independent compliance reviewer keeps the page accurate against
-        current legislation; and ABE Education has supported 31,000+
-        students since 2007.
-      </p>
-
       <ol class="border-t border-base-300 max-w-3xl">
         <li class="border-b border-base-300 py-6 lg:py-7 grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-5 lg:gap-x-8">
           <span class="font-mono text-xs uppercase tracking-[0.18em] text-primary leading-none pt-[0.3rem]">01</span>
           <div>
             <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-secondary mb-2">
-              Regulator approval
+              Reviewed against current legislation
             </p>
             <p class="text-base lg:text-[1.0625rem] text-base-content leading-relaxed">
-              Approved by{' '}
-              <a
-                href="https://www.nsw.gov.au/housing-and-construction/building-or-renovating-a-home/owner-builder/when-a-permit-needed"
-                class="font-medium text-base-content underline decoration-base-content/40 underline-offset-[3px] hover:text-primary hover:decoration-primary transition-colors"
-                rel="noopener"
-              >Building Commission&nbsp;NSW</a>{' '}
-              for Owner Builder Permit applications. The course content
-              meets the requirements published in the regulator's permit
-              guide.
+              Course content, legislation references, fee thresholds,
+              and unit-code citations are reviewed each cycle against
+              the current National Construction Code and the NSW
+              Home Building Act. Last reviewed {formattedReviewDate}.
             </p>
           </div>
         </li>
@@ -908,7 +847,7 @@ const unitOutcomes: Record<string, string> = {
 
         <header class="mb-8 lg:mb-10">
           <p data-section-eyebrow class="font-mono text-[11px] uppercase tracking-[0.22em] text-secondary mb-2">
-            09 • Common questions
+            <span class="text-primary mr-1.5" aria-hidden="true">§</span>09 • Common questions
           </p>
           <h2 class="font-display text-3xl lg:text-[2.875rem] font-semibold tracking-tight lg:tracking-[-0.03em] lg:leading-[1.05] text-base-content">
             What do builders ask before they enrol?
